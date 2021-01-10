@@ -31,6 +31,7 @@ class Pipeline_Build
 	@Override
 	void pipeline() {
 //		super.pipeline()
+		workflow.deleteWorkspace()
 		checkout({
 			getModule(SlackModule.class).setOnSuccess(getRepo().getChangeLog().toSlackMessage())
 		})
