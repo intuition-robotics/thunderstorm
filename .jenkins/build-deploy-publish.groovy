@@ -47,6 +47,7 @@ class Pipeline_Build
 			Cli cli = new Cli("#!/bin/bash")
 				.append("source \"\$HOME/.nvm/nvm.sh\"")
 				.append("nvm use")
+				.append("npm config delete @intuitionrobotics:registry")
 				.append("npm config set //registry.npmjs.org/:_authToken ${Env_SecretNPM.get()}")
 				.append("npm whoami")
 			getRepo().sh(cli)
