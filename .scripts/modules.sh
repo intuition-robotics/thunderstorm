@@ -1,12 +1,36 @@
-projectModules=(
-  #  app-backend
-  #  app-frontend
+tsLibs=(
+  ts-common
+#  testelot
+#  neural
+#  firebase
+#  thunderstorm
+#  db-api-generator
+#  storm
+#  live-docs
+#  user-account
+#  permissions
+#  push-pub-sub
+#  jira
+#  bug-report
+#  github
+#  file-upload
+#  google-services
 )
 
-projectLibraries=(
-  #  ${thunderstormLibraries[@]}
-  #  app-shared
-  ts-common
+projectLibs=(
+#  app-shared
+)
+
+backendApps=(
+#  app-backend
+)
+
+frontendApps=(
+#  app-frontend
+)
+
+executableApps=(
+#  app
 )
 
 testServiceAccount=../.trash/test-account.json
