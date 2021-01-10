@@ -47,6 +47,7 @@ class Pipeline_Build
 				.append("source \"\$HOME/.nvm/nvm.sh\"")
 				.append("nvm use")
 				.append("npm config set //registry.npmjs.org/:_authToken ${Env_SecretNPM.get()}")
+				.append("npm whoami")
 			getRepo().sh(cli)
 		})
 		publish()
