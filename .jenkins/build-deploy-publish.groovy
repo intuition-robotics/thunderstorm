@@ -48,7 +48,7 @@ class Pipeline_Build
 				.append("source \"\$HOME/.nvm/nvm.sh\"")
 				.append("nvm use")
 				.append("npm config list")
-				.append("npm config delete @intuitionrobotics:registry")
+				.append("npm config delete fee72d7c-e603-453e-931d-7385ae0b261e")
 				.append("npm config set //registry.npmjs.org/:_authToken ${Env_SecretNPM.get()}")
 				.append("npm whoami")
 				.append("npm config list")
