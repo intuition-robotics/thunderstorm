@@ -55,6 +55,7 @@ export type BaseApiConfig = {
 	key: string
 }
 
+
 export abstract class BaseDB_ApiGeneratorCaller<DBType extends DB_Object, UType extends PartialProperties<DBType, "_id"> = PartialProperties<DBType, "_id">>
 	extends Module<BaseApiConfig> {
 
