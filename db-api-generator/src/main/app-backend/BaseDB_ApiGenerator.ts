@@ -104,7 +104,7 @@ export type Config<Type extends object> = {
  */
 export abstract class BaseDB_ApiGenerator<DBType extends DB_Object, ConfigType extends Config<DBType> = Config<DBType>, UType extends PartialProperties<DBType, "_id"> = PartialProperties<DBType, "_id">>
 	extends Module<ConfigType>
-	implements OnFirestoreBackupSchedulerAct<DBType> {
+	implements OnFirestoreBackupSchedulerAct {
 
 	public readonly collection!: FirestoreCollection<DBType>;
 	private validator: ValidatorTypeResolver<DBType>;
@@ -120,14 +120,14 @@ export abstract class BaseDB_ApiGenerator<DBType extends DB_Object, ConfigType e
 		this.validator = validator;
 	}
 
-	__onFirestoreBackupSchedulerAct(): FirestoreBackupDetails<DBType> {
-		return {
+	__onFirestoreBackupSchedulerAct(): FirestoreBackupDetails<DBType>[] {
+		return [{
 			backupQuery: this.resolveBackupQuery(),
 			collection: this.collection,
 			keepInterval: 7 * Day,
 			interval: Day,
 			moduleKey: this.config.collectionName
-		};
+		}];
 	}
 
 	protected resolveBackupQuery(): FirestoreQuery<DBType> {
@@ -222,12 +222,18 @@ export abstract class BaseDB_ApiGenerator<DBType extends DB_Object, ConfigType e
 			return transaction.queryUnique(this.collection, {where: uniqueQuery});
 		}));
 
-		for (const dbInstance of dbInstances) {
-			if (!dbInstance)
+		for (const idx in dbInstances) {
+			const dbInstance = dbInstances[idx];
+			if (!dbInstance || dbInstance._id === instance._id)
 				continue;
 
-			if (dbInstance._id !== instance._id)
-				throw new ApiException(422, `${this.config.itemName} uniqueness violation`);
+			const query = uniqueQueries[idx];
+			const message = _keys(query).reduce((carry, key) => {
+				return carry + "\n" + `${key}: ${query[key]}`;
+			}, `${this.config.itemName} uniqueness violation. There is already a document with`);
+
+			this.logWarning(message);
+			throw new ApiException(422, message);
 		}
 	}
 

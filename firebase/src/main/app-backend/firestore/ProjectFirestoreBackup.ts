@@ -70,7 +70,7 @@ export class ProjectFirestoreBackup_Class
 		const bucket = await storage.getOrCreateBucket(bucketName);
 
 		const projectAuth: JWTInput = FirebaseModule.getProjectAuth(projectToBackup.projectId) as JWTInput;
-		const client = new firestore.v1.FirestoreAdminClient(projectAuth);
+		const client = new firestore.v1.FirestoreAdminClient({credentials: projectAuth});
 
 		const exportConfig = {
 			name: client.databasePath(projectToBackup.projectId, '(default)'),
