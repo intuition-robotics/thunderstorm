@@ -168,7 +168,7 @@ class XhrHttpRequest<Binder extends ApiTypeBinder<any, any, any, any>>
 				return toRet;
 			}, this.url);
 
-			this.xhr.upload.onprogress = this.onProgressListener;
+			this.xhr.onprogress = this.onProgressListener;
 			this.xhr.open(this.method, fullUrl);
 			this.xhr.timeout = this.timeout;
 
