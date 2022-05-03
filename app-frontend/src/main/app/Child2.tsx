@@ -1,10 +1,7 @@
 /*
- * Thunderstorm is a full web app framework!
+ * A typescript & react boilerplate with api call example
  *
- * Typescript & Express backend infrastructure that natively runs on firebase function
- * Typescript & React frontend infrastructure
- *
- * Copyright (C) 2020 Intuition Robotics
+ * Copyright (C) 2020 Adam van der Kruk aka TacB0sS
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -19,5 +16,22 @@
  * limitations under the License.
  */
 
-export * from "./core/ServiceWorker";
-export * from "./core/self";
+import * as React from "react";
+import {BaseComponent, RoutingModule} from "@intuitionrobotics/thunderstorm/frontend";
+import {Parent} from "./Parent";
+
+export class Child2
+	extends BaseComponent {
+
+	constructor(props: any) {
+		super(props);
+	}
+
+	render() {
+		return <Parent>
+			<div>Child2</div>
+			{RoutingModule.getLink('child1')}
+		</Parent>;
+	}
+
+}

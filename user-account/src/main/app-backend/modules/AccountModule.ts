@@ -31,7 +31,8 @@ import {
 
 import {
 	FirebaseModule,
-	FirestoreCollection
+	FirestoreCollection,
+	FirestoreTransaction
 } from "@intuitionrobotics/firebase/backend";
 import {
 	DB_Account,
@@ -39,6 +40,7 @@ import {
 	HeaderKey_SessionId,
 	Request_CreateAccount,
 	Request_LoginAccount,
+	Request_UpsertAccount,
 	Response_Auth,
 	UI_Account
 } from "./_imports";
@@ -106,9 +108,9 @@ export class AccountsModule_Class
 		this.accounts = firestore.getCollection<DB_Account>(Collection_Accounts, ["email"]);
 	}
 
-	async getUser(_email: string): Promise<UI_Account> {
+	async getUser(_email: string): Promise<UI_Account | undefined> {
 		const email = _email.toLowerCase();
-		return this.accounts.queryUnique({where: {email}, select: ["email", "_id"]}) as Promise<UI_Account>;
+		return this.accounts.queryUnique({where: {email}, select: ["email", "_id"]});
 	}
 
 	async listUsers() {
@@ -132,26 +134,77 @@ export class AccountsModule_Class
 		return session;
 	}
 
+	async upsert(request: Request_UpsertAccount) {
+		const account = await this.accounts.runInTransaction(async (transaction) => {
+			const existAccount = await transaction.queryUnique(this.accounts, {where: {email: request.email}});
+			if (existAccount)
+				return this.changePassword(request.email, request.password, transaction);
+
+			return this.createImpl(request, transaction);
+		});
+
+		const session = await this.login(request);
+		await dispatch_onNewUserRegistered.dispatchModuleAsync([getUIAccount(account)]);
+		return session;
+	}
+
+	async addNewAccount(email: string, password?: string, password_check?: string): Promise<UI_Account> {
+		let account: DB_Account;
+		if (password && password_check) {
+			account = await this.createAccount({password, password_check, email});
+			await dispatch_onNewUserRegistered.dispatchModuleAsync([getUIAccount(account)]);
+		} else
+			account = await this.createSAML(email);
+
+		return getUIAccount(account);
+	}
+
+	async changePassword(userEmail: string, newPassword: string, _transaction?: FirestoreTransaction) {
+		const email = userEmail.toLowerCase();
+		const processor = async (transaction: FirestoreTransaction) => {
+			const account = await transaction.queryUnique(this.accounts, {where: {email}});
+			if (!account)
+				throw new ApiException(422, "User with email does not exist");
+
+			if (!account.saltedPassword || !account.salt)
+				throw new ApiException(401, "Account login using SAML");
+
+			account.saltedPassword = hashPasswordWithSalt(account.salt, newPassword);
+			account._audit = auditBy(email, 'Changed password');
+
+			return transaction.upsert(this.accounts, account);
+		};
+
+		if(_transaction)
+			return processor(_transaction)
+
+		return this.accounts.runInTransaction(processor);
+	}
+
 	async createAccount(request: Request_CreateAccount) {
 		request.email = request.email.toLowerCase();
 		validate(request.email, validateEmail);
 
-		return this.accounts.runInTransaction(async (transaction) => {
-			let account = await transaction.queryUnique(this.accounts, {where: {email: request.email}});
+		return this.accounts.runInTransaction(async (transaction: FirestoreTransaction) => {
+			const account = await transaction.queryUnique(this.accounts, {where: {email: request.email}});
 			if (account)
 				throw new ApiException(422, "User with email already exists");
 
-			const salt = generateHex(32);
-			account = {
-				_id: generateHex(32),
-				_audit: auditBy(request.email),
-				email: request.email,
-				salt,
-				saltedPassword: hashPasswordWithSalt(salt, request.password),
-			};
-
-			return transaction.insert(this.accounts, account);
+			return this.createImpl(request, transaction)
 		});
+	}
+
+	private createImpl(request: Request_CreateAccount, transaction: FirestoreTransaction) {
+		const salt = generateHex(32);
+		const account = {
+			_id: generateHex(32),
+			_audit: auditBy(request.email),
+			email: request.email,
+			salt,
+			saltedPassword: hashPasswordWithSalt(salt, request.password)
+		};
+
+		return transaction.insert(this.accounts, account);
 	}
 
 	async login(request: Request_LoginAccount): Promise<Response_Auth> {
@@ -190,28 +243,27 @@ export class AccountsModule_Class
 	private async createSAML(__email: string) {
 		const _email = __email.toLowerCase();
 		const query = {where: {email: _email}};
-		const account = await this.accounts.runInTransaction(async (transaction) => {
-			let _account = await transaction.queryUnique(this.accounts, query);
-			if (!_account) {
-				_account = {
-					_id: generateHex(32),
-					_audit: auditBy(_email),
-					email: _email,
-				};
+		let dispatchEvent = false;
+		const toRet = await this.accounts.runInTransaction<DB_Account>(async (transaction) => {
+			const account = await transaction.queryUnique(this.accounts, query);
+			if (account?._id)
+				return account;
 
-				await transaction.insert(this.accounts, _account);
-			}
+			const _account: DB_Account = {
+				_id: generateHex(32),
+				_audit: auditBy(_email),
+				email: _email,
+				...account
+			};
 
-			if (!_account._id) {
-				_account._id = generateHex(32);
-				await transaction.upsert(this.accounts, _account);
-			}
-
-			return _account;
+			dispatchEvent = true;
+			return transaction.upsert(this.accounts, _account);
 		});
 
-		await dispatch_onNewUserRegistered.dispatchModuleAsync([getUIAccount(account)]);
-		return account;
+		if (dispatchEvent)
+			await dispatch_onNewUserRegistered.dispatchModuleAsync([getUIAccount(toRet)]);
+
+		return toRet;
 	}
 
 	async validateSession(request: ExpressRequest): Promise<UI_Account> {
@@ -250,7 +302,7 @@ export class AccountsModule_Class
 		return delta > this.config.sessionTTLms || delta < 0;
 	};
 
-	private upsertSession = async (userId: string): Promise<Response_Auth> => {
+	public upsertSession = async (userId: string): Promise<Response_Auth> => {
 		let session = await this.sessions.queryUnique({where: {userId}});
 		if (!session || this.TTLExpired(session)) {
 			session = {

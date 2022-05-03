@@ -18,8 +18,9 @@
 
 // import {FirestoreCollection} from "./FirestoreCollection";
 import {
-	FirebaseListener,
-	Firebase_DB
+	Firebase_DataSnapshot,
+	Firebase_DB,
+	FirebaseListener
 } from "./types";
 import {
 	BadImplementationException,
@@ -28,18 +29,17 @@ import {
 } from "@intuitionrobotics/ts-common";
 import {FirebaseSession} from "../auth/firebase-session";
 import {FirebaseBaseWrapper} from "../auth/FirebaseBaseWrapper";
+import {getDatabase} from 'firebase-admin/database'
 
 export class DatabaseWrapper
 	extends FirebaseBaseWrapper {
 
 	private readonly database: Firebase_DB;
 
-
 	constructor(firebaseSession: FirebaseSession<any>) {
 		super(firebaseSession);
-		this.database = firebaseSession.app.database() as Firebase_DB;
+		this.database = getDatabase(firebaseSession.app)
 	}
-
 
 	public async get<T>(path: string, defaultValue?: T): Promise<T | undefined> {
 		const snapshot = await this.database.ref(path).once("value");
@@ -55,7 +55,7 @@ export class DatabaseWrapper
 
 	public listen<T>(path: string, callback: (value: T | undefined) => void): FirebaseListener {
 		try {
-			return this.database.ref(path).on("value", (snapshot) => callback(snapshot ? snapshot.val() : undefined));
+			return this.database.ref(path).on("value", (snapshot: Firebase_DataSnapshot) => callback(snapshot ? snapshot.val() : undefined));
 		} catch (e) {
 			throw new BadImplementationException(`Error while getting value from path: ${path}`, e);
 		}
@@ -106,7 +106,7 @@ export class DatabaseWrapper
 		return this.delete(path, assertionRegexp);
 	}
 
-	public async delete<T>(path: string, assertionRegexp: string = "^/.*?/.*") {
+	public async delete<T>(path: string, assertionRegexp: string = "^/.*?/.*"): Promise<T | undefined> {
 		if (!path)
 			throw new BadImplementationException(`Falsy value, path: '${path}'`);
 
@@ -114,7 +114,26 @@ export class DatabaseWrapper
 			throw new BadImplementationException(`path: '${path}'  does not match assertion: '${assertionRegexp}'`);
 
 		try {
-			return await this.database.ref(path).remove();
+			return new Promise<T>(async (resolve, reject) => {
+				let val: T;
+				await this.database.ref(path).transaction(
+					(a: any) => {
+						val = a;
+						return null;
+					},
+					(error: Error | null, committed: boolean, snapshot: Firebase_DataSnapshot | null) => {
+						if(error)
+							return reject();
+
+						// Transaction aborted with return undefined
+						if(!committed)
+							return reject()
+
+						resolve(val)
+					}
+				)
+				reject()
+			})
 		} catch (e) {
 			throw new BadImplementationException(`Error while removing path: ${path}`, e);
 		}

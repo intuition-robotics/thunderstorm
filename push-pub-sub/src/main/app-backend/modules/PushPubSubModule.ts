@@ -26,9 +26,9 @@ import {
 	filterDuplicates,
 	generateHex,
 	Hour,
-	ImplementationMissingException,
 	Module,
-	Subset
+	Subset,
+    batchActionParallel
 } from "@intuitionrobotics/ts-common";
 
 import {
@@ -36,8 +36,9 @@ import {
 	FirebaseType_BatchResponse,
 	FirebaseType_Message,
 	FirestoreCollection,
+	FirestoreTransaction,
 	PushMessagesWrapper
-} from '@intuitionrobotics/firebase/backend';
+} from "@intuitionrobotics/firebase/backend";
 // noinspection TypeScriptPreferShortImport
 import {
 	DB_Notifications,
@@ -76,24 +77,26 @@ export class PushPubSubModule_Class
 		const session = FirebaseModule.createAdminSession();
 		const firestore = session.getFirestore();
 
-		this.pushSessions = firestore.getCollection<DB_PushSession>('push-sessions', ["pushSessionId"]);
-		this.pushKeys = firestore.getCollection<DB_PushKeys>('push-keys');
-		this.notifications = firestore.getCollection<DB_Notifications>('notifications', ["_id"]);
+		this.pushSessions = firestore.getCollection<DB_PushSession>("push-sessions", ["pushSessionId"]);
+		this.pushKeys = firestore.getCollection<DB_PushKeys>("push-keys");
+		this.notifications = firestore.getCollection<DB_Notifications>("notifications", ["_id"]);
 		this.messaging = session.getMessaging();
 	}
 
 	async register(body: Request_PushRegister, request: ExpressRequest): Promise<DB_Notifications[]> {
 		const resp = await dispatch_queryRequestInfo.dispatchModuleAsync([request]);
-		const userId: string | undefined = resp.find(e => e.key === 'AccountsModule')?.data?._id || resp.find(e => e.key === 'RemoteProxy')?.data;
-		if (!userId)
-			throw new ImplementationMissingException('Missing user from accounts Module');
+		const userId: string | undefined = resp.find(e => e.key === "AccountsModule")?.data?._id || resp.find(e => e.key === "RemoteProxy")?.data;
+		// if (!userId)
+		// 	throw new ImplementationMissingException("Missing user from accounts Module");
 
 		const session: DB_PushSession = {
 			firebaseToken: body.firebaseToken,
 			pushSessionId: body.pushSessionId,
-			timestamp: currentTimeMillies(),
-			userId
+			timestamp: currentTimeMillies()
 		};
+
+		if(userId)
+			session.userId = userId;
 
 		const subscriptions: DB_PushKeys[] = body.subscriptions.map((s): DB_PushKeys => {
 			const sub: DB_PushKeys = {
@@ -108,17 +111,17 @@ export class PushPubSubModule_Class
 
 		return this.pushSessions.runInTransaction(async transaction => {
 			const pushKeys = subscriptions.map(_sub => _sub.pushKey);
-			console.log(pushKeys);
+
 			let subscriptionNotifications: DB_Notifications[] = pushKeys.length !== 0 ?
-				await transaction.query(this.notifications, {where: {pushKey: {$in: pushKeys}}}) : [];
-			const userNotifications: DB_Notifications[] = await transaction.query(this.notifications, {where: {userId}});
-			if (subscriptionNotifications.length !== 0)
+				await batchAction(pushKeys, 10, async elements => transaction.query(this.notifications, {where: {pushKey: {$in: elements}}})) : [];
+
+			if (subscriptionNotifications.length > 0)
 				subscriptionNotifications = subscriptionNotifications.filter(_notification => {
 					const x = subscriptions.find(_sub => _sub.pushKey === _notification.pushKey)?.props;
-					console.log(compare(x, _notification.props), x, _notification.props);
 					return compare(x, _notification.props) || _notification.userId;
 				});
 
+			const userNotifications: DB_Notifications[] = await transaction.query(this.notifications, {where: {userId}});
 			const notifications = userNotifications.concat(subscriptionNotifications);
 			const writePush = await transaction.upsert_Read(this.pushSessions, session);
 
@@ -132,45 +135,53 @@ export class PushPubSubModule_Class
 	async pushToKey<M extends MessageType<any, any, any> = never,
 		S extends string = IFP<M>,
 		P extends SubscribeProps = ISP<M>,
-		D = ITP<M>>(key: S, props?: P, data?: D, persistent: boolean = false) {
-		console.log('i am pushing to key...', key, props, data);
-		let docs = await this.pushKeys.query({where: {pushKey: key}});
-		if (props)
-			docs = docs.filter(doc => !doc.props || compare(doc.props, props));
+		D = ITP<M>>(key: S, props?: P, data?: D, persistent: boolean = false, transaction?: FirestoreTransaction) {
+		const processor = async (_transaction: FirestoreTransaction) => {
+			console.log("i am pushing to key...", key, props, data);
+			let docs = await _transaction.query(this.pushKeys, {where: {pushKey: key}});
+			if (props)
+				docs = docs.filter(doc => !doc.props || compare(doc.props, props));
 
-		const notifications: DB_Notifications[] = [];
+			const notification = this.buildNotification(key, persistent, data, props);
+			// If we need to do read and write for a transaction move this to a callback and rename to pushToKey_Read
+			if (persistent) {
+				await this.notifications.insertAll([notification]);
+			}
 
-		const notification = this.buildNotification(key, persistent, data, props);
-		if (persistent) {
-			notifications.push(notification);
-			await this.notifications.insertAll(notifications);
-		}
+			if (docs.length === 0)
+				return;
 
-		if (docs.length === 0) {
-			return;
-		}
+			const sessionsIds = docs.map(d => d.pushSessionId);
+			// I get the tokens relative to those sessions (query)
+			const sessions = await batchAction(sessionsIds, 10, async elements => _transaction.query(this.pushSessions, {where: {pushSessionId: {$in: elements}}}));
+			const _messages = docs.reduce((carry: TempMessages, db_pushKey: DB_PushKeys) => {
+				const session = sessions.find(s => s.pushSessionId === db_pushKey.pushSessionId);
+				if (!session)
+					return carry;
 
-		const sessionsIds = docs.map(d => d.pushSessionId);
-		// I get the tokens relative to those sessions (query)
-		const sessions = await batchAction(sessionsIds, 10, async elements => this.pushSessions.query({where: {pushSessionId: {$in: elements}}}));
-		const _messages = docs.reduce((carry: TempMessages, db_pushKey: DB_PushKeys) => {
-			const session = sessions.find(s => s.pushSessionId === db_pushKey.pushSessionId);
-			if (!session)
+				carry[session.firebaseToken] = [notification];
+
 				return carry;
+			}, {} as TempMessages);
+			const resp = await this.sendMessage(persistent, _messages);
+			if (!resp)
+				return this.logInfo('No messages to send. Empty subscriptions');
 
-			carry[session.firebaseToken] = [notification];
+			const {response, messages} = resp;
+			this.logInfo(`${response.successCount} sent, ${response.failureCount} failed`, "messages", messages);
+			// return this.cleanUp(response, messages);
+		};
+		if (transaction)
+			return processor(transaction);
 
-			return carry;
-		}, {} as TempMessages);
-		const {response, messages} = await this.sendMessage(persistent, _messages);
-		return this.cleanUp(response, messages);
+		return this.pushKeys.runInTransaction(processor);
 	}
 
 	async pushToUser<M extends MessageType<any, any, any> = never,
 		S extends string = IFP<M>,
 		P extends SubscribeProps = ISP<M>,
 		D = ITP<M>>(user: string, key: string, props?: P, data?: D, persistent: boolean = false) {
-		console.log('i am pushing to user...', user, props);
+		console.log("i am pushing to user...", user, props);
 
 		const notification = this.buildNotification(key, persistent, data, props, user);
 		const notifications: DB_Notifications[] = [];
@@ -200,7 +211,7 @@ export class PushPubSubModule_Class
 		await this.sendMessage(persistent, _messages);
 	}
 
-	private buildNotification = (pushkey: string, persistent: boolean, data?: any, props?: any, user?: string,) => {
+	private buildNotification = (pushkey: string, persistent: boolean, data?: any, props?: any, user?: string) => {
 		const notification: DB_Notifications = {
 			_id: generateHex(16),
 			timestamp: currentTimeMillies(),
@@ -221,11 +232,14 @@ export class PushPubSubModule_Class
 		return notification;
 	};
 
-	sendMessage = async (persistent: boolean, _messages: TempMessages): Promise<{ response: FirebaseType_BatchResponse, messages: FirebaseType_Message[] }> => {
+	sendMessage = async (persistent: boolean, _messages: TempMessages): Promise<{ response: FirebaseType_BatchResponse, messages: FirebaseType_Message[] } | undefined> => {
 		const messages: FirebaseType_Message[] = Object.keys(_messages).map(token => ({token, data: {messages: __stringify(_messages[token])}}));
-		console.log('sending a message');
+		if (messages.length === 0)
+			return;
+
+		console.log("sending a message to \n" + Object.keys(_messages).join("\n"));
 		const response: FirebaseType_BatchResponse = await this.messaging.sendAll(messages);
-		console.log('and this is the response: ' + response.responses.map(_response => _response.success));
+		console.log("and this is the response: " + response.responses.map(_response => _response.success));
 		return {response, messages};
 	};
 
@@ -245,7 +259,7 @@ export class PushPubSubModule_Class
 		                  ]);
 	};
 
-	private cleanUp = async (response: FirebaseType_BatchResponse, messages: FirebaseType_Message[]) => {
+	cleanUp = async (response: FirebaseType_BatchResponse, messages: FirebaseType_Message[]) => {
 		this.logInfo(`${response.successCount} sent, ${response.failureCount} failed`);
 
 		if (response.failureCount > 0)
@@ -262,14 +276,16 @@ export class PushPubSubModule_Class
 		return this.cleanUpImpl(toDelete);
 	};
 
-	private async cleanUpImpl(toDelete: string[]) {
-		if (toDelete.length === 0)
+	private async cleanUpImpl(_toDelete: string[]) {
+		if (_toDelete.length === 0)
 			return;
 
-		const sessions = await this.pushSessions.query({where: {firebaseToken: {$in: toDelete}}});
+		const toDelete = filterDuplicates(_toDelete);
+		const _sessions = await batchActionParallel(toDelete, 10, async elements => this.pushSessions.query({where: {firebaseToken: {$in: elements}}}))
+		const sessions = filterDuplicates(_sessions.map(s => s.pushSessionId));
 		const async = [
-			batchAction(toDelete, 10, async elements => this.pushSessions.delete({where: {firebaseToken: {$in: elements}}})),
-			batchAction(sessions.map(s => s.pushSessionId), 10, async elements => this.pushKeys.delete({where: {pushSessionId: {$in: elements}}}))
+			batchActionParallel(toDelete, 10, async elements => this.pushSessions.delete({where: {firebaseToken: {$in: elements}}})),
+			batchActionParallel(sessions, 10, async elements => this.pushKeys.delete({where: {pushSessionId: {$in: elements}}}))
 		];
 
 		await Promise.all(async);

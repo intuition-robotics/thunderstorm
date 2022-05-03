@@ -24,7 +24,8 @@ import {
 import {FilterKeys} from "../../shared/types";
 import {FirebaseSession} from "../auth/firebase-session";
 import {FirebaseBaseWrapper} from "../auth/FirebaseBaseWrapper";
-
+import {DB_Object} from "@intuitionrobotics/ts-common";
+import {getFirestore} from "firebase-admin/firestore";
 
 export class FirestoreWrapper
 	extends FirebaseBaseWrapper {
@@ -34,7 +35,7 @@ export class FirestoreWrapper
 
 	constructor(firebaseSession: FirebaseSession<any>) {
 		super(firebaseSession);
-		this.firestore = firebaseSession.app.firestore();
+		this.firestore = getFirestore(firebaseSession.app)
 	}
 
 	public getCollection<Type extends object>(name: string, externalFilterKeys?: FilterKeys<Type>): FirestoreCollection<Type> {
@@ -43,6 +44,12 @@ export class FirestoreWrapper
 			return collection;
 
 		return this.collections[name] = new FirestoreCollection<Type>(name, this, externalFilterKeys);
+	}
+
+	public listen<Type extends DB_Object>(collection: FirestoreCollection<Type>, doc: string) {
+		collection.wrapper.firestore.doc(`${collection.name}/${doc}`).onSnapshot(_snapshot => {
+			console.log('recieved snapshot!')
+		})
 	}
 
 	public async deleteCollection(name: string) {

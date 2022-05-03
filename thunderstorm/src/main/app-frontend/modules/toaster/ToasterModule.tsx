@@ -26,10 +26,9 @@ import {
 	Second
 } from "@intuitionrobotics/ts-common";
 // noinspection TypeScriptPreferShortImport
-import {Color} from "csstype";
 import {ThunderDispatcher} from "../../core/thunder-dispatcher";
 import { Stylable, StylableBuilder } from "../../tools/Stylable";
-
+import {Color} from "../../components/types";
 
 export enum ToastType {
 	"success",
@@ -39,9 +38,10 @@ export enum ToastType {
 
 type PositionVertical = "bottom" | "top";
 type PositionHorizontal = "left" | "right" | "center";
+
 export type Toast_Model = Stylable & {
 	duration: number;
-	bgColor: string;
+	bgColor: Color;
 	type: ToastType;
 	positionVertical?: PositionVertical;
 	positionHorizontal?: PositionHorizontal;

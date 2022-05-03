@@ -39,7 +39,6 @@ import {BrowserHistoryModule} from "../modules/HistoryModule";
 import {StorageModule} from "../modules/StorageModule";
 import {ResourcesModule} from "../modules/ResourcesModule";
 import {ThunderDispatcher} from "./thunder-dispatcher";
-import {LocaleModule} from "../modules/locale/LocaleModule";
 import {
 	OnRequestListener,
 	RequestErrorHandler,
@@ -68,8 +67,7 @@ const modules: Module[] = [
 	BrowserHistoryModule,
 
 	StorageModule,
-	LocaleModule,
-	ResourcesModule,
+	ResourcesModule
 
 ];
 
@@ -121,6 +119,11 @@ export class Thunder
 	public getMainApp(): React.ElementType<WrapperProps> {
 		return this.mainApp;
 	}
+
+	public build(onStarted?: () => void) {
+		super.build()
+		onStarted?.();
+	}
 }
 
-const dispatch_requestCompleted = new ThunderDispatcher<OnRequestListener, "__onRequestCompleted">("__onRequestCompleted");
+export const dispatch_requestCompleted = new ThunderDispatcher<OnRequestListener, "__onRequestCompleted">("__onRequestCompleted");

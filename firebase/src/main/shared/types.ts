@@ -51,14 +51,17 @@ export type DB_RequestObject = Partial<DB_Object>
 export type QueryComparator<T> =
 	{ $ac: T extends (infer I)[] ? I : never } |
 	{ $aca: T extends (infer I)[] ? I[] : never } |
+	{ $nin: T extends (infer I)[] ? never : T[] } |
 	{ $in: T extends (infer I)[] ? never : T[] } |
 	{ $gt: number } |
 	{ $gte: number } |
 	{ $lt: number } |
 	{ $lte: number } |
-	{ $eq: number };
+	{ $eq: T } |
+	{ $neq: T } ;
 
 export const ComparatorMap: { [k in keyof QueryComparator<any>]: Comparator } = {
+	$nin: "not-in",
 	$in: "in",
 	$ac: "array-contains",
 	$aca: "array-contains-any",
@@ -67,6 +70,7 @@ export const ComparatorMap: { [k in keyof QueryComparator<any>]: Comparator } = 
 	$lt: "<",
 	$lte: "<=",
 	$eq: "==",
+	$neq: "!=",
 };
 
 export type FilterKeys<T extends object> = MandatoryKeys<T, string | number>[];
@@ -83,17 +87,5 @@ export type FirestoreQueryImpl<T extends object> = {
 	where?: Clause_Where<T>
 	limit?: number
 }
-
-export type EventType = 'value' | 'child_added' | 'child_changed' | 'child_moved' | 'child_removed';
-
-export enum Firebase_EventType {
-	Value        = "value",
-	ChildAdded   = "child_added",
-	ChildChanged = "child_changed",
-	ChildMoved   = "child_moved",
-	ChildRemoved = "child_removed"
-
-}
-
 
 export type FirebaseProjectCollections = { projectId: string, collections: string[] };

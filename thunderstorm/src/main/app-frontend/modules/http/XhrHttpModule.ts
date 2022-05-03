@@ -26,8 +26,8 @@ import {
 	HttpMethod
 } from "../../../shared/types";
 
-import {BadImplementationException,} from "@intuitionrobotics/ts-common";
-import {gzip} from "zlib";
+import {BadImplementationException} from "@intuitionrobotics/ts-common";
+import {gzipSync} from "zlib";
 // noinspection TypeScriptPreferShortImport
 import {HttpException} from "../../../shared/request-types";
 // noinspection TypeScriptPreferShortImport
@@ -41,10 +41,10 @@ export class XhrHttpModule_Class
 	extends BaseHttpModule_Class {
 
 	init() {
-		super.init()
+		super.init();
 		const origin = this.config.origin;
 		if (!origin)
-			throw new BadImplementationException('Did you forget to set the origin config key for the HttpModule?');
+			throw new BadImplementationException("Did you forget to set the origin config key for the HttpModule?");
 
 		this.origin = origin;
 	}
@@ -77,7 +77,7 @@ class XhrHttpRequest<Binder extends ApiTypeBinder<any, any, any, any>>
 	getStatus(): number {
 		const xhr = this.xhr;
 		if (!xhr)
-			throw new BadImplementationException('No xhr object!');
+			throw new BadImplementationException("No xhr object!");
 
 		return xhr.status;
 	}
@@ -85,7 +85,7 @@ class XhrHttpRequest<Binder extends ApiTypeBinder<any, any, any, any>>
 	protected getResponse() {
 		const xhr = this.xhr;
 		if (!xhr)
-			throw new BadImplementationException('No xhr object!');
+			throw new BadImplementationException("No xhr object!");
 
 		return xhr.response;
 	}
@@ -105,6 +105,10 @@ class XhrHttpRequest<Binder extends ApiTypeBinder<any, any, any, any>>
 			}
 		}
 		return response;
+	}
+
+	protected prepareJsonBody(bodyObject: any) {
+		return JSON.stringify(bodyObject);
 	}
 
 	protected executeImpl(): Promise<void> {
@@ -168,33 +172,40 @@ class XhrHttpRequest<Binder extends ApiTypeBinder<any, any, any, any>>
 				return toRet;
 			}, this.url);
 
+			// TODO: investigate which one should work
+			this.xhr.onprogress = this.onProgressListener;
 			this.xhr.upload.onprogress = this.onProgressListener;
+
 			this.xhr.open(this.method, fullUrl);
 			this.xhr.timeout = this.timeout;
 
 			Object.keys(this.headers).forEach((key) => {
-				xhr.setRequestHeader(key, this.headers[key].join('; '));
+				xhr.setRequestHeader(key, this.headers[key].join("; "));
 			});
 
-			const body = this.body;
-			if (typeof body === "string" && this.compress)
-				return gzip(body, (error: Error | null, result: Buffer) => {
-					if (error)
-						return reject(error);
+			let body: any = this.body;
+			if (typeof body === 'string' && this.compress)
+				try {
+					body = gzipSync(this.body);
+				} catch (error) {
+					return reject(error);
+				}
 
-					xhr.send(result);
-				});
-
-			this.xhr.send(body as BodyInit);
+			return this.xhr.send(body);
 		});
 	}
 
 	getResponseHeader(headerKey: string): string | string[] | undefined {
 		if (!this.xhr)
-			throw new BadImplementationException('No xhr object!');
+			throw new BadImplementationException("No xhr object!");
 
 		if (!this.xhr.response)
 			throw new BadImplementationException(`xhr didn't return yet`);
+
+		// Chrome bug, if the response header is not present then it throws an error (not really problematic but just annoying)
+		// https://trackjs.com/blog/refused-unsafe-header/
+		if (this.xhr.getAllResponseHeaders().indexOf(headerKey) < 0)
+			return undefined;
 
 		const header = this.xhr.getResponseHeader(headerKey);
 		if (!header)

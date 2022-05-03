@@ -1,4 +1,3 @@
-"use strict";
 /*
  * A backend boilerplate with example apis
  *
@@ -16,16 +15,25 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-Object.defineProperty(exports, "__esModule", { value: true });
-// tslint:disable-next-line:no-import-side-effect
-require("module-alias/register");
-var StormTester_1 = require("./test/StormTester");
-var _core_1 = require("./test/_core");
-var testelot_1 = require("@intuitionrobotics/testelot");
-var mainScenario = testelot_1.__scenario('root');
-mainScenario.add(_core_1.runTest);
-module.exports = new StormTester_1.StormTester()
-    .setEnvironment('dev')
-    .setScenario(mainScenario)
-    .build();
-//# sourceMappingURL=index.js.map
+
+import {
+	Firebase_PubSubFunction,
+	FirebaseEventContext,
+	TopicMessage
+} from "@intuitionrobotics/firebase/backend-functions";
+
+type MyType = any;
+
+export class PubsubExample_Class
+	extends Firebase_PubSubFunction<MyType> {
+
+	constructor() {
+		super("example-topic");
+	}
+
+	onPublish = async (object: MyType | undefined, originalMessage: TopicMessage, context: FirebaseEventContext): Promise<any> => {
+		console.log(`Pubsub example`, object);
+	}
+}
+
+export const PubsubExample = new PubsubExample_Class();

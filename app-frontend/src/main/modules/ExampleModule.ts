@@ -45,7 +45,7 @@ import {
 } from "@intuitionrobotics/thunderstorm";
 import {Test} from "@modules/TestModule";
 import {
-	OnNotificationsReceived,
+	OnNotificationsUpdated,
 	OnPushMessageReceived,
 	PushPubSubModule,
 	NotificationsModule
@@ -82,7 +82,7 @@ const mySubscriptions: BaseSubscriptionData[] = [{
 
 export class ExampleModule_Class
 	extends Module<Config>
-	implements OnPushMessageReceived, OnNotificationsReceived {
+	implements OnPushMessageReceived, OnNotificationsUpdated {
 
 	private message!: string;
 
@@ -91,13 +91,8 @@ export class ExampleModule_Class
 	private max: number = 0;
 
 	protected init(): void {
-		this.runAsync('Async start', async () => {
-			const asyncs: Promise<any>[] = [
-				PushPubSubModule.subscribeMulti(mySubscriptions),
-				this.initAnalytics()
-			];
-			return Promise.all(asyncs);
-		});
+		PushPubSubModule.subscribeMulti(mySubscriptions)
+		this.runAsync('Async start', this.initAnalytics);
 	}
 
 	initAnalytics = async () => {
@@ -112,7 +107,7 @@ export class ExampleModule_Class
 		this.logInfo('payload received in module', message, notification);
 	}
 
-	__onNotificationsReceived(): void {
+	__onNotificationsUpdated(): void {
 		this.logInfo('these are the notifications you actually care about:', NotificationsModule.getNotifications());
 	}
 

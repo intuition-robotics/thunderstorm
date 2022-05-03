@@ -1,5 +1,5 @@
 /*
- * Firebase is a simpler Typescript wrapper to all of firebase services.
+ * A typescript & react boilerplate with api call example
  *
  * Copyright (C) 2020 Intuition Robotics
  *
@@ -16,5 +16,21 @@
  * limitations under the License.
  */
 
-export * from "./app-backend/firestore/ProjectFirestoreBackup";
-export * from "./app-backend/firestore/ProjectBackupScheduler";
+import * as React from "react";
+import {BaseComponent} from "@intuitionrobotics/thunderstorm/frontend";
+
+export class Parent
+	extends BaseComponent {
+
+	constructor(props: any) {
+		super(props);
+	}
+
+	render() {
+		return <div>
+			<h1>Hi</h1>
+			{this.props.children}
+		</div>;
+	}
+
+}

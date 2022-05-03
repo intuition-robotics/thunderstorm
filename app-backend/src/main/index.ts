@@ -42,7 +42,6 @@ import {
 	Backend_ModulePack_BugReport,
 	BugReportModule
 } from "@intuitionrobotics/bug-report/backend";
-import {ProjectFirestoreBackup} from "@intuitionrobotics/firebase/backend-firestore-backup";
 import {PushPubSubModule} from '@intuitionrobotics/push-pub-sub/backend';
 import {ValueChangedListener} from "@modules/ValueChangedListener";
 import {
@@ -63,20 +62,23 @@ import {
 import {DB_Temp_File} from '@intuitionrobotics/file-upload/shared/types';
 import {Firebase_ExpressFunction} from '@intuitionrobotics/firebase/backend-functions';
 import {JiraBugReportIntegrator} from "@intuitionrobotics/bug-report/app-backend/modules/JiraBugReportIntegrator";
+import {CollectionChangedListener} from "@modules/CollectionChangedListener"
+import {PubsubExample} from "@modules/PubsubExample";
 
 const packageJson = require("./package.json");
 console.log(`Starting server v${packageJson.version} with env: ${Environment.name}`);
 
 const modules: Module[] = [
 	ValueChangedListener,
+	CollectionChangedListener,
 	ExampleModule,
 	ForceUpgrade,
-	ProjectFirestoreBackup,
 	SlackModule,
 	Slack_ServerApiError,
 	DispatchModule,
 	PushPubSubModule,
-	AxiosHttpModule
+	AxiosHttpModule,
+	PubsubExample
 ];
 
 AxiosHttpModule.setDefaultConfig({origin: 'https://us-central1-thunderstorm-staging.cloudfunctions.net/api/'});
@@ -87,7 +89,7 @@ const postProcessor: { [k: string]: PostProcessor } = {
 
 		const resp = ServerUploaderModule.upload([{file: await file.read(), name: 'myTest.txt', mimeType: doc.mimeType}]);
 
-		await new Promise(res => {
+		await new Promise<void>(res => {
 			_setTimeout(() => {
 				console.log(ServerUploaderModule.getFullFileInfo(resp[0].feId));
 				res();

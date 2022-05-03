@@ -1,8 +1,5 @@
 /*
- * Thunderstorm is a full web app framework!
- *
- * Typescript & Express backend infrastructure that natively runs on firebase function
- * Typescript & React frontend infrastructure
+ * A typescript & react boilerplate with api call example
  *
  * Copyright (C) 2020 Intuition Robotics
  *
@@ -19,8 +16,22 @@
  * limitations under the License.
  */
 
-// Unfortunately the tsconfig webworker lib is shared for service-workers,
-// web-workers and shared-workers so I need to cast this
+import * as React from "react";
+import {BaseComponent, RoutingModule} from "@intuitionrobotics/thunderstorm/frontend";
+import {Parent} from "./Parent";
 
-// @ts-ignore
-export const swSelf = self as ServiceWorkerGlobalScope;
+export class Child1
+	extends BaseComponent {
+
+	constructor(props: any) {
+		super(props);
+	}
+
+	render() {
+		return <Parent>
+			<div>Child1</div>
+			{RoutingModule.getLink('child2')}
+		</Parent>;
+	}
+
+}

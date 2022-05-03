@@ -22,14 +22,14 @@ import {
 	validateExists,
 	validateRegexp
 } from "@intuitionrobotics/ts-common";
-import {ServerApi} from "@intuitionrobotics/thunderstorm/backend"
+import {ServerApi} from "@intuitionrobotics/thunderstorm/backend";
 import {
 	BaseDB_ApiGenerator,
 	validateUniqueId
 } from "@intuitionrobotics/db-api-generator/backend";
 import {DB_Temp_File} from "../../shared/types";
 
-export const TEMP_COLLECTION = 'temp-files-upload';
+export const TEMP_COLLECTION = "temp-files-upload";
 
 export const validateName = validateRegexp(/^.{3,}$/);
 
@@ -43,11 +43,13 @@ export class UploaderTempFileModule_Class
 		key: validateExists(true),
 		path: validateExists(true),
 		_audit: auditValidator(),
-		bucketName: validateExists(true)
+		bucketName: validateExists(true),
+		public: undefined,
+		metadata: undefined
 	};
 
 	constructor() {
-		super(TEMP_COLLECTION, UploaderTempFileModule_Class._validator, 'temp-files')
+		super(TEMP_COLLECTION, UploaderTempFileModule_Class._validator, "temp-files");
 	}
 
 	apis(pathPart?: string): ServerApi<any>[] {

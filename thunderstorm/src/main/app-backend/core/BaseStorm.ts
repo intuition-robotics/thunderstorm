@@ -25,45 +25,57 @@ import {
 } from "@intuitionrobotics/firebase/backend";
 import {
 	merge,
-	ModuleManager
+	ModuleManager,
+	ObjectTS
 } from "@intuitionrobotics/ts-common";
 
 export abstract class BaseStorm
 	extends ModuleManager {
 
 	protected envKey: string = "dev";
+	private override: ObjectTS = {};
 
 	setEnvironment(envKey: string) {
 		this.envKey = envKey;
 		return this;
 	}
 
+	setOverride(override: ObjectTS) {
+		this.override = override
+	}
+
 	protected resolveConfig = async () => {
-		const adminSession = FirebaseModule.createAdminSession();
-
-		const database: DatabaseWrapper = adminSession.getDatabase();
-		const async = [];
-		async.push(database.get(`/_config/default`));
-		async.push(database.get(`/_config/${this.envKey}`));
-		const config = await Promise.all(async);
-
-
+		const database: DatabaseWrapper = FirebaseModule.createAdminSession().getDatabase();
 		let initialized = 0;
-		const terminationListener = (snapshot: any) => {
+
+		const listener = (resolve: (value: unknown) => void) => (snapshot: any) => {
 			if (initialized >= 2) {
 				console.log("CONFIGURATION HAS CHANGED... KILLING PROCESS!!!");
 				process.exit(2);
 			}
 
+			resolve(snapshot || {});
+
 			initialized++;
 		};
 
-		database.listen(`/_config/default`, terminationListener);
-		database.listen(`/_config/${this.envKey}`, terminationListener);
+		const defaultPromise = new Promise((resolve) => {
+			database.listen(`/_config/default`, listener(resolve));
+		});
+		const envPromise = new Promise((resolve) => {
+			database.listen(`/_config/${this.envKey}`, listener(resolve));
+		});
+		const [
+			      defaultConfig,
+			      overrideConfig
+		      ] = await Promise.all(
+			[
+				defaultPromise,
+				envPromise
+			]
+		);
 
-		const defaultConfig = config[0] || {};
-		const overrideConfig = config[1] || {};
-
-		this.setConfig(merge(defaultConfig, overrideConfig) || {});
+		const merge1 = merge(defaultConfig, overrideConfig);
+		this.setConfig(merge(merge1, this.override) || {});
 	};
 }

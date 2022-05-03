@@ -17,10 +17,7 @@
  */
 
 import {__scenario} from "@intuitionrobotics/testelot";
-import {
-	assert,
-	sortArray
-} from "@intuitionrobotics/ts-common";
+import {assert, sortArray} from "@intuitionrobotics/ts-common";
 import {
 	testCollection,
 	testInstance1,
@@ -33,12 +30,11 @@ import {
 	testNumber3,
 	testString1,
 	testString2,
-	testString4
+	testString3,
+	testString4,
+	testString5
 } from "../_core/consts";
-import {
-	FB_Type,
-	Query_TestCase,
-} from "../_core/types";
+import {FB_Type, Query_TestCase} from "../_core/types";
 
 export type QueryGeneral_TestCase = Query_TestCase<FB_Type, FB_Type[]> & {
 	invertSort?: boolean
@@ -147,6 +143,12 @@ const queryTests: QueryGeneral_TestCase[] = [
 		expected: [testInstance5, testInstance4, testInstance3]
 	},
 	{
+		label: `Query ARRAY EQUAL`,
+		where: {stringArray: {"$eq": testInstance1.stringArray}},
+		orderBy: [{key: "stringValue", order: "desc"}],
+		expected: [testInstance1]
+	},
+	{
 		label: "Query SELECT string prop",
 		where: {stringArray: {"$ac": testString4}},
 		select: ["stringValue", "numeric"],
@@ -164,17 +166,53 @@ const queryTests: QueryGeneral_TestCase[] = [
 		expected: [testInstance1]
 	},
 	{
+		label: "Query no Limit",
+		where: {stringValue: testString1},
+		expected: [testInstance1, testInstance1]
+	},
+	{
 		insert: [testInstance1, testInstance2],
 		label: "Query array of objects",
 		where: {objectArray: [{key: testItem1.key, value: testItem1.value}]},
 		expected: [testInstance1, testInstance2]
 	},
 	{
-		insert: [testInstance1, testInstance2],
 		label: "Query nested object",
 		where: {nestedObject: {one: testItem1}},
 		expected: [testInstance1]
 	},
+	{
+		label: "Query nested by key and value",
+		where: {nestedObject: {two: {value: testNumber3}}},
+		expected: [testInstance2]
+	},
+	{
+		label: "Query nested by key and value $gt",
+		where: {nestedObject: {two: {value: {$gt: testNumber2}}}},
+		expected: [testInstance2]
+	},
+	{
+		label: "Query nested by Array Contains",
+		where: {objectArray: {$ac: testItem1}},
+		expected: [testInstance1, testInstance2]
+	},
+	{
+		label: "Query nested by Array Contains",
+		where: {objectArray: {$ac: testItem1}},
+		expected: [testInstance1, testInstance2]
+	},
+	{
+		insert: [testInstance1, testInstance2, testInstance3],
+		label: "Query not equals to",
+		where: {stringValue: {$neq: testString2}},
+		expected: [testInstance1, testInstance3]
+	},
+	{
+		insert: [testInstance1, testInstance2, testInstance3],
+		label: "Query not-in",
+		where: {stringValue: {$nin: [testString2, testString3]}},
+		expected: [testInstance1]
+	}
 ];
 
 

@@ -27,13 +27,10 @@ import {
 } from "firebase-admin";
 import {JWTInput} from "google-auth-library";
 import {FirebaseSession} from "./firebase-session";
-import {
-	StringMap,
-	ThisShouldNotHappenException
-} from "@intuitionrobotics/ts-common";
+import {ThisShouldNotHappenException} from "@intuitionrobotics/ts-common";
 
 export class FirebaseSession_Admin
-	extends FirebaseSession<JWTInput | undefined> {
+	extends FirebaseSession<JWTInput & {databaseURL?: string} | undefined> {
 
 	constructor(sessionName: string, config?: JWTInput) {
 		super(config, sessionName);
@@ -61,21 +58,15 @@ export class FirebaseSession_Admin
 		if (!this.config)
 			return initializeApp();
 
+		const databaseURL = this.config.databaseURL || `https://${this.config.project_id}.firebaseio.com`;
 		return initializeApp({
 			                     credential: credential.cert(this.config as ServiceAccount),
-			                     databaseURL: `https://${this.config.project_id}.firebaseio.com`
+			                     databaseURL: databaseURL
 		                     }, this.sessionName);
 	}
 
 	public getAuth(): auth.Auth {
 		return this.app.auth();
-	}
-
-	public async sendMessage<T extends StringMap>(token: string, message: T) {
-		if (!this.app)
-			this.connect();
-
-		return await this.app.messaging().send(Object.assign({data: message}, {token: token}));
 	}
 }
 

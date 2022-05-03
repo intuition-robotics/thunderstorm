@@ -39,7 +39,6 @@ import {
 import {DB_Object} from "@intuitionrobotics/firebase";
 import {
 	ThunderDispatcher,
-	ToastModule,
 	XhrHttpModule
 } from "@intuitionrobotics/thunderstorm/frontend";
 
@@ -61,8 +60,8 @@ export abstract class BaseDB_ApiGeneratorCaller<DBType extends DB_Object, UType 
 	private readonly errorHandler: RequestErrorHandler<any> = (request: BaseHttpRequest<any>, resError?: ErrorResponse<any>) => {
 		if (this.onError(request, resError))
 			return;
-		return ToastModule.toastError(
-			request.getStatus() === 403 ? "You are not allowed to perform this action. Please check your permissions." : "Failed to perform action.");
+
+		return XhrHttpModule.handleRequestFailure(request, resError);
 	};
 
 	private defaultDispatcher?: ThunderDispatcher<any, string>;
@@ -81,10 +80,20 @@ export abstract class BaseDB_ApiGeneratorCaller<DBType extends DB_Object, UType 
 		R = DeriveResponseType<Binder>,
 		B = DeriveBodyType<Binder>,
 		P extends QueryParams = DeriveQueryType<Binder>>(apiDef: GenericApiDef): BaseHttpRequest<Binder> {
-		return XhrHttpModule
+
+		const request = XhrHttpModule
 			.createRequest(apiDef.method, `request-api--${this.config.key}-${apiDef.key}`)
 			.setRelativeUrl(`${this.config.relativeUrl}${apiDef.suffix ? "/" + apiDef.suffix : ""}`)
 			.setOnError(this.errorHandler) as BaseHttpRequest<any>;
+
+		const timeout = this.timeoutHandler(apiDef);
+		if (timeout)
+			request.setTimeout(timeout);
+
+		return request;
+	}
+
+	protected timeoutHandler(apiDef: GenericApiDef): number | void {
 	}
 
 	protected onError(request: BaseHttpRequest<any>, resError?: ErrorResponse<any>): boolean {
@@ -147,22 +156,31 @@ export abstract class BaseDB_ApiGeneratorCaller<DBType extends DB_Object, UType 
 		return this.ids.map(id => this.items[id]);
 	}
 
-	protected async onEntryCreated(item: DBType): Promise<void> {
-		addItemToArray(this.ids, item._id);
-		this.items[item._id] = item;
-		this.defaultDispatcher?.dispatchUI([]);
+	public get(id: string): DBType | undefined {
+		return this.items[id];
 	}
+
+	protected async onEntryCreated(item: DBType): Promise<void> {
+		this.upsertId(item._id);
+		this.items[item._id] = item;
+		this.dispatch();
+	}
+
+	private dispatch = () => {
+		this.defaultDispatcher?.dispatchUI([]);
+		this.defaultDispatcher?.dispatchModule([]);
+	};
 
 	protected async onEntryDeleted(item: DBType): Promise<void> {
 		removeItemFromArray(this.ids, item._id);
 		delete this.items[item._id];
 
-		this.defaultDispatcher?.dispatchUI([]);
+		this.dispatch();
 	}
 
 	protected async onEntryUpdated(item: DBType): Promise<void> {
 		this.items[item._id] = item;
-		this.defaultDispatcher?.dispatchUI([]);
+		this.dispatch();
 	}
 
 	protected async onGotUnique(item: DBType): Promise<void> {
@@ -170,16 +188,21 @@ export abstract class BaseDB_ApiGeneratorCaller<DBType extends DB_Object, UType 
 			addItemToArray(this.ids, item._id);
 
 		this.items[item._id] = item;
-		this.defaultDispatcher?.dispatchUI([]);
+		this.dispatch();
 	}
 
 	protected async onQueryReturned(items: DBType[]): Promise<void> {
-		this.ids = items.map(item => item._id);
+		items.forEach(item => this.upsertId(item._id));
 		this.items = items.reduce((toRet, item) => {
 			toRet[item._id] = item;
 			return toRet;
 		}, this.items);
 
-		this.defaultDispatcher?.dispatchUI([]);
+		this.dispatch();
 	}
+
+	private upsertId = (id: string) => {
+		if (!this.ids.includes(id))
+			addItemToArray(this.ids, id);
+	};
 }

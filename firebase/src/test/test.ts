@@ -19,7 +19,6 @@
 import {FirebaseTester} from "./_core/Firebase-Tester";
 import {testCollections} from "./firestore/collection/test-collections";
 import {TestModuleThatUsesCollection,} from "./firestore/backup/test-project-backup";
-import {ProjectFirestoreBackup} from "../main/app-backend/firestore/ProjectFirestoreBackup";
 import {FirebaseModule} from "../main/app-backend/FirebaseModule";
 import {testStorage} from "./firestore/storage/test-storage";
 import {__scenario} from "@intuitionrobotics/testelot";
@@ -27,14 +26,13 @@ import {testDatabase} from "./database/test-database";
 import {scenarioUpsert} from "./firestore/collection/test/upsert";
 
 const mainScenario = __scenario("Firebase testing");
-// mainScenario.add(testDatabase)
-// mainScenario.add(testCollections);
-mainScenario.add(testStorage);
+mainScenario.add(testDatabase)
+mainScenario.add(testCollections);
+// mainScenario.add(testStorage);
 // mainScenario.add(scenarioUpsert);
 // mainScenario.add(testFirestoreBackup);
 module.exports = new FirebaseTester()
 	.addModules(FirebaseModule,
-	            TestModuleThatUsesCollection,
-	            ProjectFirestoreBackup)
+	            TestModuleThatUsesCollection)
 	.setScenario(mainScenario)
 	.build();

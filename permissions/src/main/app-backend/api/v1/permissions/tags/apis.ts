@@ -1,4 +1,3 @@
-
 /*
  * Permissions management system, define access level for each of
  * your server apis, and restrict users by giving them access levels
@@ -18,4 +17,6 @@
  * limitations under the License.
  */
 
-export * from './modules/PushPubSubModule';
+import {TagsDB} from "../_imports";
+
+module.exports = TagsDB.apis();

@@ -21,7 +21,7 @@ import {
 	EventContext,
 	HttpsFunction,
 	RuntimeOptions
-} from 'firebase-functions';
+} from "firebase-functions";
 import {DataSnapshot} from "firebase-functions/lib/providers/database";
 
 import * as express from "express";
@@ -30,23 +30,71 @@ import {
 	Response
 } from "express";
 import {
+	__stringify,
 	addItemToArray,
 	deepClone,
+	dispatch_onServerError,
 	ImplementationMissingException,
-	Module
+	Module,
+	ServerErrorSeverity,
+	StringMap
 } from "@intuitionrobotics/ts-common";
 import {ObjectMetadata} from "firebase-functions/lib/providers/storage";
+import {Message} from "firebase-functions/lib/providers/pubsub";
+import {firestore} from "firebase-admin";
+import DocumentSnapshot = firestore.DocumentSnapshot;
 
-const functions = require('firebase-functions');
+const functions = require("firebase-functions");
 
-export interface FirebaseFunction {
+export interface FirebaseFunctionInterface {
 	getFunction(): HttpsFunction;
 
 	onFunctionReady(): Promise<void>;
 }
 
+export abstract class FirebaseFunction<Config = any>
+	extends Module<Config>
+	implements FirebaseFunctionInterface {
+	protected isReady: boolean = false;
+	protected toBeExecuted: (() => Promise<any>)[] = [];
+	protected toBeResolved!: (value?: (PromiseLike<any>)) => void;
+
+	protected constructor(tag?: string) {
+		super(tag);
+		this.onFunctionReady = this.onFunctionReady.bind(this);
+	}
+
+	abstract getFunction(): HttpsFunction
+
+	protected async handleCallback(callback: () => Promise<any>) {
+		if (this.isReady)
+			return await callback();
+
+		return new Promise((resolve) => {
+			addItemToArray(this.toBeExecuted, async () => await callback());
+
+			this.toBeResolved = resolve;
+		});
+	}
+
+	onFunctionReady = async () => {
+		this.isReady = true;
+		const toBeExecuted = this.toBeExecuted;
+		this.toBeExecuted = [];
+		for (const toExecute of toBeExecuted) {
+			try {
+				await toExecute();
+			} catch (e) {
+				console.error("Error running function: ", e);
+			}
+		}
+
+		this.toBeResolved && this.toBeResolved();
+	};
+}
+
 export class Firebase_ExpressFunction
-	implements FirebaseFunction {
+	implements FirebaseFunctionInterface {
 	private readonly express: express.Express;
 	private function!: HttpsFunction;
 	private toBeExecuted: (() => Promise<any>)[] = [];
@@ -59,7 +107,7 @@ export class Firebase_ExpressFunction
 		this.express = _express;
 	}
 
-	static setConfig(config: RuntimeOptions){
+	static setConfig(config: RuntimeOptions) {
 		this.config = config;
 	}
 
@@ -100,13 +148,9 @@ export class Firebase_ExpressFunction
 
 //TODO: I would like to add a type for the params..
 export abstract class FirebaseFunctionModule<DataType = any, ConfigType = any>
-	extends Module<ConfigType>
-	implements FirebaseFunction {
+	extends FirebaseFunction<ConfigType> {
 
-	private toBeExecuted: (() => Promise<any>)[] = [];
-	private isReady: boolean = false;
 	private readonly listeningPath: string;
-	private toBeResolved!: (value?: (PromiseLike<any>)) => void;
 	private function!: CloudFunction<Change<DataSnapshot>>;
 
 	protected constructor(listeningPath: string, name?: string) {
@@ -127,54 +171,55 @@ export abstract class FirebaseFunctionModule<DataType = any, ConfigType = any>
 				const after: DataType = change.after && change.after.val();
 				const params = deepClone(context.params);
 
-				if (this.isReady) {
-					this.logDebug(`Processing function: ${before} => ${after}\nParams: ${JSON.stringify(params, null, 2)}`);
-					return this.processChanges(before, after, params);
-				}
-
-				return new Promise((resolve) => {
-					addItemToArray(this.toBeExecuted, async () => {
-						return await this.processChanges(before, after, params);
-					});
-
-					this.logDebug(`Queuing function: ${before} => ${after}\nParams: ${JSON.stringify(params, null, 2)}`);
-					this.toBeResolved = resolve;
-				});
+				return this.handleCallback(() => this.processChanges(before, after, params));
 			});
 	};
+}
 
-	onFunctionReady = async () => {
-		this.isReady = true;
-		const toBeExecuted = this.toBeExecuted;
-		this.toBeExecuted = [];
-		this.logDebug(`onFunctionReady, ${toBeExecuted.length} actions to execute`);
-		this.logInfo(`Listening on path: ${this.listeningPath}`);
+export type FirestoreConfigs = {
+	runTimeOptions?: RuntimeOptions,
+	configs: any
+}
 
-		for (const toExecute of toBeExecuted) {
-			try {
-				await toExecute();
-			} catch (e) {
-				this.logError("Error running function: ", e);
-			}
-		}
+//TODO: I would like to add a type for the params..
+export abstract class FirestoreFunctionModule<DataType extends object, ConfigType extends FirestoreConfigs = FirestoreConfigs>
+	extends FirebaseFunction<ConfigType> {
 
-		this.toBeResolved && this.toBeResolved();
+	private readonly collectionName: string;
+	private function!: CloudFunction<Change<DataSnapshot>>;
+
+	protected constructor(collectionName: string, name?: string, tag?: string) {
+		super(tag);
+		name && this.setName(name);
+		this.collectionName = collectionName;
+	}
+
+	abstract processChanges(params: { [param: string]: any }, before?: DataType, after?: DataType): Promise<any>;
+
+	getFunction = () => {
+		if (this.function)
+			return this.function;
+
+		return this.function = functions.runWith(this.config?.runTimeOptions || {}).firestore.document(`${this.collectionName}/{docId}`).onWrite(
+			(change: Change<DocumentSnapshot<DataType>>, context: EventContext) => {
+				const before: DataType | undefined = change.before && change.before.data();
+				const after: DataType | undefined = change.after && change.after.data();
+				const params = deepClone(context.params);
+
+				return this.handleCallback(() => this.processChanges(params, before, after));
+			});
 	};
 }
 
 export abstract class FirebaseScheduledFunction<ConfigType extends any = any>
-	extends Module<ConfigType>
-	implements FirebaseFunction {
+	extends FirebaseFunction<ConfigType> {
 
-	private toBeExecuted: (() => Promise<any>)[] = [];
-	private isReady: boolean = false;
-	private toBeResolved!: (value?: (PromiseLike<any>)) => void;
 	private function!: CloudFunction<Change<DataSnapshot>>;
 	private schedule?: string;
 	private runningCondition: (() => Promise<boolean>)[] = [async () => true];
 
-	constructor(name?: string) {
-		super();
+	protected constructor(name?: string, tag?: string) {
+		super(tag);
 		name && this.setName(name);
 	}
 
@@ -190,7 +235,7 @@ export abstract class FirebaseScheduledFunction<ConfigType extends any = any>
 
 	abstract onScheduledEvent(): Promise<any>;
 
-	private async _onScheduledEvent() {
+	private _onScheduledEvent = async () => {
 		const results: boolean[] = await Promise.all(this.runningCondition.map(condition => condition()));
 
 		if (results.includes(false)) {
@@ -199,7 +244,7 @@ export abstract class FirebaseScheduledFunction<ConfigType extends any = any>
 		}
 
 		return this.onScheduledEvent();
-	}
+	};
 
 	getFunction = () => {
 		if (!this.schedule)
@@ -209,54 +254,24 @@ export abstract class FirebaseScheduledFunction<ConfigType extends any = any>
 			return this.function;
 
 		return this.function = functions.pubsub.schedule(this.schedule).onRun(async () => {
-			if (this.isReady) {
-				this.logDebug(`FirebaseScheduledFunction schedule`);
-				return this._onScheduledEvent();
-			}
-
-			return new Promise((resolve) => {
-				addItemToArray(this.toBeExecuted, async () => {
-					return this._onScheduledEvent();
-				});
-
-				this.logDebug(`FirebaseScheduledFunction schedule`);
-				this.toBeResolved = resolve;
-			});
+			return this.handleCallback(() => this._onScheduledEvent());
 		});
-	};
-
-	onFunctionReady = async () => {
-		this.isReady = true;
-		const toBeExecuted = this.toBeExecuted;
-		this.toBeExecuted = [];
-		this.logDebug(`onFunctionReady, ${toBeExecuted.length} actions to execute`);
-
-		for (const toExecute of toBeExecuted) {
-			try {
-				await toExecute();
-			} catch (e) {
-				this.logError("Error running function: ", e);
-			}
-		}
-
-		this.toBeResolved && this.toBeResolved();
 	};
 }
 
-export abstract class Firebase_StorageFunction<ConfigType extends RuntimeOptions = RuntimeOptions>
-	extends Module<ConfigType>
-	implements FirebaseFunction {
+export type BucketConfigs = {
+	runtimeOpts?: RuntimeOptions
+	bucketName?: string
+}
+
+export abstract class Firebase_StorageFunction<ConfigType extends BucketConfigs = BucketConfigs>
+	extends FirebaseFunction<ConfigType> {
 
 	private function!: CloudFunction<ObjectMetadata>;
-	private toBeExecuted: (() => Promise<any>)[] = [];
-	private isReady: boolean = false;
-	private toBeResolved!: (value?: (PromiseLike<any>)) => void;
-	private readonly path: string;
 	private runtimeOpts: RuntimeOptions = {};
 
-	protected constructor(path: string, name?: string) {
+	protected constructor(name?: string) {
 		super();
-		this.path = path;
 		name && this.setName(name);
 	}
 
@@ -267,39 +282,80 @@ export abstract class Firebase_StorageFunction<ConfigType extends RuntimeOptions
 			return this.function;
 
 		this.runtimeOpts = {
-			timeoutSeconds: this.config?.timeoutSeconds || 300,
-			memory: this.config?.memory || '2GB'
+			timeoutSeconds: this.config?.runtimeOpts?.timeoutSeconds || 300,
+			memory: this.config?.runtimeOpts?.memory || "2GB"
 		};
 
-		return this.function = functions.runWith(this.runtimeOpts).storage.bucket().object().onFinalize(async (object: ObjectMetadata, context: EventContext) => {
-			if (!object.name?.startsWith(this.path))
-				return;
-
-			if (this.isReady)
-				return await this.onFinalize(object, context);
-
-			return new Promise((resolve) => {
-				addItemToArray(this.toBeExecuted, async () => {
-					return await this.onFinalize(object, context);
-				});
-
-				this.toBeResolved = resolve;
+		return this.function = functions.runWith(this.runtimeOpts).storage.bucket(this.config.bucketName).object().onFinalize(
+			async (object: ObjectMetadata, context: EventContext) => {
+				try {
+					return await this.handleCallback(() => this.onFinalize(object, context));
+				} catch (e) {
+					const _message = `Error handling callback to onFinalize bucket listener method` +
+						"\n" + `File changed ${object.name}` + "\n with attributes: " + __stringify(context) + "\n" + __stringify(e);
+					this.logError(_message);
+					try {
+						await dispatch_onServerError.dispatchModuleAsync([ServerErrorSeverity.Critical, this, _message]);
+					} catch (_e) {
+						this.logError("Error while handing bucket listener error", _e);
+					}
+					throw e;
+				}
 			});
-		});
-	};
-
-	onFunctionReady = async () => {
-		this.isReady = true;
-		const toBeExecuted = this.toBeExecuted;
-		this.toBeExecuted = [];
-		for (const toExecute of toBeExecuted) {
-			try {
-				await toExecute();
-			} catch (e) {
-				console.error("Error running function: ", e);
-			}
-		}
-
-		this.toBeResolved && this.toBeResolved();
 	};
 }
+
+export type FirebaseEventContext = EventContext;
+
+export type TopicMessage = { data: string, attributes: StringMap };
+
+export abstract class Firebase_PubSubFunction<T>
+	extends FirebaseFunction {
+
+	private function!: CloudFunction<ObjectMetadata>;
+	private readonly topic: string;
+
+	protected constructor(topic: string, tag?: string) {
+		super(tag);
+		this.topic = topic;
+	}
+
+	abstract onPublish(object: T | undefined, originalMessage: TopicMessage, context: FirebaseEventContext): Promise<any>;
+
+	private _onPublish = async (object: T | undefined, originalMessage: TopicMessage, context: FirebaseEventContext) => {
+		try {
+			return await this.onPublish(object, originalMessage, context);
+		} catch (e) {
+			const _message = `Error publishing pub/sub message` + __stringify(object) +
+				"\n" + ` to topic ${this.topic}` + "\n with attributes: " + __stringify(originalMessage.attributes) + "\n" + __stringify(e);
+			this.logError(_message);
+			try {
+				await dispatch_onServerError.dispatchModuleAsync([ServerErrorSeverity.Critical, this, _message]);
+			} catch (_e) {
+				this.logError("Error while handing pubsub error", _e);
+			}
+			throw e;
+		}
+	};
+
+	getFunction = () => {
+		if (this.function)
+			return this.function;
+
+		return this.function = functions.pubsub.topic(this.topic).onPublish(async (message: Message, context: FirebaseEventContext) => {
+			// need to validate etc...
+			const originalMessage: TopicMessage = message.toJSON();
+
+			let data: T | undefined;
+			try {
+				data = JSON.parse(Buffer.from(originalMessage.data, "base64").toString());
+			} catch (e) {
+				this.logError(`Error parsing the data attribute from pub/sub message to topic ${this.topic}` +
+					              "\n" + __stringify(originalMessage.data) + "\n" + __stringify(e));
+			}
+
+			return this.handleCallback(() => this._onPublish(data, originalMessage, context));
+		});
+	};
+}
+

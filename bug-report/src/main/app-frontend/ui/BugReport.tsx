@@ -28,6 +28,11 @@ import {
 	TS_Input,
 	TS_TextArea
 } from "@intuitionrobotics/thunderstorm/frontend";
+import {generateHex} from "@intuitionrobotics/ts-common";
+import {
+	Platform_Jira,
+	Platform_Slack
+} from "../../shared/api";
 
 type Props = {
 	component?: React.ReactNode
@@ -63,7 +68,7 @@ export class BugReport
 	}
 
 	componentDidCatch(error: Error, errorInfo: React.ErrorInfo) {
-		BugReportModule.sendBugReport("Automatic submission", "these logs were triggered by a UI failure");
+		BugReportModule.sendBugReport("Automatic submission", "these logs were triggered by a UI failure",[Platform_Slack]);
 		this.setState({
 			              error: error,
 			              errorInfo: errorInfo
@@ -76,7 +81,9 @@ export class BugReport
 		const onSubmit = () => {
 			if (!this.state.subject)
 				return ToastModule.toastError('you must first add a subject');
-			BugReportModule.sendBugReport(this.state.subject, this.state.description || '');
+			if (!this.state.description)
+				return ToastModule.toastError('you must first add a description')
+			BugReportModule.sendBugReport(this.state.subject, this.state.description || '',[Platform_Jira]);
 			this.setState({subject: undefined, description: undefined});
 			DialogModule.close();
 		};
@@ -94,6 +101,7 @@ export class BugReport
 						      type={"text"}
 						      value={this.state.subject || ''}
 						      placeholder={"type bug name here"}
+						      name={generateHex(8)}
 						      onChange={(subject: string) => this.setState({subject})}
 					      />
 				      </div>
