@@ -1,8 +1,8 @@
 /*
- * Permissions management system, define access level for each of 
+ * Permissions management system, define access level for each of
  * your server apis, and restrict users by giving them access levels
  *
- * Copyright (C) 2020 Adam van der Kruk aka TacB0sS
+ * Copyright (C) 2020 Intuition Robotics
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -16,12 +16,12 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-import {DB_Object} from "@nu-art/firebase";
+import {DB_Object} from "@intuitionrobotics/firebase";
 import {
 	ApiWithBody,
 	ApiWithQuery,
 	HttpMethod,
-} from "@nu-art/thunderstorm";
+} from "@intuitionrobotics/thunderstorm";
 
 export const DefaultApiDefs: { [k: string]: GenericApiDef; } = {
 	Create: {

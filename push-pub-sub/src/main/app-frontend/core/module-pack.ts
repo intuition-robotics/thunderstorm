@@ -2,7 +2,7 @@
  * Permissions management system, define access level for each of
  * your server apis, and restrict users by giving them access levels
  *
- * Copyright (C) 2020 Adam van der Kruk aka TacB0sS
+ * Copyright (C) 2020 Intuition Robotics
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -18,7 +18,7 @@
  */
 
 import {PushPubSubModule} from "../modules/PushPubSubModule";
-import {FirebaseModule} from "@nu-art/firebase/frontend";
+import {FirebaseModule} from "@intuitionrobotics/firebase/frontend";
 import {NotificationsModule} from "../modules/NotificationModule";
 
 export const Frontend_ModulePack_PushPubSub = [

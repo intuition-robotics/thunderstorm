@@ -2,7 +2,7 @@
  * Permissions management system, define access level for each of
  * your server apis, and restrict users by giving them access levels
  *
- * Copyright (C) 2020 Adam van der Kruk aka TacB0sS
+ * Copyright (C) 2020 Intuition Robotics
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -17,14 +17,14 @@
  * limitations under the License.
  */
 
-import {StormTester} from "@nu-art/thunderstorm/backend-test";
-import {__scenario} from "@nu-art/testelot";
+import {StormTester} from "@intuitionrobotics/thunderstorm/backend-test";
+import {__scenario} from "@intuitionrobotics/testelot";
 import {
 	add_Get_Update_Undo_Redo_Doc,
 	getNoneExistingDoc
 } from "./tests/live-doc";
 import {Backend_ModulePack_LiveDocs} from "./_main";
-import { FirebaseModule } from "@nu-art/firebase/backend";
+import { FirebaseModule } from "@intuitionrobotics/firebase/backend";
 
 export const mainScenario = __scenario("Live-docs testing");
 

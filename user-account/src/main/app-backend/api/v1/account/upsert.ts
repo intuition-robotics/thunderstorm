@@ -2,15 +2,15 @@ import {
 	ApiResponse,
 	RemoteProxy,
 	ServerApi
-} from "@nu-art/thunderstorm/backend";
+} from "@intuitionrobotics/thunderstorm/backend";
 import {
 	AccountModule,
 	AccountApi_Upsert,
 	Request_UpsertAccount
 } from "./_imports";
-import {HttpMethod} from "@nu-art/thunderstorm";
-import {ExpressRequest} from "@nu-art/thunderstorm/backend";
-import { validateExists } from "@nu-art/ts-common";
+import {HttpMethod} from "@intuitionrobotics/thunderstorm";
+import {ExpressRequest} from "@intuitionrobotics/thunderstorm/backend";
+import { validateExists } from "@intuitionrobotics/ts-common";
 
 class ServerApi_Account_Upsert
 	extends ServerApi<AccountApi_Upsert> {

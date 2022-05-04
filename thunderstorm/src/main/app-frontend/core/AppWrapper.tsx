@@ -4,7 +4,7 @@
  * Typescript & Express backend infrastructure that natively runs on firebase function
  * Typescript & React frontend infrastructure
  *
- * Copyright (C) 2020 Adam van der Kruk aka TacB0sS
+ * Copyright (C) 2020 Intuition Robotics
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -25,7 +25,7 @@ import {Router} from 'react-router-dom';
 // noinspection TypeScriptPreferShortImport`
 import {BrowserHistoryModule} from "../modules/HistoryModule";
 import {Thunder} from "./Thunder";
-import {ImplementationMissingException} from "@nu-art/ts-common";
+import {ImplementationMissingException} from "@intuitionrobotics/ts-common";
 
 
 export type WrapperProps = {}

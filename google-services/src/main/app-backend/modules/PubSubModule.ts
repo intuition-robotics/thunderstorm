@@ -1,4 +1,4 @@
-import {Module} from "@nu-art/ts-common";
+import {Module} from "@intuitionrobotics/ts-common";
 import {PubSub} from "@google-cloud/pubsub";
 import {PublishOptions} from "@google-cloud/pubsub/build/src/topic";
 import {AuthModule} from "./AuthModule";

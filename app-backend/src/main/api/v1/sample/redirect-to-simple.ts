@@ -1,7 +1,7 @@
 /*
  * A backend boilerplate with example apis
  *
- * Copyright (C) 2020 Adam van der Kruk aka TacB0sS
+ * Copyright (C) 2020 Intuition Robotics
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -18,7 +18,7 @@
 
 import {
 	ServerApi_Redirect
-} from "@nu-art/thunderstorm/backend";
+} from "@intuitionrobotics/thunderstorm/backend";
 
 
 module.exports = new ServerApi_Redirect("redirect", 301, "/api/v1/sample/endpoint-example" );

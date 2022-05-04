@@ -1,7 +1,7 @@
 /*
  * ts-common is the basic building blocks of our typescript projects
  *
- * Copyright (C) 2020 Adam van der Kruk aka TacB0sS
+ * Copyright (C) 2020 Intuition Robotics
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -23,13 +23,13 @@ import {
 	filterDuplicates,
 	Module,
 	StringMap
-} from "@nu-art/ts-common";
+} from "@intuitionrobotics/ts-common";
 import {
 	ApiException,
 	ExpressRequest,
 	HttpRequestData,
 	ServerApi_Middleware
-} from "@nu-art/thunderstorm/backend";
+} from "@intuitionrobotics/thunderstorm/backend";
 import {
 	Base_AccessLevels,
 	DB_PermissionAccessLevel,
@@ -46,8 +46,8 @@ import {
 	GroupPermissionsDB,
 	UserPermissionsDB
 } from "./db-types/assign";
-import {HttpMethod} from "@nu-art/thunderstorm";
-import {AccountModule} from "@nu-art/user-account/backend";
+import {HttpMethod} from "@intuitionrobotics/thunderstorm";
+import {AccountModule} from "@intuitionrobotics/user-account/backend";
 import {PermissionsModule} from "./PermissionsModule";
 
 export type UserCalculatedAccessLevel = { [domainId: string]: number };

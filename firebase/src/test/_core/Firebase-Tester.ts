@@ -1,7 +1,7 @@
 /*
  * Firebase is a simpler Typescript wrapper to all of firebase services.
  *
- * Copyright (C) 2020 Adam van der Kruk aka TacB0sS
+ * Copyright (C) 2020 Intuition Robotics
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -20,13 +20,13 @@ import * as fs from "fs";
 import {
 	ImplementationMissingException,
 	ModuleManager
-} from "@nu-art/ts-common";
+} from "@intuitionrobotics/ts-common";
 import {
 	__scenario,
 	Action,
 	Reporter,
 	Scenario
-} from "@nu-art/testelot";
+} from "@intuitionrobotics/testelot";
 import {
 	FirebaseModule,
 	FirebaseModule_Class

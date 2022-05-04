@@ -5,19 +5,19 @@ import {
 	ServerApi_Query,
 	ServerApi_Unique,
 	validateStringAndNumbersWithDashes
-} from "@nu-art/db-api-generator/backend";
+} from "@intuitionrobotics/db-api-generator/backend";
 import {
 	Clause_Where,
 	FirestoreQuery
-} from "@nu-art/firebase";
+} from "@intuitionrobotics/firebase";
 import {
 	ExpressRequest,
 	ServerApi
-} from "@nu-art/thunderstorm/backend";
+} from "@intuitionrobotics/thunderstorm/backend";
 import {
 	TypeValidator,
 	validateRegexp,
-} from "@nu-art/ts-common";
+} from "@intuitionrobotics/ts-common";
 import {DB_GroupTags} from "../..";
 import {GroupPermissionsDB} from "./db-types/assign";
 

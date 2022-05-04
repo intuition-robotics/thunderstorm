@@ -1,7 +1,7 @@
 /*
  * Firebase is a simpler Typescript wrapper to all of firebase services.
  *
- * Copyright (C) 2020 Adam van der Kruk aka TacB0sS
+ * Copyright (C) 2020 Intuition Robotics
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -24,7 +24,7 @@ import {
 import {FilterKeys} from "../../shared/types";
 import {FirebaseSession} from "../auth/firebase-session";
 import {FirebaseBaseWrapper} from "../auth/FirebaseBaseWrapper";
-import {DB_Object} from "@nu-art/ts-common";
+import {DB_Object} from "@intuitionrobotics/ts-common";
 import {getFirestore} from "firebase-admin/firestore";
 
 export class FirestoreWrapper

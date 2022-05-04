@@ -1,15 +1,15 @@
-import {ThunderDispatcher} from "@nu-art/thunderstorm/app-frontend/core/thunder-dispatcher";
+import {ThunderDispatcher} from "@intuitionrobotics/thunderstorm/app-frontend/core/thunder-dispatcher";
 import {
 	Minute,
 	Module,
 	removeItemFromArray
-} from "@nu-art/ts-common";
+} from "@intuitionrobotics/ts-common";
 import {
 	DB_Notifications,
 	PubSubReadNotification
 } from "../..";
-import {XhrHttpModule} from "@nu-art/thunderstorm/frontend";
-import {HttpMethod} from "@nu-art/thunderstorm";
+import {XhrHttpModule} from "@intuitionrobotics/thunderstorm/frontend";
+import {HttpMethod} from "@intuitionrobotics/thunderstorm";
 
 export interface OnNotificationsUpdated {
 	__onNotificationsUpdated(): void

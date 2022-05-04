@@ -2,7 +2,7 @@
  * Permissions management system, define access level for each of
  * your server apis, and restrict users by giving them access levels
  *
- * Copyright (C) 2020 Adam van der Kruk aka TacB0sS
+ * Copyright (C) 2020 Intuition Robotics
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -17,13 +17,13 @@
  * limitations under the License.
  */
 
-import {ApiWithBody} from "@nu-art/thunderstorm";
-import {DB_Object} from "@nu-art/firebase";
+import {ApiWithBody} from "@intuitionrobotics/thunderstorm";
+import {DB_Object} from "@intuitionrobotics/firebase";
 import {
 	AuditBy,
 	ObjectTS
-} from "@nu-art/ts-common";
-import {MessageType} from "@nu-art/push-pub-sub";
+} from "@intuitionrobotics/ts-common";
+import {MessageType} from "@intuitionrobotics/push-pub-sub";
 
 export const fileUploadedKey = "file-uploaded";
 export type Push_FileUploaded = MessageType<"file-uploaded", { feId: string }, { message: string, result: string, cause?: Error }>;

@@ -2,7 +2,7 @@
  * Permissions management system, define access level for each of
  * your server apis, and restrict users by giving them access levels
  *
- * Copyright (C) 2020 Adam van der Kruk aka TacB0sS
+ * Copyright (C) 2020 Intuition Robotics
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -17,7 +17,7 @@
  * limitations under the License.
  */
 
-import {CheckboxOption} from "@nu-art/thunderstorm/app-frontend/components/checkbox/TS_CheckboxField";
+import {CheckboxOption} from "@intuitionrobotics/thunderstorm/app-frontend/components/checkbox/TS_CheckboxField";
 
 export type ChckbxOption = {
     label: string

@@ -1,7 +1,7 @@
 /*
  * ts-common is the basic building blocks of our typescript projects
  *
- * Copyright (C) 2020 Adam van der Kruk aka TacB0sS
+ * Copyright (C) 2020 Intuition Robotics
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -20,8 +20,8 @@ import {
 	UserPermissionsDB,
 	GroupPermissionsDB
 } from "../_imports";
-import {addAllItemToArray} from "@nu-art/ts-common";
-import {ServerApi} from "@nu-art/thunderstorm/backend";
+import {addAllItemToArray} from "@intuitionrobotics/ts-common";
+import {ServerApi} from "@intuitionrobotics/thunderstorm/backend";
 
 
 const assignmentApis: ServerApi<any>[] = [];

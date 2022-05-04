@@ -2,7 +2,7 @@
  * Permissions management system, define access level for each of
  * your server apis, and restrict users by giving them access levels
  *
- * Copyright (C) 2020 Adam van der Kruk aka TacB0sS
+ * Copyright (C) 2020 Intuition Robotics
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -20,7 +20,7 @@
 import {UploaderModule} from "../modules/UploaderModule";
 import {UploaderTempFileModule} from "../modules/UploaderTempFileModule";
 import {BucketListener} from "../modules/BucketListener";
-import {Backend_ModulePack_PushPubSub} from "@nu-art/push-pub-sub/backend";
+import {Backend_ModulePack_PushPubSub} from "@intuitionrobotics/push-pub-sub/backend";
 import {ServerUploaderModule} from "../modules/ServerUploaderModule";
 
 export const Backend_ModulePack_Uploader = [

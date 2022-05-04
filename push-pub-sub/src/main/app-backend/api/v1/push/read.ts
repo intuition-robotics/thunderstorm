@@ -2,10 +2,10 @@ import {
 	ApiResponse,
 	ExpressRequest,
 	ServerApi
-} from "@nu-art/thunderstorm/backend";
+} from "@intuitionrobotics/thunderstorm/backend";
 
 
-import {HttpMethod} from "@nu-art/thunderstorm";
+import {HttpMethod} from "@intuitionrobotics/thunderstorm";
 import {PushPubSubModule} from "../../../modules/PushPubSubModule";
 import {
 	PubSubReadNotification,

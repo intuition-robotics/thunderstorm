@@ -1,7 +1,7 @@
 /*
  * A backend boilerplate with example apis
  *
- * Copyright (C) 2020 Adam van der Kruk aka TacB0sS
+ * Copyright (C) 2020 Intuition Robotics
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -16,10 +16,10 @@
  * limitations under the License.
  */
 
-import {Firebase_StorageFunction} from "@nu-art/firebase/backend-functions";
+import {Firebase_StorageFunction} from "@intuitionrobotics/firebase/backend-functions";
 import {ObjectMetadata} from "firebase-functions/lib/providers/storage";
 import {EventContext} from "firebase-functions";
-import {Dispatcher} from "@nu-art/ts-common";
+import {Dispatcher} from "@intuitionrobotics/ts-common";
 
 export interface OnFileUploaded {
 	__onFileUploaded(filePath?: string): void;

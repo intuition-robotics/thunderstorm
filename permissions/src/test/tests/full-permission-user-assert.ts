@@ -1,7 +1,7 @@
 /*
  * ts-common is the basic building blocks of our typescript projects
  *
- * Copyright (C) 2020 Adam van der Kruk aka TacB0sS
+ * Copyright (C) 2020 Intuition Robotics
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -19,7 +19,7 @@ import {
 	currentTimeMillies,
 	generateHex,
 	StringMap
-} from "@nu-art/ts-common";
+} from "@intuitionrobotics/ts-common";
 import {
 	ProjectPermissionsDB,
 	DomainPermissionsDB,
@@ -31,13 +31,13 @@ import {
     PermissionsAssert,
     GroupPermissionsDB
 } from "../_main";
-import { FirestoreTransaction } from "@nu-art/firebase/backend";
+import { FirestoreTransaction } from "@intuitionrobotics/firebase/backend";
 import { cleanup } from "./_core";
 import {
 	__custom,
 	__scenario
-} from "@nu-art/testelot";
-import { ApiException } from "@nu-art/thunderstorm/backend";
+} from "@intuitionrobotics/testelot";
+import { ApiException } from "@intuitionrobotics/thunderstorm/backend";
 
 function makeAlphaBetIdForTestOnly(length: number) {
 	let result = '';

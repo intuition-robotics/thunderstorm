@@ -1,7 +1,7 @@
 /*
  * ts-common is the basic building blocks of our typescript projects
  *
- * Copyright (C) 2020 Adam van der Kruk aka TacB0sS
+ * Copyright (C) 2020 Intuition Robotics
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -29,17 +29,17 @@ import {
 	BaseDB_ApiGenerator,
 	validateStringAndNumbersWithDashes,
 	validateUniqueId
-} from "@nu-art/db-api-generator/backend";
+} from "@intuitionrobotics/db-api-generator/backend";
 import {
 	AccountModule,
 	OnNewUserRegistered,
 	OnUserLogin
-} from "@nu-art/user-account/backend";
-import {Clause_Where} from "@nu-art/firebase";
+} from "@intuitionrobotics/user-account/backend";
+import {Clause_Where} from "@intuitionrobotics/firebase";
 import {
 	ApiException,
 	ExpressRequest
-} from "@nu-art/thunderstorm/backend";
+} from "@intuitionrobotics/thunderstorm/backend";
 
 import {
 	_keys,
@@ -54,11 +54,11 @@ import {
 	validateArray,
 	validateObjectValues,
 	validateRegexp,
-} from "@nu-art/ts-common";
+} from "@intuitionrobotics/ts-common";
 import {AccessLevelPermissionsDB} from "./managment";
-import {FirestoreTransaction} from "@nu-art/firebase/backend";
+import {FirestoreTransaction} from "@intuitionrobotics/firebase/backend";
 import {PermissionsShare} from "../permissions-share";
-import {UI_Account} from "@nu-art/user-account";
+import {UI_Account} from "@intuitionrobotics/user-account";
 
 const validateUserUuid = validateRegexp(/^.{0,50}$/);
 const validateGroupLabel = validateRegexp(/^[A-Za-z-\._ ]+$/);

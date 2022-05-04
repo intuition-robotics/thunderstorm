@@ -1,7 +1,7 @@
 /*
  * A typescript & react boilerplate with api call example
  *
- * Copyright (C) 2020 Adam van der Kruk aka TacB0sS
+ * Copyright (C) 2020 Intuition Robotics
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -16,7 +16,7 @@
  * limitations under the License.
  */
 
-import {Module} from "@nu-art/ts-common";
+import {Module} from "@intuitionrobotics/ts-common";
 import {dispatchAll} from "@modules/ExampleModule";
 import {TestDispatch} from "@app/app-shared";
 

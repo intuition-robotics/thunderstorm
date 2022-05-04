@@ -1,13 +1,13 @@
 import * as React from "react";
 import {ReactNode} from "react";
-import {BaseComponent} from "@nu-art/thunderstorm/app-frontend/core/BaseComponent";
+import {BaseComponent} from "@intuitionrobotics/thunderstorm/app-frontend/core/BaseComponent";
 import {
 	ScaleLinear,
 	scaleLinear
 } from "d3-scale";
 import AxisLeft from "./Example_AxisX";
 import AxisBottom from "./Example_AxisBottom.";
-import {deepClone} from "@nu-art/ts-common";
+import {deepClone} from "@intuitionrobotics/ts-common";
 
 export type Coordinates = {
 	x: number,

@@ -1,7 +1,7 @@
 /*
  * A backend boilerplate with example apis
  *
- * Copyright (C) 2020 Adam van der Kruk aka TacB0sS
+ * Copyright (C) 2020 Intuition Robotics
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -19,16 +19,16 @@
 import {
 	ServerApi,
 	ApiResponse
-} from "@nu-art/thunderstorm/backend";
+} from "@intuitionrobotics/thunderstorm/backend";
 
 import {
 	HttpMethod,
 	ApiWithQuery
-} from "@nu-art/thunderstorm";
+} from "@intuitionrobotics/thunderstorm";
 
-import {FirebaseProjectCollections} from "@nu-art/firebase";
-import {FirebaseModule} from "@nu-art/firebase/backend";
-import {ExpressRequest} from "@nu-art/thunderstorm/backend";
+import {FirebaseProjectCollections} from "@intuitionrobotics/firebase";
+import {FirebaseModule} from "@intuitionrobotics/firebase/backend";
+import {ExpressRequest} from "@intuitionrobotics/thunderstorm/backend";
 
 
 class ServerApi_RegisterExternalProject

@@ -1,7 +1,7 @@
 /*
  * A typescript & react boilerplate with api call example
  *
- * Copyright (C) 2020 Adam van der Kruk aka TacB0sS
+ * Copyright (C) 2020 Intuition Robotics
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -20,13 +20,13 @@ import {
 	__stringify,
 	Module,
 	Second
-} from "@nu-art/ts-common";
+} from "@intuitionrobotics/ts-common";
 
 import {
 	ThunderDispatcher,
 	ToastModule,
 	XhrHttpModule
-} from "@nu-art/thunderstorm/frontend";
+} from "@intuitionrobotics/thunderstorm/frontend";
 import {
 	CommonBodyReq,
 	CustomError1,
@@ -42,19 +42,19 @@ import {
 import {
 	ErrorResponse,
 	HttpMethod
-} from "@nu-art/thunderstorm";
+} from "@intuitionrobotics/thunderstorm";
 import {Test} from "@modules/TestModule";
 import {
 	OnNotificationsUpdated,
 	OnPushMessageReceived,
 	PushPubSubModule,
 	NotificationsModule
-} from "@nu-art/push-pub-sub/frontend";
-import {FirebaseModule} from "@nu-art/firebase/frontend";
+} from "@intuitionrobotics/push-pub-sub/frontend";
+import {FirebaseModule} from "@intuitionrobotics/firebase/frontend";
 import {
 	BaseSubscriptionData,
 	DB_Notifications
-} from "@nu-art/push-pub-sub";
+} from "@intuitionrobotics/push-pub-sub";
 
 type Config = {
 	remoteUrl: string

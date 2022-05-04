@@ -4,10 +4,10 @@ import {
 	Module,
 	Second,
 	StringMap
-} from "@nu-art/ts-common";
-import {ThunderDispatcher} from "@nu-art/thunderstorm/app-frontend/core/thunder-dispatcher";
-import {XhrHttpModule} from "@nu-art/thunderstorm/frontend";
-import {HttpMethod} from "@nu-art/thunderstorm";
+} from "@intuitionrobotics/ts-common";
+import {ThunderDispatcher} from "@intuitionrobotics/thunderstorm/app-frontend/core/thunder-dispatcher";
+import {XhrHttpModule} from "@intuitionrobotics/thunderstorm/frontend";
+import {HttpMethod} from "@intuitionrobotics/thunderstorm";
 import {
 	PermissionsApi_UserUrlsPermissions,
 	UserUrlsPermissions

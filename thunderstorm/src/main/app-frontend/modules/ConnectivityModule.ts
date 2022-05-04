@@ -1,4 +1,4 @@
-import {Module} from "@nu-art/ts-common";
+import {Module} from "@intuitionrobotics/ts-common";
 import {ThunderDispatcher} from "../core/thunder-dispatcher";
 
 export interface OnConnectivityChange {

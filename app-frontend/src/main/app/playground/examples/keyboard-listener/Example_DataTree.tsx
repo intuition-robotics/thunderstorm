@@ -1,7 +1,7 @@
 /*
  * A typescript & react boilerplate with api call example
  *
- * Copyright (C) 2020 Adam van der Kruk aka TacB0sS
+ * Copyright (C) 2020 Intuition Robotics
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -23,7 +23,7 @@ import {
 	Adapter,
 	TreeNode,
 	NodeRendererProps,
-} from "@nu-art/thunderstorm/frontend";
+} from "@intuitionrobotics/thunderstorm/frontend";
 
 type State = { focused?: string, actionMessage: string };
 export type Element = { label: string, action?: () => void }

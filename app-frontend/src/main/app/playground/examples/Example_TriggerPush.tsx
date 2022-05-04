@@ -2,7 +2,7 @@
  * Permissions management system, define access level for each of
  * your server apis, and restrict users by giving them access levels
  *
- * Copyright (C) 2020 Adam van der Kruk aka TacB0sS
+ * Copyright (C) 2020 Intuition Robotics
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -17,17 +17,17 @@
  * limitations under the License.
  */
 import * as React from 'react';
-import {BaseComponent} from "@nu-art/thunderstorm/frontend";
+import {BaseComponent} from "@intuitionrobotics/thunderstorm/frontend";
 import {
 	_setTimeout,
 	Second
-} from '@nu-art/ts-common';
+} from '@intuitionrobotics/ts-common';
 import {ExampleModule} from "@modules/ExampleModule";
 import {
 	NotificationsModule,
 	OnNotificationsUpdated
-} from "@nu-art/push-pub-sub/frontend";
-import {DB_Notifications} from "@nu-art/push-pub-sub/shared/types";
+} from "@intuitionrobotics/push-pub-sub/frontend";
+import {DB_Notifications} from "@intuitionrobotics/push-pub-sub/shared/types";
 
 export type State = {
 	notifications: DB_Notifications[]

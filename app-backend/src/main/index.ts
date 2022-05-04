@@ -1,7 +1,7 @@
 /*
  * A backend boilerplate with example apis
  *
- * Copyright (C) 2020 Adam van der Kruk aka TacB0sS
+ * Copyright (C) 2020 Intuition Robotics
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -24,44 +24,44 @@ import {
 	ForceUpgrade,
 	RouteResolver,
 	Storm
-} from "@nu-art/thunderstorm/backend";
+} from "@intuitionrobotics/thunderstorm/backend";
 import {Environment} from "./config";
 import {
 	DispatchModule,
 	ExampleModule
 } from "@modules/ExampleModule";
-import {Backend_ModulePack_LiveDocs} from "@nu-art/live-docs/backend";
+import {Backend_ModulePack_LiveDocs} from "@intuitionrobotics/live-docs/backend";
 import {
 	__stringify,
 	_setTimeout,
 	Minute,
 	Module
-} from "@nu-art/ts-common";
-import {Backend_ModulePack_Permissions} from "@nu-art/permissions/backend";
+} from "@intuitionrobotics/ts-common";
+import {Backend_ModulePack_Permissions} from "@intuitionrobotics/permissions/backend";
 import {
 	Backend_ModulePack_BugReport,
 	BugReportModule
-} from "@nu-art/bug-report/backend";
-import {PushPubSubModule} from '@nu-art/push-pub-sub/backend';
+} from "@intuitionrobotics/bug-report/backend";
+import {PushPubSubModule} from '@intuitionrobotics/push-pub-sub/backend';
 import {ValueChangedListener} from "@modules/ValueChangedListener";
 import {
 	Slack_ServerApiError,
 	SlackModule
-} from "@nu-art/storm/slack";
+} from "@intuitionrobotics/storm/slack";
 import {
 	Backend_ModulePack_Uploader,
 	PostProcessor,
 	ServerUploaderModule,
 	UploaderModule
-} from "@nu-art/file-upload/backend";
+} from "@intuitionrobotics/file-upload/backend";
 import {
 	FileWrapper,
 	FirebaseModule,
 	FirestoreTransaction
-} from '@nu-art/firebase/backend';
-import {DB_Temp_File} from '@nu-art/file-upload/shared/types';
-import {Firebase_ExpressFunction} from '@nu-art/firebase/backend-functions';
-import {JiraBugReportIntegrator} from "@nu-art/bug-report/app-backend/modules/JiraBugReportIntegrator";
+} from '@intuitionrobotics/firebase/backend';
+import {DB_Temp_File} from '@intuitionrobotics/file-upload/shared/types';
+import {Firebase_ExpressFunction} from '@intuitionrobotics/firebase/backend-functions';
+import {JiraBugReportIntegrator} from "@intuitionrobotics/bug-report/app-backend/modules/JiraBugReportIntegrator";
 import {CollectionChangedListener} from "@modules/CollectionChangedListener"
 import {PubsubExample} from "@modules/PubsubExample";
 

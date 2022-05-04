@@ -1,7 +1,7 @@
 /*
  * A backend boilerplate with example apis
  *
- * Copyright (C) 2020 Adam van der Kruk aka TacB0sS
+ * Copyright (C) 2020 Intuition Robotics
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -15,8 +15,8 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-import {FirebaseFunctionModule,} from "@nu-art/firebase/backend-functions";
-import {PushPubSubModule} from "@nu-art/push-pub-sub/backend";
+import {FirebaseFunctionModule,} from "@intuitionrobotics/firebase/backend-functions";
+import {PushPubSubModule} from "@intuitionrobotics/push-pub-sub/backend";
 
 export class ValueChangedListener_Class
 	extends FirebaseFunctionModule {

@@ -1,7 +1,7 @@
 /*
  * ts-common is the basic building blocks of our typescript projects
  *
- * Copyright (C) 2020 Adam van der Kruk aka TacB0sS
+ * Copyright (C) 2020 Intuition Robotics
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -20,7 +20,7 @@ import {
 	__custom,
 	__scenario,
 	TestException
-} from "@nu-art/testelot";
+} from "@intuitionrobotics/testelot";
 import {
 	testLevel1,
 	testLevel2
@@ -33,7 +33,7 @@ import {
 import {
 	generateHex,
 	StringMap
-} from "@nu-art/ts-common";
+} from "@intuitionrobotics/ts-common";
 
 
 const customField1 = {unit: 'eq1'};

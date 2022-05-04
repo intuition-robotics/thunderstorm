@@ -1,7 +1,7 @@
 /*
  * A backend boilerplate with example apis
  *
- * Copyright (C) 2020 Adam van der Kruk aka TacB0sS
+ * Copyright (C) 2020 Intuition Robotics
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -19,12 +19,12 @@ import {
 	ApiResponse,
 	ExpressRequest,
 	ServerApi
-} from "@nu-art/thunderstorm/backend";
-import {HttpMethod} from "@nu-art/thunderstorm";
+} from "@intuitionrobotics/thunderstorm/backend";
+import {HttpMethod} from "@intuitionrobotics/thunderstorm";
 import {
 	PermissionsApi_UserUrlsPermissions,
 	Request_UserUrlsPermissions
-} from "@nu-art/permissions";
+} from "@intuitionrobotics/permissions";
 
 class ServerApi_UserUrlsPermissions
 	extends ServerApi<PermissionsApi_UserUrlsPermissions> {

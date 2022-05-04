@@ -2,7 +2,7 @@
  * Permissions management system, define access level for each of
  * your server apis, and restrict users by giving them access levels
  *
- * Copyright (C) 2020 Adam van der Kruk aka TacB0sS
+ * Copyright (C) 2020 Intuition Robotics
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -22,7 +22,7 @@ import {
 	Module,
 	removeItemFromArray,
     BadImplementationException
-} from "@nu-art/ts-common";
+} from "@intuitionrobotics/ts-common";
 
 import {
 	DB_Document,
@@ -33,9 +33,9 @@ import {
 import {
 	FirebaseModule,
 	FirestoreCollection
-} from "@nu-art/firebase/backend";
+} from "@intuitionrobotics/firebase/backend";
 
-import {ApiException} from "@nu-art/thunderstorm/backend";
+import {ApiException} from "@intuitionrobotics/thunderstorm/backend";
 
 export const CollectionName_LiveDocs = "live-docs";
 

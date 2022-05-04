@@ -2,7 +2,7 @@
  * Permissions management system, define access level for each of
  * your server apis, and restrict users by giving them access levels
  *
- * Copyright (C) 2020 Adam van der Kruk aka TacB0sS
+ * Copyright (C) 2020 Intuition Robotics
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -19,16 +19,16 @@
 
 import * as React from "react";
 import {css} from 'emotion';
-import {AdapterBuilder} from "@nu-art/thunderstorm/app-frontend/components/adapter/Adapter";
-import {NodeRendererProps} from "@nu-art/thunderstorm/app-frontend/components/adapter/BaseRenderer";
+import {AdapterBuilder} from "@intuitionrobotics/thunderstorm/app-frontend/components/adapter/Adapter";
+import {NodeRendererProps} from "@intuitionrobotics/thunderstorm/app-frontend/components/adapter/BaseRenderer";
 import {
 	DropDown,
 	headerStyle,
 	inputStyle,
 	listStyle,
 	Stylable,
-} from "@nu-art/thunderstorm/frontend";
-import {generateHex} from "@nu-art/ts-common";
+} from "@intuitionrobotics/thunderstorm/frontend";
+import {generateHex} from "@intuitionrobotics/ts-common";
 import {ICONS} from "@res/icons";
 import { Plague, plagues } from "./consts";
 

@@ -1,7 +1,7 @@
 /*
  * A typescript & react boilerplate with api call example
  *
- * Copyright (C) 2020 Adam van der Kruk aka TacB0sS
+ * Copyright (C) 2020 Intuition Robotics
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -22,7 +22,7 @@ import {
 	showAppConfirmationDialogExample,
 	showDefaultInfoModalExample
 } from "../../themes/dialog";
-import {ToastModule} from "@nu-art/thunderstorm/frontend";
+import {ToastModule} from "@intuitionrobotics/thunderstorm/frontend";
 
 
 export class Example_Dialogs

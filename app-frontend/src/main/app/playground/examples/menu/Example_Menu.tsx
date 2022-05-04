@@ -8,12 +8,12 @@
 // 	stopPropagation,
 // 	NodeRendererProps,
 // 	BaseNodeRenderer
-// } from "@nu-art/thunderstorm/frontend";
+// } from "@intuitionrobotics/thunderstorm/frontend";
 // import {
 // 	_keys,
 // 	randomNumber,
 // 	randomObject
-// } from "@nu-art/ts-common";
+// } from "@intuitionrobotics/ts-common";
 // import {ICONS} from "@res/icons";
 //
 // type RendererString = { action?: (item: { toDisplay: string }) => void, toDisplay: string };

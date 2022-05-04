@@ -1,7 +1,7 @@
 /*
  * A typescript & react boilerplate with api call example
  *
- * Copyright (C) 2020 Adam van der Kruk aka TacB0sS
+ * Copyright (C) 2020 Intuition Robotics
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -22,14 +22,14 @@ import {
 	TS_Input,
 	FormRenderer,
 	ToastModule
-} from "@nu-art/thunderstorm/frontend";
+} from "@intuitionrobotics/thunderstorm/frontend";
 import * as React from "react";
-import {Request_CreateAccount} from "@nu-art/user-account/shared/api";
+import {Request_CreateAccount} from "@intuitionrobotics/user-account/shared/api";
 import {css} from "emotion";
 import {COLORS} from "@res/colors";
 import {ICONS} from "@res/icons";
 import {renderForm} from "../../themes/forms";
-import {__stringify} from "@nu-art/ts-common";
+import {__stringify} from "@intuitionrobotics/ts-common";
 
 const fieldStyle = css({
 	                       borderBottom: `1px solid ${COLORS.gold()}`,

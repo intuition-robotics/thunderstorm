@@ -1,7 +1,7 @@
 /*
  * ts-common is the basic building blocks of our typescript projects
  *
- * Copyright (C) 2020 Adam van der Kruk aka TacB0sS
+ * Copyright (C) 2020 Intuition Robotics
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -27,8 +27,8 @@ import {
 	ProjectPermissionsDB,
 	UserPermissionsDB
 } from "../_main";
-import {BaseDB_ApiGenerator} from "@nu-art/db-api-generator/backend";
-import {__custom} from "@nu-art/testelot";
+import {BaseDB_ApiGenerator} from "@intuitionrobotics/db-api-generator/backend";
+import {__custom} from "@intuitionrobotics/testelot";
 
 export type SetupLevel = { name: string, value: number }
 export type SetupConfig = {

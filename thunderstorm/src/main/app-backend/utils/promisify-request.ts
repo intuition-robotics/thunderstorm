@@ -4,7 +4,7 @@
  * Typescript & Express backend infrastructure that natively runs on firebase function
  * Typescript & React frontend infrastructure
  *
- * Copyright (C) 2020 Adam van der Kruk aka TacB0sS
+ * Copyright (C) 2020 Intuition Robotics
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -22,7 +22,7 @@
 import * as _request from "request";
 import {Response} from "request";
 import {ApiException} from "../exceptions";
-import {__stringify} from "@nu-art/ts-common";
+import {__stringify} from "@intuitionrobotics/ts-common";
 import {RequestOptions} from "../../backend";
 
 export async function promisifyRequest(request: RequestOptions, throwException: boolean = true): Promise<Response> {

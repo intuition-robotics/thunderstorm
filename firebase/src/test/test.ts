@@ -1,7 +1,7 @@
 /*
  * Firebase is a simpler Typescript wrapper to all of firebase services.
  *
- * Copyright (C) 2020 Adam van der Kruk aka TacB0sS
+ * Copyright (C) 2020 Intuition Robotics
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -21,7 +21,7 @@ import {testCollections} from "./firestore/collection/test-collections";
 import {TestModuleThatUsesCollection,} from "./firestore/backup/test-project-backup";
 import {FirebaseModule} from "../main/app-backend/FirebaseModule";
 import {testStorage} from "./firestore/storage/test-storage";
-import {__scenario} from "@nu-art/testelot";
+import {__scenario} from "@intuitionrobotics/testelot";
 import {testDatabase} from "./database/test-database";
 import {scenarioUpsert} from "./firestore/collection/test/upsert";
 

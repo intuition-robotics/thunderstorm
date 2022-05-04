@@ -1,7 +1,7 @@
 /*
  * A backend boilerplate with example apis
  *
- * Copyright (C) 2020 Adam van der Kruk aka TacB0sS
+ * Copyright (C) 2020 Intuition Robotics
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -19,14 +19,14 @@
 import {
 	ApiWithBody,
 	ApiWithQuery
-} from "@nu-art/thunderstorm";
+} from "@intuitionrobotics/thunderstorm";
 import {
 	ApiResponse,
 	ExpressRequest,
 	RemoteProxy,
 	ServerApi_Get
-} from "@nu-art/thunderstorm/backend";
-import {PermissionsAssert} from "@nu-art/permissions/backend";
+} from "@intuitionrobotics/thunderstorm/backend";
+import {PermissionsAssert} from "@intuitionrobotics/permissions/backend";
 
 const PROP_A = "a";
 const PROP_E = "e";

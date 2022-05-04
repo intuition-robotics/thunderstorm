@@ -1,7 +1,7 @@
 /*
  * Firebase is a simpler Typescript wrapper to all of firebase services.
  *
- * Copyright (C) 2020 Adam van der Kruk aka TacB0sS
+ * Copyright (C) 2020 Intuition Robotics
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -19,7 +19,7 @@
 import {
 	__custom,
 	__scenario
-} from "@nu-art/testelot";
+} from "@intuitionrobotics/testelot";
 import {PushPubSubModule} from "../main/app-backend/modules/PushPubSubModule";
 import {
 	assert,
@@ -27,7 +27,7 @@ import {
 	currentTimeMillies,
 	generateHex,
 	Hour
-} from "@nu-art/ts-common";
+} from "@intuitionrobotics/ts-common";
 import {
 	DB_PushKeys,
 	DB_PushSession,
@@ -36,7 +36,7 @@ import {
 import {
 	FirestoreCollection,
 	FirestoreTransaction
-} from "@nu-art/firebase/backend";
+} from "@intuitionrobotics/firebase/backend";
 
 const arrayOf2 = Array(2).fill(0);
 export const scenarioCleanup = __scenario("Scheduled Cleaup");

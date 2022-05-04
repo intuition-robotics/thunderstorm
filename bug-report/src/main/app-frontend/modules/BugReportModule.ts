@@ -2,7 +2,7 @@
  * Permissions management system, define access level for each of
  * your server apis, and restrict users by giving them access levels
  *
- * Copyright (C) 2020 Adam van der Kruk aka TacB0sS
+ * Copyright (C) 2020 Intuition Robotics
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -24,9 +24,9 @@ import {
 	LogLevel,
 	LogLevelOrdinal,
 	Module
-} from "@nu-art/ts-common";
-import {XhrHttpModule} from "@nu-art/thunderstorm/frontend";
-import {HttpMethod} from "@nu-art/thunderstorm";
+} from "@intuitionrobotics/ts-common";
+import {XhrHttpModule} from "@intuitionrobotics/thunderstorm/frontend";
+import {HttpMethod} from "@intuitionrobotics/thunderstorm";
 import {
 	ApiBugReport,
 	Platform_Jira,

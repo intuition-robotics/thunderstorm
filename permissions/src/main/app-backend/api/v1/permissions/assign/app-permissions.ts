@@ -1,7 +1,7 @@
 /*
  * ts-common is the basic building blocks of our typescript projects
  *
- * Copyright (C) 2020 Adam van der Kruk aka TacB0sS
+ * Copyright (C) 2020 Intuition Robotics
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -20,7 +20,7 @@ import {
 	ApiResponse,
 	ExpressRequest,
 	ServerApi
-} from "@nu-art/thunderstorm/backend";
+} from "@intuitionrobotics/thunderstorm/backend";
 import {
 	PermissionsApi_AssignAppPermissions,
 	Request_AssignAppPermissions,
@@ -29,8 +29,8 @@ import {
 import {
 	HttpMethod,
 	QueryParams
-} from "@nu-art/thunderstorm";
-import {AccountModule} from "@nu-art/user-account/app-backend/modules/AccountModule";
+} from "@intuitionrobotics/thunderstorm";
+import {AccountModule} from "@intuitionrobotics/user-account/app-backend/modules/AccountModule";
 
 
 class ServerApi_UserUrlsPermissions

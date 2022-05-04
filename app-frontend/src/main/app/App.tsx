@@ -1,7 +1,7 @@
 /*
  * A typescript & react boilerplate with api call example
  *
- * Copyright (C) 2020 Adam van der Kruk aka TacB0sS
+ * Copyright (C) 2020 Intuition Robotics
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -24,15 +24,15 @@ import {
 	RoutingModule,
 	Toaster,
 	WrapperProps
-} from "@nu-art/thunderstorm/frontend";
+} from "@intuitionrobotics/thunderstorm/frontend";
 
 import {VersionOnScreen} from './components/VersionOnScreen';
 import {
 	AccountModule,
 	OnLoginStatusUpdated
-} from "@nu-art/user-account/frontend";
+} from "@intuitionrobotics/user-account/frontend";
 import {registerRoutes} from "./Routes";
-import {BugReport} from '@nu-art/bug-report/frontend';
+import {BugReport} from '@intuitionrobotics/bug-report/frontend';
 
 export class App
 	extends BaseComponent<WrapperProps>
@@ -45,7 +45,7 @@ export class App
 
 	onLoginStatusUpdated = () => {
 		const status = AccountModule.getLoggedStatus();
-		console.log('status update', status); 
+		console.log('status update', status);
 	};
 
 	render() {

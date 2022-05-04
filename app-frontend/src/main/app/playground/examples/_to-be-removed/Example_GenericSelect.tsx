@@ -1,7 +1,7 @@
 /*
  * A typescript & react boilerplate with api call example
  *
- * Copyright (C) 2020 Adam van der Kruk aka TacB0sS
+ * Copyright (C) 2020 Intuition Robotics
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -17,7 +17,7 @@
  */
 
 import * as React from "react";
-import {GenericSelect} from "@nu-art/thunderstorm/app-frontend/components/GenericSelect";
+import {GenericSelect} from "@intuitionrobotics/thunderstorm/app-frontend/components/GenericSelect";
 import {ICONS} from "@res/icons";
 import {selectStyles} from "../../Page_Playground";
 

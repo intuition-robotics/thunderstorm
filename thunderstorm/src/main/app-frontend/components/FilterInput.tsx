@@ -4,7 +4,7 @@
  * Typescript & Express backend infrastructure that natively runs on firebase function
  * Typescript & React frontend infrastructure
  *
- * Copyright (C) 2020 Adam van der Kruk aka TacB0sS
+ * Copyright (C) 2020 Intuition Robotics
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -20,13 +20,13 @@
  */
 
 import * as React from 'react';
-import {Filter} from "@nu-art/ts-common/utils/filter-tools";
+import {Filter} from "@intuitionrobotics/ts-common/utils/filter-tools";
 import {TS_Input} from "./TS_Input";
 import {Stylable} from "../tools/Stylable";
 import {
 	compare,
 	generateHex
-} from '@nu-art/ts-common';
+} from '@intuitionrobotics/ts-common';
 
 export type Props_FilterInput<T> = Stylable & {
 	filter: (item: T) => string[],

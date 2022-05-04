@@ -1,7 +1,7 @@
 /*
  * ts-common is the basic building blocks of our typescript projects
  *
- * Copyright (C) 2020 Adam van der Kruk aka TacB0sS
+ * Copyright (C) 2020 Intuition Robotics
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -19,8 +19,8 @@
 import {
 	Auditable,
 	StringMap
-} from "@nu-art/ts-common";
-import {DB_Object} from "@nu-art/firebase";
+} from "@intuitionrobotics/ts-common";
+import {DB_Object} from "@intuitionrobotics/firebase";
 
 export type Base_AccessLevels = {
 	domainId: string,

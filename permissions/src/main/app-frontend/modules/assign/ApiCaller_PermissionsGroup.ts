@@ -1,7 +1,7 @@
 /*
  * ts-common is the basic building blocks of our typescript projects
  *
- * Copyright (C) 2020 Adam van der Kruk aka TacB0sS
+ * Copyright (C) 2020 Intuition Robotics
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -18,10 +18,10 @@
 import {
 	DB_PermissionsGroup
 } from "../../../index";
-import {BaseDB_ApiGeneratorCaller} from "@nu-art/db-api-generator/frontend";
+import {BaseDB_ApiGeneratorCaller} from "@intuitionrobotics/db-api-generator/frontend";
 import {
 	ThunderDispatcher
-} from "@nu-art/thunderstorm/frontend";
+} from "@intuitionrobotics/thunderstorm/frontend";
 
 
 export interface OnPermissionsGroupsLoaded {

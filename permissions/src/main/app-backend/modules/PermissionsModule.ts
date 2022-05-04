@@ -1,7 +1,7 @@
 /*
  * ts-common is the basic building blocks of our typescript projects
  *
- * Copyright (C) 2020 Adam van der Kruk aka TacB0sS
+ * Copyright (C) 2020 Intuition Robotics
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -20,7 +20,7 @@ import {
 	ImplementationMissingException,
 	Module,
 	StringMap
-} from "@nu-art/ts-common";
+} from "@intuitionrobotics/ts-common";
 import {
 	DB_PermissionProject,
 	PredefinedGroup,
@@ -34,12 +34,12 @@ import {
 	ApiPermissionsDB,
 	ProjectPermissionsDB
 } from "./db-types/managment";
-import {HttpServer} from "@nu-art/thunderstorm/backend";
+import {HttpServer} from "@intuitionrobotics/thunderstorm/backend";
 import {
 	GroupPermissionsDB,
 	UserPermissionsDB
 } from "./db-types/assign";
-import {AccountModule} from "@nu-art/user-account/backend";
+import {AccountModule} from "@intuitionrobotics/user-account/backend";
 
 type Config = {
 	project: DB_PermissionProject

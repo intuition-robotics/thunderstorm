@@ -1,7 +1,7 @@
 /*
  * A typescript & react boilerplate with api call example
  *
- * Copyright (C) 2020 Adam van der Kruk aka TacB0sS
+ * Copyright (C) 2020 Intuition Robotics
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -25,18 +25,18 @@ import {
 	ForceUpgrade,
 	Thunder,
 	ToastBuilder
-} from "@nu-art/thunderstorm/frontend";
+} from "@intuitionrobotics/thunderstorm/frontend";
 import {
 	Frontend_ModulePack_LiveDocs,
 	LiveDocsModule,
 	showEditModalExample
-} from "@nu-art/live-docs/frontend";
+} from "@intuitionrobotics/live-docs/frontend";
 import {ExampleModule} from "@modules/ExampleModule";
-import {Frontend_ModulePack_PushPubSub} from "@nu-art/push-pub-sub/frontend";
-import {BugReportModule} from "@nu-art/bug-report/frontend";
-import {Module} from '@nu-art/ts-common';
-import {Frontend_ModulePack_Uploader} from "@nu-art/file-upload/frontend";
-import {PermissionsFE} from '@nu-art/permissions/frontend';
+import {Frontend_ModulePack_PushPubSub} from "@intuitionrobotics/push-pub-sub/frontend";
+import {BugReportModule} from "@intuitionrobotics/bug-report/frontend";
+import {Module} from '@intuitionrobotics/ts-common';
+import {Frontend_ModulePack_Uploader} from "@intuitionrobotics/file-upload/frontend";
+import {PermissionsFE} from '@intuitionrobotics/permissions/frontend';
 
 const modules: Module[] = [
 	ForceUpgrade,

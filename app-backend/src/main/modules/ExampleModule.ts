@@ -1,7 +1,7 @@
 /*
  * A backend boilerplate with example apis
  *
- * Copyright (C) 2020 Adam van der Kruk aka TacB0sS
+ * Copyright (C) 2020 Intuition Robotics
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -18,13 +18,13 @@
 import {
 	Dispatcher,
 	Module
-} from "@nu-art/ts-common";
+} from "@intuitionrobotics/ts-common";
 import {TestDispatch} from "@app/app-shared";
 import {
 	FirebaseModule,
 	FirestoreCollection
-} from "@nu-art/firebase/backend";
-import {QueryRequestInfo} from "@nu-art/thunderstorm/backend";
+} from "@intuitionrobotics/firebase/backend";
+import {QueryRequestInfo} from "@intuitionrobotics/thunderstorm/backend";
 
 type Config = {
 	options: string[],

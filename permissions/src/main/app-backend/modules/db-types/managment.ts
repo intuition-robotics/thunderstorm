@@ -1,7 +1,7 @@
 /*
  * ts-common is the basic building blocks of our typescript projects
  *
- * Copyright (C) 2020 Adam van der Kruk aka TacB0sS
+ * Copyright (C) 2020 Intuition Robotics
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -26,7 +26,7 @@ import {
 	validateOptionalId,
 	validateStringWithDashes,
 	validateUniqueId
-} from "@nu-art/db-api-generator/backend";
+} from "@intuitionrobotics/db-api-generator/backend";
 
 import {
 	CollectionName_Api,
@@ -48,16 +48,16 @@ import {
 	validateArray,
 	validateRange,
 	validateRegexp
-} from "@nu-art/ts-common";
-import {FirestoreTransaction} from "@nu-art/firebase/backend";
+} from "@intuitionrobotics/ts-common";
+import {FirestoreTransaction} from "@intuitionrobotics/firebase/backend";
 import {GroupPermissionsDB} from "./assign";
-import {Clause_Where} from "@nu-art/firebase";
-import {ApiException} from "@nu-art/thunderstorm/app-backend/exceptions";
+import {Clause_Where} from "@intuitionrobotics/firebase";
+import {ApiException} from "@intuitionrobotics/thunderstorm/app-backend/exceptions";
 import {
 	ExpressRequest,
 	ServerApi
-} from "@nu-art/thunderstorm/backend";
-import {AccountModule} from "@nu-art/user-account/app-backend/modules/AccountModule";
+} from "@intuitionrobotics/thunderstorm/backend";
+import {AccountModule} from "@intuitionrobotics/user-account/app-backend/modules/AccountModule";
 
 const validateProjectId = validateRegexp(/^[a-z-]{3,20}$/);
 export const validateProjectName = validateRegexp(/^[A-Za-z- ]{3,20}$/);

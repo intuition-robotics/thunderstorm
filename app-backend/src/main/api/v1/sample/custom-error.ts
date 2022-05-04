@@ -1,7 +1,7 @@
 /*
  * A backend boilerplate with example apis
  *
- * Copyright (C) 2020 Adam van der Kruk aka TacB0sS
+ * Copyright (C) 2020 Intuition Robotics
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -19,7 +19,7 @@ import {
 	ApiException,
 	ApiResponse,
 	ServerApi_Post,
-} from "@nu-art/thunderstorm/backend";
+} from "@intuitionrobotics/thunderstorm/backend";
 
 
 import {
@@ -27,8 +27,8 @@ import {
 	CustomError2,
 	ExampleApiCustomError
 } from "@app/app-shared";
-import {randomObject} from "@nu-art/ts-common";
-import {ExpressRequest} from "@nu-art/thunderstorm/backend";
+import {randomObject} from "@intuitionrobotics/ts-common";
+import {ExpressRequest} from "@intuitionrobotics/thunderstorm/backend";
 
 class ServerApi_CustomError
 	extends ServerApi_Post<ExampleApiCustomError> {

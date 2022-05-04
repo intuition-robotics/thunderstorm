@@ -2,7 +2,7 @@
  * Permissions management system, define access level for each of
  * your server apis, and restrict users by giving them access levels
  *
- * Copyright (C) 2020 Adam van der Kruk aka TacB0sS
+ * Copyright (C) 2020 Intuition Robotics
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -18,11 +18,11 @@
  */
 
 import {simpleTypeCollection} from "../_core/consts";
-import {__scenario} from "@nu-art/testelot";
+import {__scenario} from "@intuitionrobotics/testelot";
 import {
 	BadImplementationException,
 	generateHex
-} from "@nu-art/ts-common";
+} from "@intuitionrobotics/ts-common";
 
 export const scenarioCollectionDeleteInTransaction = __scenario("Delete In Transaction");
 const deleteId = generateHex(8);

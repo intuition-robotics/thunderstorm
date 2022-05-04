@@ -2,7 +2,7 @@
  * Permissions management system, define access level for each of
  * your server apis, and restrict users by giving them access levels
  *
- * Copyright (C) 2020 Adam van der Kruk aka TacB0sS
+ * Copyright (C) 2020 Intuition Robotics
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -17,7 +17,7 @@
  * limitations under the License.
  */
 
-import {FirebaseScheduledFunction} from "@nu-art/firebase/backend-functions";
+import {FirebaseScheduledFunction} from "@intuitionrobotics/firebase/backend-functions";
 import {PushPubSubModule} from "./PushPubSubModule";
 
 export class ScheduledCleanup_Class

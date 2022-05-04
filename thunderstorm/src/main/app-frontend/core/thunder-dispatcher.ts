@@ -4,7 +4,7 @@
  * Typescript & Express backend infrastructure that natively runs on firebase function
  * Typescript & React frontend infrastructure
  *
- * Copyright (C) 2020 Adam van der Kruk aka TacB0sS
+ * Copyright (C) 2020 Intuition Robotics
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -23,7 +23,7 @@ import {
 	Dispatcher,
 	FunctionKeys,
 	ReturnPromiseType
-} from "@nu-art/ts-common";
+} from "@intuitionrobotics/ts-common";
 
 export class ThunderDispatcher<T extends object, K extends FunctionKeys<T>>
 	extends Dispatcher<T, K> {

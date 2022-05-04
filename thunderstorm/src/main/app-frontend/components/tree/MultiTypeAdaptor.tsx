@@ -4,7 +4,7 @@
  * Typescript & Express backend infrastructure that natively runs on firebase function
  * Typescript & React frontend infrastructure
  *
- * Copyright (C) 2020 Adam van der Kruk aka TacB0sS
+ * Copyright (C) 2020 Intuition Robotics
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -19,7 +19,7 @@
  * limitations under the License.
  */
 
-import {_keys} from "@nu-art/ts-common";
+import {_keys} from "@intuitionrobotics/ts-common";
 import {Adapter,} from "../adapter/Adapter";
 import {BaseRendererMap} from "../adapter/BaseRenderer";
 

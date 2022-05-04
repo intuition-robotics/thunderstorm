@@ -2,7 +2,7 @@
  * Permissions management system, define access level for each of
  * your server apis, and restrict users by giving them access levels
  *
- * Copyright (C) 2020 Adam van der Kruk aka TacB0sS
+ * Copyright (C) 2020 Intuition Robotics
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -17,12 +17,12 @@
  * limitations under the License.
  */
 
-import {DB_Object} from "@nu-art/firebase";
-import {assert, generateHex} from "@nu-art/ts-common";
+import {DB_Object} from "@intuitionrobotics/firebase";
+import {assert, generateHex} from "@intuitionrobotics/ts-common";
 import {
 	__custom,
 	__scenario
-} from "@nu-art/testelot";
+} from "@intuitionrobotics/testelot";
 import {cleanup} from "./_core";
 import {ExampleModule} from "./db-api-generator";
 

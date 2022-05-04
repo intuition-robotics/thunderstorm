@@ -2,7 +2,7 @@
  * Permissions management system, define access level for each of
  * your server apis, and restrict users by giving them access levels
  *
- * Copyright (C) 2020 Adam van der Kruk aka TacB0sS
+ * Copyright (C) 2020 Intuition Robotics
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -18,7 +18,7 @@
  */
 
 import * as React from "react";
-import {BaseComponent} from "@nu-art/thunderstorm/app-frontend/core/BaseComponent";
+import {BaseComponent} from "@intuitionrobotics/thunderstorm/app-frontend/core/BaseComponent";
 import Example_LineGraph, {D3ChartData} from "./d3components/Example_LineGraph";
 import Example_TableGraph, {TableData} from "./d3components/Example_TableGraph";
 

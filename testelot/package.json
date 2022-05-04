@@ -1,25 +1,25 @@
 {
-  "name": "@nu-art/testelot",
+  "name": "@intuitionrobotics/testelot",
   "version": "0.0.0",
   "description": "Nu-Art Sir Testelot",
   "keywords": [
-    "TacB0sS",
+    "IR",
     "infra",
     "nu-art",
     "tests",
     "thunderstorm",
     "typescript"
   ],
-  "homepage": "https://github.com/nu-art-js/testelot",
+  "homepage": "https://github.com/intuition-robotics/testelot",
   "bugs": {
-    "url": "https://github.com/nu-art-js/testelot/issues"
+    "url": "https://github.com/intuition-robotics/testelot/issues"
   },
   "repository": {
     "type": "git",
-    "url": "git+ssh://git@github.com:nu-art-js/testelot.git"
+    "url": "git+ssh://git@github.com:intuition-robotics/testelot.git"
   },
   "license": "Apache-2.0",
-  "author": "TacB0sS",
+  "author": "IR",
   "main": "index.js",
   "types": "index.d.ts",
   "files": [
@@ -29,7 +29,7 @@
     "build": "tsc"
   },
   "dependencies": {
-    "@nu-art/ts-common": "~0.0.1",
+    "@intuitionrobotics/ts-common": "~0.0.1",
     "fetch": "^1.1.0",
     "node-fetch": "^2.3.0",
     "object-hash": "^1.3.1"

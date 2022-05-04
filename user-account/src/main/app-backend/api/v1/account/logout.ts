@@ -1,8 +1,8 @@
 /*
- * Permissions management system, define access level for each of 
+ * Permissions management system, define access level for each of
  * your server apis, and restrict users by giving them access levels
  *
- * Copyright (C) 2020 Adam van der Kruk aka TacB0sS
+ * Copyright (C) 2020 Intuition Robotics
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -21,14 +21,14 @@ import {
 	ApiException,
 	ApiResponse,
 	ServerApi
-} from "@nu-art/thunderstorm/backend";
+} from "@intuitionrobotics/thunderstorm/backend";
 import {
 	AccountModule,
 	AccountApi_Logout,
 	Header_SessionId
 } from "./_imports";
-import {HttpMethod} from "@nu-art/thunderstorm";
-import {ExpressRequest} from "@nu-art/thunderstorm/backend";
+import {HttpMethod} from "@intuitionrobotics/thunderstorm";
+import {ExpressRequest} from "@intuitionrobotics/thunderstorm/backend";
 
 class ServerApi_Account_Logout
 	extends ServerApi<AccountApi_Logout> {

@@ -1,7 +1,7 @@
 /*
  * ts-common is the basic building blocks of our typescript projects
  *
- * Copyright (C) 2020 Adam van der Kruk aka TacB0sS
+ * Copyright (C) 2020 Intuition Robotics
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -19,17 +19,17 @@
 import {
 	ApiResponse,
 	ServerApi
-} from "@nu-art/thunderstorm/backend";
+} from "@intuitionrobotics/thunderstorm/backend";
 
 
-import {AccountModule} from "@nu-art/user-account/backend";
+import {AccountModule} from "@intuitionrobotics/user-account/backend";
 import {
 	PermissionsApi_AssertUserAccess,
 	Request_AssertApiForUser
 } from "./_imports";
-import {HttpMethod} from "@nu-art/thunderstorm";
+import {HttpMethod} from "@intuitionrobotics/thunderstorm";
 import {PermissionsAssert} from "../../../modules/permissions-assert";
-import {ExpressRequest} from "@nu-art/thunderstorm/backend";
+import {ExpressRequest} from "@intuitionrobotics/thunderstorm/backend";
 
 class ServerApi_AssertPermissions
 	extends ServerApi<PermissionsApi_AssertUserAccess> {

@@ -1,7 +1,7 @@
 /*
  * Firebase is a simpler Typescript wrapper to all of firebase services.
  *
- * Copyright (C) 2020 Adam van der Kruk aka TacB0sS
+ * Copyright (C) 2020 Intuition Robotics
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -19,13 +19,13 @@
 import {
 	__custom,
 	__scenario
-} from "@nu-art/testelot";
+} from "@intuitionrobotics/testelot";
 import {
 	BucketWrapper,
 	FirebaseModule
 } from "../../../_main";
 import {File} from "@google-cloud/storage";
-import {assert} from "@nu-art/ts-common";
+import {assert} from "@intuitionrobotics/ts-common";
 
 const metadata = {
 	my: 'custom',

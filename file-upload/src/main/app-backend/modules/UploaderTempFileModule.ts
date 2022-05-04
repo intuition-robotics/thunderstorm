@@ -2,7 +2,7 @@
  * Permissions management system, define access level for each of
  * your server apis, and restrict users by giving them access levels
  *
- * Copyright (C) 2020 Adam van der Kruk aka TacB0sS
+ * Copyright (C) 2020 Intuition Robotics
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -21,12 +21,12 @@ import {
 	TypeValidator,
 	validateExists,
 	validateRegexp
-} from "@nu-art/ts-common";
-import {ServerApi} from "@nu-art/thunderstorm/backend";
+} from "@intuitionrobotics/ts-common";
+import {ServerApi} from "@intuitionrobotics/thunderstorm/backend";
 import {
 	BaseDB_ApiGenerator,
 	validateUniqueId
-} from "@nu-art/db-api-generator/backend";
+} from "@intuitionrobotics/db-api-generator/backend";
 import {DB_Temp_File} from "../../shared/types";
 
 export const TEMP_COLLECTION = "temp-files-upload";

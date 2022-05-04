@@ -1,7 +1,7 @@
 /*
  * Firebase is a simpler Typescript wrapper to all of firebase services.
  *
- * Copyright (C) 2020 Adam van der Kruk aka TacB0sS
+ * Copyright (C) 2020 Intuition Robotics
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -22,12 +22,12 @@ import {
 	testInstance2,
 	testInstance3
 } from "../_core/consts";
-import {__scenario} from "@nu-art/testelot";
+import {__scenario} from "@intuitionrobotics/testelot";
 import {
 	assert,
 	sortArray,
 	BadImplementationException
-} from "@nu-art/ts-common";
+} from "@intuitionrobotics/ts-common";
 import {FB_Type} from "../_core/types";
 
 const resultsSorter = (items: FB_Type[], invert: boolean = true) => sortArray(items, (item: FB_Type) => item.numeric, invert);

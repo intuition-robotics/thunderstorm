@@ -1,9 +1,9 @@
 {
-  "name": "@nu-art/db-api-generator",
+  "name": "@intuitionrobotics/db-api-generator",
   "version": "0.0.0",
   "description": "db-api-generator",
   "keywords": [
-    "TacB0sS",
+    "IR",
     "express",
     "infra",
     "live-docs",
@@ -11,30 +11,30 @@
     "thunderstorm",
     "typescript"
   ],
-  "homepage": "https://github.com/nu-art-js/db-api-generator",
+  "homepage": "https://github.com/intuition-robotics/db-api-generator",
   "bugs": {
-    "url": "https://github.com/nu-art-js/db-api-generator/issues"
+    "url": "https://github.com/intuition-robotics/db-api-generator/issues"
   },
   "repository": {
     "type": "git",
-    "url": "git+ssh://git@github.com:nu-art-js/db-api-generator.git"
+    "url": "git+ssh://git@github.com:intuition-robotics/db-api-generator.git"
   },
   "license": "Apache-2.0",
-  "author": "TacB0sS",
+  "author": "IR",
   "main": "./dist/index.js",
   "types": "dist/index.d.ts",
   "scripts": {
     "build": "tsc"
   },
   "dependencies": {
-    "@nu-art/ts-common": "~0.0.1",
+    "@intuitionrobotics/ts-common": "~0.0.1",
     "moment": "^2.24.0",
     "use-strict": "^1.0.1"
   },
   "devDependencies": {
-    "@nu-art/firebase": "~0.0.1",
-    "@nu-art/testelot": "~0.0.1",
-    "@nu-art/thunderstorm": "~0.0.1",
+    "@intuitionrobotics/firebase": "~0.0.1",
+    "@intuitionrobotics/testelot": "~0.0.1",
+    "@intuitionrobotics/thunderstorm": "~0.0.1",
     "@types/compression": "^1.7.0",
     "@types/express": "^4.16.1",
     "@types/history": "^4.7.2",

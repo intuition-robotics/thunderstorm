@@ -1,7 +1,7 @@
 /*
  * ts-common is the basic building blocks of our typescript projects
  *
- * Copyright (C) 2020 Adam van der Kruk aka TacB0sS
+ * Copyright (C) 2020 Intuition Robotics
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -17,8 +17,8 @@
  */
 
 import {Backend_ModulePack_Permissions} from "../main/backend";
-import {StormTester} from "@nu-art/thunderstorm/backend-test";
-import {__scenario} from "@nu-art/testelot";
+import {StormTester} from "@intuitionrobotics/thunderstorm/backend-test";
+import {__scenario} from "@intuitionrobotics/testelot";
 import {createTwoAccessLevels} from "./tests/create-project";
 import {
 	checkAccessLevelsPropertyOfGroup,
@@ -57,8 +57,8 @@ import {
 	permissionsAssertDoesCustomFieldsSatisfiesTests,
 	permissionsAssertIsLevelsMatchTests
 } from "./tests/permissions-assert";
-import { FirebaseModule } from "@nu-art/firebase/backend";
-import { AccountModule } from "@nu-art/user-account/backend";
+import { FirebaseModule } from "@intuitionrobotics/firebase/backend";
+import { AccountModule } from "@intuitionrobotics/user-account/backend";
 import {
 	assignUserPermissionsTests
 } from "./tests/assign-permissions";

@@ -1,7 +1,7 @@
 /*
  * A typescript & react boilerplate with api call example
  *
- * Copyright (C) 2020 Adam van der Kruk aka TacB0sS
+ * Copyright (C) 2020 Intuition Robotics
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -19,9 +19,9 @@
 import {
 	BaseComponent,
 	ThunderDispatcher
-} from "@nu-art/thunderstorm/frontend";
+} from "@intuitionrobotics/thunderstorm/frontend";
 import * as React from "react";
-import {Second} from "@nu-art/ts-common";
+import {Second} from "@intuitionrobotics/ts-common";
 import {ExampleModule} from "@modules/ExampleModule";
 import {Test} from "@modules/TestModule";
 import {TestDispatch} from "@app/app-shared";

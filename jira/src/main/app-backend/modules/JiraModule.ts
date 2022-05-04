@@ -2,7 +2,7 @@
  * Permissions management system, define access level for each of
  * your server apis, and restrict users by giving them access levels
  *
- * Copyright (C) 2020 Adam van der Kruk aka TacB0sS
+ * Copyright (C) 2020 Intuition Robotics
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -22,13 +22,13 @@ import {
 	ImplementationMissingException,
 	Module,
 	TypedMap
-} from "@nu-art/ts-common";
+} from "@intuitionrobotics/ts-common";
 import {
 	ApiException,
 	AxiosHttpModule,
 	promisifyRequest
-} from "@nu-art/thunderstorm/backend";
-import {HttpMethod} from "@nu-art/thunderstorm";
+} from "@intuitionrobotics/thunderstorm/backend";
+import {HttpMethod} from "@intuitionrobotics/thunderstorm";
 import {
 	CoreOptions,
 	Headers,

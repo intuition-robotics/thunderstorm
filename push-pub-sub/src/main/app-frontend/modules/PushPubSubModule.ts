@@ -1,7 +1,7 @@
 /*
  * A typescript & react boilerplate with api call example
  *
- * Copyright (C) 2018  Adam van der Kruk aka TacB0sS
+ * Copyright (C) 2018  Intuition Robotics
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -26,13 +26,13 @@ import {
 	Module,
 	removeFromArray,
 	StringMap
-} from "@nu-art/ts-common";
+} from "@intuitionrobotics/ts-common";
 
 import {
 	StorageKey,
 	ThunderDispatcher,
 	XhrHttpModule
-} from "@nu-art/thunderstorm/frontend";
+} from "@intuitionrobotics/thunderstorm/frontend";
 // noinspection TypeScriptPreferShortImport
 import {
 	BaseSubscriptionData,
@@ -45,12 +45,12 @@ import {
 	Request_PushRegister,
 	SubscribeProps
 } from "../../index";
-import {HttpMethod} from "@nu-art/thunderstorm";
+import {HttpMethod} from "@intuitionrobotics/thunderstorm";
 import {
 	FirebaseModule,
 	FirebaseSession,
 	MessagingWrapper
-} from "@nu-art/firebase/frontend";
+} from "@intuitionrobotics/firebase/frontend";
 import {NotificationsModule} from "./NotificationModule";
 
 export const Command_SwToApp = "SwToApp";

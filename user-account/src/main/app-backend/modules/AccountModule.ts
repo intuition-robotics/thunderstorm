@@ -2,7 +2,7 @@
  * Permissions management system, define access level for each of
  * your server apis, and restrict users by giving them access levels
  *
- * Copyright (C) 2020 Adam van der Kruk aka TacB0sS
+ * Copyright (C) 2020 Intuition Robotics
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -26,14 +26,14 @@ import {
 	hashPasswordWithSalt,
 	Module,
 	validate
-} from "@nu-art/ts-common";
+} from "@intuitionrobotics/ts-common";
 
 
 import {
 	FirebaseModule,
 	FirestoreCollection,
 	FirestoreTransaction
-} from "@nu-art/firebase/backend";
+} from "@intuitionrobotics/firebase/backend";
 import {
 	DB_Account,
 	DB_Session,
@@ -51,8 +51,8 @@ import {
 	ExpressRequest,
 	HeaderKey,
 	QueryRequestInfo
-} from "@nu-art/thunderstorm/backend";
-import {validateEmail} from "@nu-art/db-api-generator/backend";
+} from "@intuitionrobotics/thunderstorm/backend";
+import {validateEmail} from "@intuitionrobotics/db-api-generator/backend";
 
 export const Header_SessionId = new HeaderKey(HeaderKey_SessionId);
 

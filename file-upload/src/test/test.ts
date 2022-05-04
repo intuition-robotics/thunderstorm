@@ -2,7 +2,7 @@
  * Permissions management system, define access level for each of
  * your server apis, and restrict users by giving them access levels
  *
- * Copyright (C) 2020 Adam van der Kruk aka TacB0sS
+ * Copyright (C) 2020 Intuition Robotics
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -20,11 +20,11 @@
 import {
 	__custom,
 	__scenario
-} from "@nu-art/testelot";
-import {FirebaseModule} from "@nu-art/firebase/backend";
+} from "@intuitionrobotics/testelot";
+import {FirebaseModule} from "@intuitionrobotics/firebase/backend";
 import {MyTester} from "./core";
-import {AxiosHttpModule} from "@nu-art/thunderstorm/app-backend/modules/http/AxiosHttpModule";
-import {HttpMethod} from "@nu-art/thunderstorm";
+import {AxiosHttpModule} from "@intuitionrobotics/thunderstorm/app-backend/modules/http/AxiosHttpModule";
+import {HttpMethod} from "@intuitionrobotics/thunderstorm";
 
 AxiosHttpModule.setDefaultConfig({origin: 'sjdfojds'});
 const mainScenario = __scenario("File Uploading Testing");

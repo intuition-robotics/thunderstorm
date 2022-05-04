@@ -1,7 +1,7 @@
 /*
  * A typescript & react boilerplate with api call example
  *
- * Copyright (C) 2020 Adam van der Kruk aka TacB0sS
+ * Copyright (C) 2020 Intuition Robotics
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -16,10 +16,10 @@
  * limitations under the License.
  */
 import * as React from "react";
-import {RoutingModule} from "@nu-art/thunderstorm/frontend";
+import {RoutingModule} from "@intuitionrobotics/thunderstorm/frontend";
 import {Page_Home} from "../pages/Page_Home";
 import {css} from "emotion";
-import {Component_Login} from "@nu-art/user-account/frontend";
+import {Component_Login} from "@intuitionrobotics/user-account/frontend";
 import {Page_ApiGen} from "../pages/Page_ApiGen";
 import { Example_Dialogs } from "../playground/examples/Example_Dialogs";
 import { Example_Toaster } from "../playground/examples/Example_Toaster";

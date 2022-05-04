@@ -2,7 +2,7 @@
  * Permissions management system, define access level for each of
  * your server apis, and restrict users by giving them access levels
  *
- * Copyright (C) 2020 Adam van der Kruk aka TacB0sS
+ * Copyright (C) 2020 Intuition Robotics
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -21,14 +21,14 @@ import {
 	__scenario,
 	ContextKey,
     __custom
-} from "@nu-art/testelot";
+} from "@intuitionrobotics/testelot";
 import {
 	AccountModule,
 	DB_Account
 } from "../_main";
 import {cleanup} from "./_core";
-import {isErrorOfType} from "@nu-art/ts-common";
-import {ApiException} from "@nu-art/thunderstorm/app-backend/exceptions";
+import {isErrorOfType} from "@intuitionrobotics/ts-common";
+import {ApiException} from "@intuitionrobotics/thunderstorm/app-backend/exceptions";
 
 const userContextKey1 = new ContextKey<DB_Account>("user-1");
 

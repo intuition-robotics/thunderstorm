@@ -1,8 +1,8 @@
 /*
- * Permissions management system, define access level for each of 
+ * Permissions management system, define access level for each of
  * your server apis, and restrict users by giving them access levels
  *
- * Copyright (C) 2020 Adam van der Kruk aka TacB0sS
+ * Copyright (C) 2020 Intuition Robotics
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -24,7 +24,7 @@ import {
 	DeriveQueryType,
 	DeriveResponseType,
 	QueryParams
-} from "@nu-art/thunderstorm";
+} from "@intuitionrobotics/thunderstorm";
 import {
 	ApiBinder_DBCreate,
 	ApiBinder_DBDelete,
@@ -38,13 +38,13 @@ import {
 	Clause_Where,
 	DB_Object,
 	FirestoreQuery
-} from "@nu-art/firebase";
+} from "@intuitionrobotics/firebase";
 import {
 	ApiResponse,
 	ExpressRequest,
 	ServerApi
-} from "@nu-art/thunderstorm/backend";
-import {addItemToArray} from "@nu-art/ts-common";
+} from "@intuitionrobotics/thunderstorm/backend";
+import {addItemToArray} from "@intuitionrobotics/ts-common";
 
 export function resolveUrlPart(dbModule: BaseDB_ApiGenerator<any>, pathPart?: string, pathSuffix?: string) {
 	return `${!pathPart ? dbModule.getItemName() : pathPart}${pathSuffix ? "/" + pathSuffix : ""}`;

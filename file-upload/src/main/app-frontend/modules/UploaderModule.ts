@@ -2,7 +2,7 @@
  * Permissions management system, define access level for each of
  * your server apis, and restrict users by giving them access levels
  *
- * Copyright (C) 2020 Adam van der Kruk aka TacB0sS
+ * Copyright (C) 2020 Intuition Robotics
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -20,7 +20,7 @@ import {
 	ThunderDispatcher,
 	XhrHttpModule,
 	XhrHttpModule_Class
-} from "@nu-art/thunderstorm/frontend";
+} from "@intuitionrobotics/thunderstorm/frontend";
 import {
 	BaseUploaderFile,
 	fileUploadedKey,
@@ -31,17 +31,17 @@ import {
 import {
 	OnPushMessageReceived,
 	PushPubSubModule
-} from "@nu-art/push-pub-sub/frontend";
+} from "@intuitionrobotics/push-pub-sub/frontend";
 import {
 	BaseUploaderModule_Class,
 	FileStatus,
 	OnFileStatusChanged
 } from "../../shared/modules/BaseUploaderModule";
-import {DB_Notifications} from "@nu-art/push-pub-sub";
+import {DB_Notifications} from "@intuitionrobotics/push-pub-sub";
 import {
 	Second,
 	timeout
-} from "@nu-art/ts-common";
+} from "@intuitionrobotics/ts-common";
 
 export class UploaderModule_Class
 	extends BaseUploaderModule_Class<XhrHttpModule_Class>

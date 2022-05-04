@@ -1,13 +1,19 @@
-@Library('dev-tools@pipeline')
+@Library('dev-tools')
 
 import com.nu.art.pipeline.modules.SlackModule
+import com.nu.art.pipeline.modules.git.Cli
 import com.nu.art.pipeline.modules.build.BuildModule
 import com.nu.art.pipeline.modules.build.TriggerCause
 import com.nu.art.pipeline.thunderstorm.Pipeline_ThunderstormMain
 import com.nu.art.pipeline.workflow.Workflow
+import com.nu.art.pipeline.workflow.variables.Var_Creds
+import com.nu.art.pipeline.workflow.variables.Var_Env
 
 class Pipeline_Build
 	extends Pipeline_ThunderstormMain<Pipeline_Build> {
+
+	public Var_Env Env_SecretNPM = new Var_Env("NPM_SECRET")
+	public Var_Creds Creds_SecretNPM = new Var_Creds("string", "npm_token", Env_SecretNPM)
 
 	Pipeline_Build() {
 		super("Thunderstorm", "thunderstorm", SlackModule.class)
@@ -15,12 +21,15 @@ class Pipeline_Build
 
 	@Override
 	protected void init() {
-		declareEnv("dev", "thunderstorm-dev")
-		declareEnv("staging", "thunderstorm-staging")
-		declareEnv("prod", "nu-art-thunderstorm")
-		setGitRepoId("nu-art-js/thunderstorm", true)
+		setRequiredCredentials(Creds_SecretNPM)
 
+		declareEnv("dev", "ir-thunderstorm-dev")
+		declareEnv("staging", "ir-thunderstorm-staging")
+		declareEnv("prod", "ir-thunderstorm")
+		setGitRepoId("intuition-robotics/thunderstorm", true)
 		super.init()
+
+//		getRepo().assertCommitDiffs()
 	}
 
 	@Override
@@ -40,7 +49,32 @@ class Pipeline_Build
 	}
 
 	@Override
-	protected void _test() {
+	void pipeline() {
+//		super.pipeline()
+		workflow.deleteWorkspace()
+		checkout({
+			getModule(SlackModule.class).setOnSuccess(getRepo().getChangeLog().toSlackMessage())
+		})
+
+		install()
+		clean()
+		build()
+//		test()
+
+//		deploy()
+
+		addStage("Auth NPM", {
+			Cli cli = new Cli("#!/bin/bash")
+				.append("source \"\$HOME/.nvm/nvm.sh\"")
+				.append("nvm use")
+				.append("npm config list")
+				.append("npm config delete fee72d7c-e603-453e-931d-7385ae0b261e")
+				.append("npm config set //registry.npmjs.org/:_authToken ${Env_SecretNPM.get()}")
+				.append("npm whoami")
+				.append("npm config list")
+			getRepo().sh(cli)
+		})
+		publish()
 	}
 }
 

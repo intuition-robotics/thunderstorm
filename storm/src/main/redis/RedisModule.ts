@@ -2,7 +2,7 @@
  * Storm contains a list of utility functions.. this project
  * might be broken down into more smaller projects in the future.
  *
- * Copyright (C) 2020 Adam van der Kruk aka TacB0sS
+ * Copyright (C) 2020 Intuition Robotics
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -25,7 +25,7 @@
 // Perhaps we may need to change this especially if it should be able to
 // be used as a standalone package.
 import {createClient} from "redis";
-import {Module} from "@nu-art/ts-common";
+import {Module} from "@intuitionrobotics/ts-common";
 
 type ConfigType = { port: number, host: string };
 

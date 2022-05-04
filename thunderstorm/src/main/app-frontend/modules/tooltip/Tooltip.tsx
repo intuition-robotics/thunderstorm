@@ -4,7 +4,7 @@
  * Typescript & Express backend infrastructure that natively runs on firebase function
  * Typescript & React frontend infrastructure
  *
- * Copyright (C) 2020 Adam van der Kruk aka TacB0sS
+ * Copyright (C) 2020 Intuition Robotics
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -27,7 +27,7 @@ import {
 	TooltipModule
 } from "./TooltipModule";
 import {BaseComponent} from "../../core/BaseComponent";
-import {_setTimeout} from "@nu-art/ts-common";
+import {_setTimeout} from "@intuitionrobotics/ts-common";
 
 type State = { model?: Tooltip_Model };
 

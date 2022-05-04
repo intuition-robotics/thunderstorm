@@ -1,7 +1,7 @@
 /*
  * A backend boilerplate with example apis
  *
- * Copyright (C) 2018  Adam van der Kruk aka TacB0sS
+ * Copyright (C) 2018  Intuition Robotics
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -19,7 +19,7 @@ import {
 	BadImplementationException,
 	Exception,
 	Module
-} from "@nu-art/ts-common";
+} from "@intuitionrobotics/ts-common";
 import * as jwt from "jsonwebtoken";
 import {
 	Octokit,
@@ -32,7 +32,7 @@ import * as path from "path";
 import {
 	ExpressRequest,
 	promisifyRequest
-} from "@nu-art/thunderstorm/backend";
+} from "@intuitionrobotics/thunderstorm/backend";
 
 type Config = {
 	appId: string

@@ -1,7 +1,7 @@
 /*
  * A typescript & react boilerplate with api call example
  *
- * Copyright (C) 2020 Adam van der Kruk aka TacB0sS
+ * Copyright (C) 2020 Intuition Robotics
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -22,12 +22,12 @@ import {
 	Component_Form,
 	FormProps,
 	ToastModule
-} from "@nu-art/thunderstorm/frontend";
+} from "@intuitionrobotics/thunderstorm/frontend";
 import {
 	deepClone,
 	ObjectTS,
 	validateObject
-} from "@nu-art/ts-common";
+} from "@intuitionrobotics/ts-common";
 
 type State<T extends ObjectTS> = {
 	value: Partial<T>,

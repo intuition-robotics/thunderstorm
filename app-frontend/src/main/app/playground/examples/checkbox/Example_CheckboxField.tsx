@@ -2,7 +2,7 @@
  * Permissions management system, define access level for each of
  * your server apis, and restrict users by giving them access levels
  *
- * Copyright (C) 2020 Adam van der Kruk aka TacB0sS
+ * Copyright (C) 2020 Intuition Robotics
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -23,11 +23,11 @@ import {
     CheckboxFieldProps,
     CheckboxOption,
     TS_CheckboxField
-} from "@nu-art/thunderstorm/frontend";
+} from "@intuitionrobotics/thunderstorm/frontend";
 import {ChckbxOption, lessOptions, options, lessOptions2} from "./data";
-import {deepClone, toggleElementInArray} from "@nu-art/ts-common";
+import {deepClone, toggleElementInArray} from "@intuitionrobotics/ts-common";
 import {ICONS} from "@res/icons";
-import {Example_NewProps} from "@nu-art/thunderstorm/app-frontend/components/playground/Example_NewProps";
+import {Example_NewProps} from "@intuitionrobotics/thunderstorm/app-frontend/components/playground/Example_NewProps";
 
 const container = css({
     width: '500px'

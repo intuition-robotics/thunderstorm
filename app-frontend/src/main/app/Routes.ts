@@ -1,7 +1,7 @@
 /*
  * A typescript & react boilerplate with api call example
  *
- * Copyright (C) 2020 Adam van der Kruk aka TacB0sS
+ * Copyright (C) 2020 Intuition Robotics
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -16,7 +16,7 @@
  * limitations under the License.
  */
 
-import {RoutingModule} from "@nu-art/thunderstorm/frontend";
+import {RoutingModule} from "@intuitionrobotics/thunderstorm/frontend";
 import {Page_Playground} from "./playground/Page_Playground";
 import {Parent} from "./Parent";
 import {Child1} from "./Child1";

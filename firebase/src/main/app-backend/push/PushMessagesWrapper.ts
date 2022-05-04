@@ -1,7 +1,7 @@
 /*
  * Firebase is a simpler Typescript wrapper to all of firebase services.
  *
- * Copyright (C) 2020 Adam van der Kruk aka TacB0sS
+ * Copyright (C) 2020 Intuition Robotics
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -25,7 +25,7 @@ import {
 } from "./types";
 import {FirebaseBaseWrapper} from "../auth/FirebaseBaseWrapper";
 import {FirebaseSession} from "../auth/firebase-session";
-import {StringMap} from "@nu-art/ts-common";
+import {StringMap} from "@intuitionrobotics/ts-common";
 import {getMessaging} from "firebase-admin/messaging";
 
 export class PushMessagesWrapper

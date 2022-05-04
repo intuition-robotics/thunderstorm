@@ -1,7 +1,7 @@
 /*
  * Firebase is a simpler Typescript wrapper to all of firebase services.
  *
- * Copyright (C) 2020 Adam van der Kruk aka TacB0sS
+ * Copyright (C) 2020 Intuition Robotics
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -17,7 +17,7 @@
  */
 
 import {FirebaseSession} from "./firebase-session";
-import {Logger} from "@nu-art/ts-common";
+import {Logger} from "@intuitionrobotics/ts-common";
 
 export abstract class FirebaseBaseWrapper
 	extends Logger {

@@ -2,7 +2,7 @@
  * Permissions management system, define access level for each of
  * your server apis, and restrict users by giving them access levels
  *
- * Copyright (C) 2020 Adam van der Kruk aka TacB0sS
+ * Copyright (C) 2020 Intuition Robotics
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -17,12 +17,12 @@
  * limitations under the License.
  */
 
-import {Module} from "@nu-art/ts-common";
+import {Module} from "@intuitionrobotics/ts-common";
 import {
 	XhrHttpModule,
 	ToastBuilder,
 	ToastModule
-} from "@nu-art/thunderstorm/frontend";
+} from "@intuitionrobotics/thunderstorm/frontend";
 import {
 	DB_Document,
 	Request_UpdateDocument
@@ -33,7 +33,7 @@ import {
 	ApiUpdateLiveDocs
 } from "../../shared/api";
 import {setDefaultLiveDocEditor} from "../utils";
-import {HttpMethod} from "@nu-art/thunderstorm";
+import {HttpMethod} from "@intuitionrobotics/thunderstorm";
 
 export const RequestKey_FetchDoc = "FetchDoc";
 export const RequestKey_UpdateDoc = "UpdateDoc";

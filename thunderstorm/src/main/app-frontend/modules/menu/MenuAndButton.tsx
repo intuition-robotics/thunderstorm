@@ -11,7 +11,7 @@ import {
 	// resolveGenericPosition,
 	resolveRealPosition
 } from "./MenuModule";
-import {BadImplementationException} from "@nu-art/ts-common";
+import {BadImplementationException} from "@intuitionrobotics/ts-common";
 import {Adapter} from "../../components/adapter/Adapter";
 import {MenuPosition} from "./PopupMenu";
 
@@ -70,6 +70,6 @@ export class MenuAndButton
 
 		new MenuBuilder(this.props.adapter, this.props.resolvePosition ? this.props.resolvePosition(this.ref.current) : resolveRealPosition(this.ref.current), this.props.css && this.props.css)
 			.setId(this.props.id)
-			.show()  
+			.show()
 	}
 }

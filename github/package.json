@@ -1,9 +1,9 @@
 {
-  "name": "@nu-art/github",
+  "name": "@intuitionrobotics/github",
   "version": "0.0.0",
   "description": "Github api Module",
   "keywords": [
-    "TacB0sS",
+    "IR",
     "backend",
     "boilerplate",
     "github",
@@ -11,15 +11,15 @@
   ],
   "repository": {
     "type": "git",
-    "url": "git+ssh://git@github.com:nu-art-js/thunderstorm-boilerplate.git"
+    "url": "git+ssh://git@github.com:intuition-robotics/thunderstorm-boilerplate.git"
   },
   "license": "Apache-2.0",
-  "author": "TacB0sS",
+  "author": "IR",
   "main": "./dist/index.js",
   "types": "dist/index.d.ts",
   "dependencies": {
-    "@nu-art/thunderstorm": "~0.0.1",
-    "@nu-art/ts-common": "~0.0.1",
+    "@intuitionrobotics/thunderstorm": "~0.0.1",
+    "@intuitionrobotics/ts-common": "~0.0.1",
     "@octokit/rest": "18.0.9",
     "@octokit/plugin-paginate-rest": "2.2.1",
     "jsonwebtoken": "~8.5.1"

@@ -1,8 +1,8 @@
 /*
- * Permissions management system, define access level for each of 
+ * Permissions management system, define access level for each of
  * your server apis, and restrict users by giving them access levels
  *
- * Copyright (C) 2020 Adam van der Kruk aka TacB0sS
+ * Copyright (C) 2020 Intuition Robotics
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -27,7 +27,7 @@ import {
 	ErrorResponse,
 	QueryParams,
 	RequestErrorHandler
-} from "@nu-art/thunderstorm";
+} from "@intuitionrobotics/thunderstorm";
 import {
 	ApiBinder_DBCreate,
 	ApiBinder_DBDelete,
@@ -36,18 +36,18 @@ import {
 	DefaultApiDefs,
 	GenericApiDef
 } from "../index";
-import {DB_Object} from "@nu-art/firebase";
+import {DB_Object} from "@intuitionrobotics/firebase";
 import {
 	ThunderDispatcher,
 	XhrHttpModule
-} from "@nu-art/thunderstorm/frontend";
+} from "@intuitionrobotics/thunderstorm/frontend";
 
 import {
 	addItemToArray,
 	Module,
 	PartialProperties,
 	removeItemFromArray
-} from "@nu-art/ts-common";
+} from "@intuitionrobotics/ts-common";
 
 export type BaseApiConfig = {
 	relativeUrl: string

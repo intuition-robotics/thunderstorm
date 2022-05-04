@@ -1,6 +1,6 @@
-import {BaseDB_ApiGeneratorCaller} from "@nu-art/db-api-generator/frontend";
+import {BaseDB_ApiGeneratorCaller} from "@intuitionrobotics/db-api-generator/frontend";
 import {DB_GroupTags} from "../../../index";
-import {ThunderDispatcher} from "@nu-art/thunderstorm/frontend";
+import {ThunderDispatcher} from "@intuitionrobotics/thunderstorm/frontend";
 
 
 export interface OnPermissionsTagsLoaded {

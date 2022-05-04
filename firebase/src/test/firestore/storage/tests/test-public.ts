@@ -2,7 +2,7 @@
  * Permissions management system, define access level for each of
  * your server apis, and restrict users by giving them access levels
  *
- * Copyright (C) 2020 Adam van der Kruk aka TacB0sS
+ * Copyright (C) 2020 Intuition Robotics
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -19,7 +19,7 @@
 /*
  * Firebase is a simpler Typescript wrapper to all of firebase services.
  *
- * Copyright (C) 2020 Adam van der Kruk aka TacB0sS
+ * Copyright (C) 2020 Intuition Robotics
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -37,12 +37,12 @@
 import {
 	__custom,
 	__scenario
-} from "@nu-art/testelot";
+} from "@intuitionrobotics/testelot";
 import {
 	BucketWrapper,
 	FirebaseModule
 } from "../../../_main";
-import {generateHex} from "@nu-art/ts-common";
+import {generateHex} from "@intuitionrobotics/ts-common";
 
 export function makeFilesPublicTest() {
 	const scenario = __scenario("Save files and delete them");

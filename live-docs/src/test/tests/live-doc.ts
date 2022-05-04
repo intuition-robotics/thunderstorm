@@ -2,7 +2,7 @@
  * Permissions management system, define access level for each of
  * your server apis, and restrict users by giving them access levels
  *
- * Copyright (C) 2020 Adam van der Kruk aka TacB0sS
+ * Copyright (C) 2020 Intuition Robotics
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -21,15 +21,15 @@ import {
 	__custom,
 	__scenario,
 	TestException
-} from "@nu-art/testelot";
+} from "@intuitionrobotics/testelot";
 import {LiveDocsModule} from "../_main";
 import {
 	assert,
 	auditBy,
 	isErrorOfType
-} from "@nu-art/ts-common";
+} from "@intuitionrobotics/ts-common";
 import {cleanup} from "./_core";
-import {ApiException} from "@nu-art/thunderstorm/backend";
+import {ApiException} from "@intuitionrobotics/thunderstorm/backend";
 
 export function getNoneExistingDoc() {
 	const liveDocKey = "my-first-key";

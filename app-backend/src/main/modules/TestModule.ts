@@ -1,7 +1,7 @@
 /*
  * A backend boilerplate with example apis
  *
- * Copyright (C) 2020 Adam van der Kruk aka TacB0sS
+ * Copyright (C) 2020 Intuition Robotics
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -18,8 +18,8 @@
 import {
 	generateHex,
 	Module
-} from "@nu-art/ts-common";
-import {FirebaseModule} from "@nu-art/firebase/backend";
+} from "@intuitionrobotics/ts-common";
+import {FirebaseModule} from "@intuitionrobotics/firebase/backend";
 
 type Type = {
 	id: number

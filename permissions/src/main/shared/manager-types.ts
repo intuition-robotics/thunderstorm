@@ -1,7 +1,7 @@
 /*
  * ts-common is the basic building blocks of our typescript projects
  *
- * Copyright (C) 2020 Adam van der Kruk aka TacB0sS
+ * Copyright (C) 2020 Intuition Robotics
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -19,8 +19,8 @@
 import {
 	DB_Object,
 	DB_RequestObject
-} from "@nu-art/firebase";
-import {Auditable} from "@nu-art/ts-common";
+} from "@intuitionrobotics/firebase";
+import {Auditable} from "@intuitionrobotics/ts-common";
 
 export type Request_CreateDomain = DB_RequestObject & {
 	projectId: string

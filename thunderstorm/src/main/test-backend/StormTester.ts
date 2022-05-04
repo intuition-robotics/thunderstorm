@@ -4,7 +4,7 @@
  * Typescript & Express backend infrastructure that natively runs on firebase function
  * Typescript & React frontend infrastructure
  *
- * Copyright (C) 2020 Adam van der Kruk aka TacB0sS
+ * Copyright (C) 2020 Intuition Robotics
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -19,19 +19,19 @@
  * limitations under the License.
  */
 
-import {ImplementationMissingException} from "@nu-art/ts-common";
+import {ImplementationMissingException} from "@intuitionrobotics/ts-common";
 import {BaseStorm} from '../app-backend/core/BaseStorm';
 import * as fs from "fs";
 import {
 	FirebaseModule,
 	FirebaseModule_Class
-} from '@nu-art/firebase/backend';
+} from '@intuitionrobotics/firebase/backend';
 import {
 	__scenario,
 	Reporter,
 	Scenario,
     Action
-} from "@nu-art/testelot";
+} from "@intuitionrobotics/testelot";
 
 export class StormTester
 	extends BaseStorm {
