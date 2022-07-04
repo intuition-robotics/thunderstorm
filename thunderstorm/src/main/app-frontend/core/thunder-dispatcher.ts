@@ -19,11 +19,11 @@
  * limitations under the License.
  */
 
+import {Dispatcher} from "@intuitionrobotics/ts-common/core/dispatcher";
 import {
-	Dispatcher,
 	FunctionKeys,
 	ReturnPromiseType
-} from "@intuitionrobotics/ts-common";
+} from "@intuitionrobotics/ts-common/utils/types";
 
 export class ThunderDispatcher<T extends object, K extends FunctionKeys<T>>
 	extends Dispatcher<T, K> {

@@ -19,34 +19,18 @@
  * limitations under the License.
  */
 
-import {
-	BeLogged,
-	LogClient_Browser,
-	Module,
-	ModuleManager,
-	removeItemFromArray
-} from "@intuitionrobotics/ts-common";
-import {ToastModule} from "../modules/toaster/ToasterModule";
-import {DialogModule} from "../modules/dialog/DialogModule";
 import {ThunderDispatcher} from "./thunder-dispatcher";
 import {OnRequestListener} from "../../shared/request-types";
-import {ThunderstormModule} from "../modules/ThunderstormModule";
-
-const modules: Module[] = [
-	ThunderstormModule,
-
-	ToastModule,
-	DialogModule
-];
+import {ModuleManager} from "@intuitionrobotics/ts-common/core/module-manager";
+import {removeItemFromArray} from "@intuitionrobotics/ts-common/utils/array-tools";
 
 export class AbstractThunder
 	extends ModuleManager {
 
 	protected listeners: any[] = [];
 
-	protected constructor() {
+	constructor() {
 		super();
-		this.addModules(...modules);
 		this._DEBUG_FLAG.enable(false);
 		// @ts-ignore
 		ThunderDispatcher.listenersResolver = () => this.listeners;
@@ -57,15 +41,13 @@ export class AbstractThunder
 	}
 
 	init() {
-		BeLogged.addClient(LogClient_Browser);
-
 		super.init();
 
 		this.renderApp();
 		return this;
 	}
 
-	setRenderApp(renderApp: () => void){
+	setRenderApp(renderApp: () => void) {
 		this.renderApp = renderApp;
 		return this;
 	}

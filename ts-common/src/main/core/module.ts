@@ -25,12 +25,12 @@ import {ModuleManager} from "./module-manager";
 import {BadImplementationException} from "./exceptions";
 import {merge} from "../utils/merge-tools";
 import {Logger} from "./logger/Logger";
+import {ValidatorTypeResolver} from "../validator/validator";
 import {
 	_clearTimeout,
 	_setTimeout,
-	TimerHandler,
-	ValidatorTypeResolver
-} from "..";
+	TimerHandler
+} from "../utils/date-time-tools";
 
 export abstract class Module<Config = any>
 	extends Logger {
@@ -43,11 +43,11 @@ export abstract class Module<Config = any>
 	protected timeoutMap: { [k: string]: number } = {};
 
 	// noinspection TypeScriptAbstractClassConstructorCanBeMadeProtected
-	constructor(tag?: string) {
+	constructor(tag?: string, name?: string) {
 		super(tag);
-		this.name = this.constructor["name"];
+		this.name = name || this.constructor["name"];
 		if (!this.name.endsWith("_Class"))
-			throw new BadImplementationException("Module class MUST end with '_Class' e.g. MyModule_Class");
+			throw new BadImplementationException(`Module class MUST end with '_Class' e.g. MyModule_Class, check class named: ${this.name}`);
 
 		this.name = this.name.replace("_Class", "");
 	}
