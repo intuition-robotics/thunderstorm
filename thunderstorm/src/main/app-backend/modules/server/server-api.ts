@@ -153,8 +153,18 @@ export abstract class ServerApi<Binder extends ApiTypeBinder<string, R, B, P>, R
 
 	callWrapper = async (req: ExpressRequest, res: ExpressResponse) => {
 		await this.call(req, res)
-		await Promise.all(this.sideEffects.map(sideEffect => sideEffect()))
+		await this.releaseSideEffects();
 	}
+
+	private releaseSideEffects = async () => {
+		try {
+			await Promise.all(this.sideEffects.map(sideEffect => sideEffect()))
+		} catch (e) {
+			this.logError("Something went wrong while performing the side effects", e);
+		} finally {
+			this.sideEffects = [];
+		}
+	};
 
 	call = async (req: ExpressRequest, res: ExpressResponse) => {
 		const response: ApiResponse = new ApiResponse(this, res);
