@@ -48,13 +48,32 @@ class Pipeline_Build
 		super.postInit()
 	}
 
+
+
+
 	@Override
 	void pipeline() {
 //		super.pipeline()
 		workflow.deleteWorkspace()
-		checkout({
-			getModule(SlackModule.class).setOnSuccess(getRepo().getChangeLog().toSlackMessage())
-		})
+		checkout(
+            [$class           : 'GitSCM',
+			branches         : [[name: config.branch]],
+			extensions       : [[$class: 'LocalBranch', localBranch: "**"],
+								[$class             : 'SubmoduleOption',
+									disableSubmodules  : true,
+									parentCredentials  : true,
+									recursiveSubmodules: true,
+									reference          : '',
+									trackingSubmodules : false],
+								[$class: 'CloneOption', noTags: false, reference: '', shallow: config.shallowClone],
+								[$class: 'CheckoutOption'],
+								[$class: 'UserExclusion', excludedUsers: "IR-Jenkins"],
+								[$class: 'RelativeTargetDirectory', relativeTargetDir: "__${outputFolder}"]],
+			browser          : [$class: config.service, repoUrl: url],
+			userRemoteConfigs: [[url: url + '.git']]
+			]
+			// {getModule(SlackModule.class).setOnSuccess(getRepo().getChangeLog().toSlackMessage())}
+		)
 
 		install()
 		clean()
