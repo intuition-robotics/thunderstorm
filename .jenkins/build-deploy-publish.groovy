@@ -21,14 +21,17 @@ class Pipeline_Build
 
 	@Override
 	protected void init() {
+		if (env.BUILD_USER_EMAIL == 'IR-Jenkins') {
+			echo "Detected push from IR-Jenkins user"
+		workflow.terminate("Detected push from Jenkins")
+		} else {
 		setRequiredCredentials(Creds_SecretNPM)
-
 		declareEnv("dev", "ir-thunderstorm-dev")
 		declareEnv("staging", "ir-thunderstorm-staging")
 		declareEnv("prod", "ir-thunderstorm")
 		setGitRepoId("intuition-robotics/thunderstorm", true)
 		super.init()
-
+		}
 //		getRepo().assertCommitDiffs()
 	}
 
@@ -36,11 +39,10 @@ class Pipeline_Build
 	void _postInit() {
 		TriggerCause[] causes = getModule(BuildModule.class).getTriggerCause(TriggerCause.Type_SCM)
 		this.logInfo("GOT HERE!! ${causes.size()}")
-		// TriggerCause cause = causes.find { it.originator == "IR-Jenkins" }
-		TriggerCause cause = causes.find { org.jenkinsci.plugins.gwt.GenericCause == "IR-Jenkins Pushed to prod" }
+		TriggerCause cause = causes.find { it.originator == "Nu-Art-Jenkins" }
 		causes.each {
-			this.logInfo("Detected SCM cause: '${org.jenkinsci.plugins.gwt.GenericCause}'")
-		}
+			this.logInfo("Detected SCM cause: '${it.originator}'")
+   		}
 
 		if (cause) {
 			workflow.terminate("Detected push from Jenkins")
