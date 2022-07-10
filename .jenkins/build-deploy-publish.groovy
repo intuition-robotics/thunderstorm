@@ -45,7 +45,7 @@ class Pipeline_Build
 			workflow.terminate("Detected push from Jenkins")
 		}
         
-		if ( "${BUILD_USER_EMAIL}" == "AndreiHardziyenkaIR") {
+		if ($BUILD_USER_EMAIL == "AndreiHardziyenkaIR") {
 			workflow.terminate("Detected push from Jenkins")
 		}
 
