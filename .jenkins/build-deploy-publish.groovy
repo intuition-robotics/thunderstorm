@@ -36,7 +36,7 @@ class Pipeline_Build
 	void _postInit() {
 		TriggerCause[] causes = getModule(BuildModule.class).getTriggerCause(TriggerCause.Type_Unknown)
 		this.logInfo("GOT HERE!! ${causes.size()}")
-		TriggerCause cause = causes.find {it.print() == "Cause(org.jenkinsci.plugins.gwt.GenericCause): AndreiHardziyenkaIR"}
+		TriggerCause cause = causes.find {it.print() == "Cause(org.jenkinsci.plugins.gwt.GenericCause): IR-Jenkins"}
 		causes.each {
 			this.logInfo("Detected SCM cause: '${it.type}'")
 		}
