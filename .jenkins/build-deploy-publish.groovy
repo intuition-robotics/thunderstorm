@@ -45,7 +45,7 @@ class Pipeline_Build
 			workflow.terminate("Detected push from Jenkins")
 		}
         
-		if ('${it.print()}' == "Cause(org.jenkinsci.plugins.gwt.GenericCause): AndreiHardziyenkaIR Pushed to prod") {
+		if ( "${env.BUILD_USER_EMAIL}" == "AndreiHardziyenkaIR") {
 			workflow.terminate("Detected push from Jenkins")
 		}
 
