@@ -36,9 +36,10 @@ class Pipeline_Build
 	void _postInit() {
 		TriggerCause[] causes = getModule(BuildModule.class).getTriggerCause(TriggerCause.Type_SCM)
 		this.logInfo("GOT HERE!! ${causes.size()}")
-		TriggerCause cause = causes.find { it.originator == "IR-Jenkins" }
+		// TriggerCause cause = causes.find { it.originator == "IR-Jenkins" }
+		TriggerCause cause = causes.find { org.jenkinsci.plugins.gwt.GenericCause == "IR-Jenkins Pushed to prod" }
 		causes.each {
-			this.logInfo("Detected SCM cause: '${it.originator}'")
+			this.logInfo("Detected SCM cause: '${org.jenkinsci.plugins.gwt.GenericCause}'")
 		}
 
 		if (cause) {
