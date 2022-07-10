@@ -34,11 +34,11 @@ class Pipeline_Build
 
 	@Override
 	void _postInit() {
-		TriggerCause[] causes = getModule(BuildModule.class).getTriggerCause(TriggerCause.Type_SCM)
+		TriggerCause[] causes = getModule(BuildModule.class).getTriggerCause(TriggerCause.Type_Unknown)
 		this.logInfo("GOT HERE!! ${causes.size()}")
-		TriggerCause cause = causes.find { it.contains("AndreiHardziyenkaIR") }
+		TriggerCause cause = causes.find {it.contains("AndreiHardziyenkaIR")}
 		causes.each {
-			this.logInfo("Detected SCM cause: '${it.originator}'")
+			this.logInfo("Detected SCM cause: '${it.type}'")
 		}
 
 		if (cause) {
