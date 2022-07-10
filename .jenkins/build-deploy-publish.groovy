@@ -36,14 +36,20 @@ class Pipeline_Build
 	void _postInit() {
 		TriggerCause[] causes = getModule(BuildModule.class).getTriggerCause(TriggerCause.Type_SCM)
 		this.logInfo("GOT HERE!! ${causes.size()}")
-		TriggerCause cause = causes.find { ${it.print()} == "Cause(org.jenkinsci.plugins.gwt.GenericCause): AndreiHardziyenkaIR Pushed to prod" }
+		TriggerCause cause = causes.find { it.originator == "Nu-Art-Jenkins" }
 		causes.each {
-			this.logInfo("Detected SCM cause: '${description}'")
+			this.logInfo("Detected SCM cause: '${it.originator}'")
 		}
 
 		if (cause) {
 			workflow.terminate("Detected push from Jenkins")
 		}
+        
+		if (${it.print()} == "Cause(org.jenkinsci.plugins.gwt.GenericCause): AndreiHardziyenkaIR Pushed to prod") {
+			workflow.terminate("Detected push from Jenkins")
+		}
+
+
 		super.postInit()
 	}
 
