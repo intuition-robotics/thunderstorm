@@ -45,7 +45,7 @@ class Pipeline_Build
 			workflow.terminate("Detected push from Jenkins")
 		}
         
-		if (cause.contains("AndreiHardziyenkaIR")) {
+		if (TriggerCause.contains("AndreiHardziyenkaIR")) {
 			workflow.terminate("Detected push from Jenkins")
 		}
 
