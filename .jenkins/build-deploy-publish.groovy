@@ -43,7 +43,8 @@ class Pipeline_Build
 
 		if (cause) {
 			workflow.terminate("Detected push from Jenkins")
-		else
+		}
+		else {
 		    workflow.terminate("Testing unknown cause")
 		}
 
