@@ -36,7 +36,7 @@ export class DatabaseWrapper
 
 	private readonly database: Firebase_DB;
 
-	constructor(firebaseSession: FirebaseSession<any>) {
+	constructor(firebaseSession: FirebaseSession<any, any>) {
 		super(firebaseSession);
 		this.database = getDatabase(firebaseSession.app)
 	}

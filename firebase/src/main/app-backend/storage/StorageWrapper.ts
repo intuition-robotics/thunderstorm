@@ -43,7 +43,7 @@ export class StorageWrapper
 	// readonly storage: FirebaseType_Storage;
 	private storage: FirebaseType_Storage;
 
-	constructor(firebaseSession: FirebaseSession<any>) {
+	constructor(firebaseSession: FirebaseSession<any, any>) {
 		super(firebaseSession);
 		this.storage = getStorage(firebaseSession.app);
 	}
@@ -219,7 +219,7 @@ export class FileWrapper {
 		}
 	}
 
-	async delete() {
+	async delete(): Promise<any> {
 		if (!await this.file.exists())
 			return;
 

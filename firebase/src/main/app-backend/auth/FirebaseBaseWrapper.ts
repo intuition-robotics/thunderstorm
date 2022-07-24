@@ -22,9 +22,9 @@ import {Logger} from "@intuitionrobotics/ts-common";
 export abstract class FirebaseBaseWrapper
 	extends Logger {
 
-	public readonly firebaseSession: FirebaseSession<any>;
+	public readonly firebaseSession: FirebaseSession<any, any>;
 
-	protected constructor(firebaseSession: FirebaseSession<any>) {
+	protected constructor(firebaseSession: FirebaseSession<any, any>) {
 		super();
 		this.firebaseSession = firebaseSession;
 	}

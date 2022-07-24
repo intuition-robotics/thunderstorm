@@ -33,7 +33,7 @@ export class PushMessagesWrapper
 
 	private readonly messaging: FirebaseType_PushMessages;
 
-	constructor(firebaseSession: FirebaseSession<any>) {
+	constructor(firebaseSession: FirebaseSession<any, any>) {
 		super(firebaseSession);
 		this.messaging = getMessaging(firebaseSession.app)
 	}

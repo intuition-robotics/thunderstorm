@@ -16,21 +16,24 @@
  * limitations under the License.
  */
 
-/**
- * Created by tacb0ss on 19/09/2018.
- */
 import {
-	auth,
 	credential,
-	initializeApp,
 	ServiceAccount
 } from "firebase-admin";
 import {JWTInput} from "google-auth-library";
 import {FirebaseSession} from "./firebase-session";
 import {ThisShouldNotHappenException} from "@intuitionrobotics/ts-common";
+import {
+	Auth,
+	getAuth
+} from "firebase-admin/auth";
+import {
+	App,
+	initializeApp
+} from "firebase-admin/app";
 
 export class FirebaseSession_Admin
-	extends FirebaseSession<JWTInput & {databaseURL?: string} | undefined> {
+	extends FirebaseSession<JWTInput & { databaseURL?: string } | undefined, App> {
 
 	constructor(sessionName: string, config?: JWTInput) {
 		super(config, sessionName);
@@ -65,8 +68,8 @@ export class FirebaseSession_Admin
 		                     }, this.sessionName);
 	}
 
-	public getAuth(): auth.Auth {
-		return this.app.auth();
+	public getAuth(): Auth {
+		return getAuth(this.app);
 	}
 }
 

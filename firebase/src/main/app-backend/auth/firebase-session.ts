@@ -16,15 +16,11 @@
  * limitations under the License.
  */
 
-/**
- * Created by tacb0ss on 25/08/2018.
- */
 import {Logger} from "@intuitionrobotics/ts-common";
 import {FirestoreWrapper} from "../firestore/FirestoreWrapper";
 import {DatabaseWrapper} from "../database/DatabaseWrapper";
 import {StorageWrapper} from "../storage/StorageWrapper";
 import {PushMessagesWrapper} from "../push/PushMessagesWrapper";
-import * as admin from "firebase-admin";
 import {FirebaseConfig} from "../..";
 
 export type Firebase_UserCredential = {
@@ -35,12 +31,9 @@ export type Firebase_UserCredential = {
 	}
 };
 
-// export type FirebaseApp = admin.app.App | firebase.app.App
-export type FirebaseApp = admin.app.App
-
-export abstract class FirebaseSession<Config>
+export abstract class FirebaseSession<Config, AppType>
 	extends Logger {
-	app!: FirebaseApp;
+	app!: AppType;
 	protected database?: DatabaseWrapper;
 	protected storage?: StorageWrapper;
 	protected firestore?: FirestoreWrapper;

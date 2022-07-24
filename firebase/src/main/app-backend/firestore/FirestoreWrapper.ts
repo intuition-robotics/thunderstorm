@@ -33,7 +33,7 @@ export class FirestoreWrapper
 	readonly firestore: FirestoreType;
 	private readonly collections: { [collectionName: string]: FirestoreCollection<any> } = {};
 
-	constructor(firebaseSession: FirebaseSession<any>) {
+	constructor(firebaseSession: FirebaseSession<any, any>) {
 		super(firebaseSession);
 		this.firestore = getFirestore(firebaseSession.app)
 	}
