@@ -61,7 +61,7 @@ import {AccountModule} from "@intuitionrobotics/user-account/app-backend/modules
 
 const validateProjectId = validateRegexp(/^[a-z-]{3,20}$/);
 export const validateProjectName = validateRegexp(/^[A-Za-z- ]{3,20}$/);
-export const validateStringWithDashesAndSlash = validateRegexp(/^[0-9A-Za-z-/]+$/);
+export const validateStringWithDashesAndSlash = validateRegexp(/^[0-9A-Za-z-:/]+$/);
 
 export class ProjectDB_Class
 	extends BaseDB_ApiGenerator<DB_PermissionProject> {
