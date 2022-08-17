@@ -1,0 +1,37 @@
+{
+  "HttpServer": {
+    "bodyParserLimit": 200,
+    "cors": {
+      "headers": [
+        "x-session-id",
+        "x-browser-type",
+        "x-app-version"
+      ],
+      "methods": [
+        "GET",
+        "POST"
+      ],
+      "origins": [
+        "https://localhost:5001"
+      ]
+    },
+    "host": "localhost"
+  },
+  "SlackModule": {
+    "defaultChannel": "private_ben",
+    "throttlingTime": 60000,
+    "token": "[STUB]"
+  },
+  "Slack_ServerApiError": {
+    "exclude": [
+      "4 \"DEADLINE_EXCEEDED\": Deadline Exceeded",
+      "14 \"UNAVAILABLE\": Connect Failed",
+      "No connection established"
+    ],
+    "headers": [
+      "x-test"
+    ]
+  },
+  "isDebug": true,
+  "name": "default"
+}

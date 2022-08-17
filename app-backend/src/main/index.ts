@@ -58,9 +58,9 @@ import {DB_Temp_File} from '@intuitionrobotics/file-upload/shared/types';
 import {Firebase_ExpressFunction} from '@intuitionrobotics/firebase/backend-functions';
 import {CollectionChangedListener} from "@modules/CollectionChangedListener"
 import {PubsubExample} from "@modules/PubsubExample";
-
-const packageJson = require("./package.json");
-console.log(`Starting server v${packageJson.version} with env: ${Environment.name}`);
+import defaultConfig from "./defaultConfig.json"
+const version = process.env.npm_package_version as string;
+console.log(`Starting server v${version} with env: ${Environment.name}`);
 
 const modules: Module[] = [
 	ValueChangedListener,
@@ -110,13 +110,15 @@ export class ServerApi_Health
 	}
 }
 
-const serverApiHealth: ServerApi<any> = new ServerApi_Health(packageJson.version, Environment.name);
+const serverApiHealth: ServerApi<any> = new ServerApi_Health(version, Environment.name);
 const _exports = new Storm()
 	.addModules(...modules)
 	.setInitialRouteResolver(new RouteResolver(require, __dirname, "api"))
 	.setInitialRoutePath("/api")
 	.setEnvironment(Environment.name)
-	.registerApis(serverApiHealth)
+	.registerApis(serverApiHealth,serverApiHealth)
+	.setConfig(defaultConfig)
+	.setOverride(Environment.override)
 	.build();
 
 _exports.logTest = functions.database.ref('triggerLogs').onWrite((change, context) => {

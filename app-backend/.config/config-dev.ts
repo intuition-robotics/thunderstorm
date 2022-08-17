@@ -17,6 +17,6 @@
  * limitations under the License.
  */
 
-export const Environment = {
+export const Environment:any = {
 	name: "dev"
 };

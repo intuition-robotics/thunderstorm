@@ -4,6 +4,8 @@
     "composite": false,
     "declaration": true,
     "experimentalDecorators": true,
+    "resolveJsonModule": true,
+    "esModuleInterop": true,
     "incremental": false,
     "module": "commonjs",
     "moduleResolution": "node",

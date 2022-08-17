@@ -27,6 +27,7 @@ import {
 	addItemToArray,
 	filterDuplicates
 } from "../utils/array-tools";
+import {ObjectTS} from "../utils/types";
 
 const _modules: Module[] = [];
 
@@ -37,7 +38,7 @@ export function moduleResolver() {
 export class ModuleManager
 	extends Logger {
 
-	protected config!: any;
+	protected config?: ObjectTS;
 	protected modules: Module[] = _modules;
 	public static instance: ModuleManager;
 
@@ -82,7 +83,7 @@ export class ModuleManager
 			module.setManager(this);
 
 			if (this.config)
-			// @ts-ignore
+				// @ts-ignore
 				module.setConfig(this.config[module.getName()]);
 		});
 

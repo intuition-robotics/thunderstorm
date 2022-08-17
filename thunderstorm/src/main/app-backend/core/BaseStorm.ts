@@ -40,16 +40,18 @@ export abstract class BaseStorm
 		return this;
 	}
 
-	setOverride(override: ObjectTS) {
-		this.override = override
+	setOverride(override?: ObjectTS) {
+		if (override && typeof override === "object" && Object.keys(override).length !== 0)
+			this.override = override
+		return this;
 	}
 
 	protected resolveConfig = async () => {
 		const database: DatabaseWrapper = FirebaseModule.createAdminSession().getDatabase();
 		let initialized = 0;
 
-		const listener = (resolve: (value: unknown) => void) => (snapshot: any) => {
-			if (initialized >= 2) {
+		const listener = (resolve: (value?: ObjectTS) => void) => (snapshot?: ObjectTS) => {
+			if (initialized > 1) {
 				console.log("CONFIGURATION HAS CHANGED... KILLING PROCESS!!!");
 				process.exit(2);
 			}
@@ -67,7 +69,7 @@ export abstract class BaseStorm
 		});
 		const [
 			      defaultConfig,
-			      overrideConfig
+			      envConfig
 		      ] = await Promise.all(
 			[
 				defaultPromise,
@@ -75,7 +77,13 @@ export abstract class BaseStorm
 			]
 		);
 
-		const merge1 = merge(defaultConfig, overrideConfig);
-		this.setConfig(merge(merge1, this.override) || {});
+		let toBeConfig: ObjectTS = merge(defaultConfig || {}, envConfig || {});
+		if(this.config)
+			toBeConfig = merge(this.config, toBeConfig)
+
+		if(this.override)
+			toBeConfig = merge(toBeConfig, this.override)
+
+		this.setConfig(toBeConfig);
 	};
 }
