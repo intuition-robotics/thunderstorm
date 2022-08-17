@@ -59,7 +59,7 @@ const ALL_Methods: string[] = [
 
 const DefaultHeaders: string[] = [
 	'content-type',
-	'content-encoding',];
+	'content-encoding'];
 
 
 type ConfigType = {
@@ -116,7 +116,7 @@ export class HttpServer_Class
 	}
 
 	protected async init() {
-		this.setMinLevel(ServerApi.isDebug? LogLevel.Verbose:LogLevel.Info)
+		this.setMinLevel(ServerApi.isDebug ? LogLevel.Verbose : LogLevel.Info)
 		const baseUrl = this.config.baseUrl;
 		if (baseUrl) {
 			if (baseUrl.endsWith("/"))
@@ -185,12 +185,13 @@ export class HttpServer_Class
 	}
 
 	public printRoutes(prefix: string): void {
-		if(!ServerApi.isDebug)
+		if (!ServerApi.isDebug)
 			return;
 
-		console.time('Printing Routes')
-		this.routes.forEach(route => this.logDebug(`${JSON.stringify(route.methods)} ${prefix}${route.path}`));
-		console.timeEnd('Printing Routes')
+		const label = `Printing ${this.routes.length} Routes`;
+		console.time(label)
+		this.routes.forEach(route => this.logInfo(`${JSON.stringify(route.methods)} ${prefix}${route.path}`));
+		console.timeEnd(label)
 	}
 
 	private createServer(): Server {
@@ -214,7 +215,7 @@ export class HttpServer_Class
 			key: key,
 			cert: cert,
 			rejectUnauthorized: false,
-			requestCert: false,
+			requestCert: false
 		};
 
 		return require('https').createServer(options, this.express);
@@ -318,7 +319,7 @@ export class HttpServer_Class
 			const toAdd: HttpRoute[] = Array.isArray(route) ? route : [route];
 			addAllItemToArray(toRet, toAdd);
 			return toRet;
-		}, [] as HttpRoute[]);
+		}, []);
 		console.timeEnd('Resolving Apis')
 	}
 }
@@ -388,10 +389,14 @@ export class RouteResolver {
 			if (!Array.isArray(content))
 				content = [content];
 
-			content.forEach(api => {
-				api.addMiddlewares(...this.middlewares);
-				api.route(this.express, urlPrefix);
-			});
+			this.routeApis(content, urlPrefix)
+		});
+	}
+
+	public routeApis(apis: ServerApi<any>[], urlPrefix: string) {
+		apis.forEach(api => {
+			api.addMiddlewares(...this.middlewares);
+			api.route(this.express, urlPrefix);
 		});
 	}
 }

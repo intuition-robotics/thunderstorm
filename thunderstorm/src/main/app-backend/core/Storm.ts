@@ -40,7 +40,7 @@ import {ServerApi} from "../modules/server/server-api";
 
 const modules: Module[] = [
 	HttpServer,
-	FirebaseModule,
+	FirebaseModule
 ];
 
 
@@ -49,6 +49,7 @@ export class Storm
 	private routeResolver!: RouteResolver;
 	private initialPath!: string;
 	private functions: any[] = [];
+	private apis: ServerApi<any>[] = [];
 
 	constructor() {
 		super();
@@ -61,8 +62,18 @@ export class Storm
 
 		super.init();
 
-		HttpServer.resolveApi(this.routeResolver, !process.env.GCLOUD_PROJECT ? this.initialPath : "");
+		const urlPrefix = !process.env.GCLOUD_PROJECT ? this.initialPath : "";
+		// Load from folder structure
+		HttpServer.resolveApi(this.routeResolver, urlPrefix);
+		// Load from those passed by init
+		this.routeResolver.routeApis(this.apis, urlPrefix)
+
 		HttpServer.printRoutes(process.env.GCLOUD_PROJECT ? this.initialPath : "");
+		return this;
+	}
+
+	registerApis(...apis: ServerApi<any>[]) {
+		this.apis = apis;
 		return this;
 	}
 
@@ -79,7 +90,8 @@ export class Storm
 	startServer(onStarted?: () => Promise<void>) {
 		const modulesAsFunction: FirebaseFunction[] = this.modules.filter((module: Module): module is FirebaseFunction => module instanceof FirebaseFunction);
 
-		this.functions = [new Firebase_ExpressFunction(HttpServer.express), ...modulesAsFunction];
+		this.functions = [new Firebase_ExpressFunction(HttpServer.express),
+		                  ...modulesAsFunction];
 
 		this.startServerImpl(onStarted)
 		    .then(() => console.log("Server Started!!"))

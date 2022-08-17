@@ -17,11 +17,11 @@
   },
   "license": "Apache-2.0",
   "author": "IR",
-  "main": "./index.js",
-  "types": "./index.d.ts",
+  "main": "./dist/index.js",
+  "types": "./dist/index.d.ts",
   "scripts": {
     "build": "tsc",
-    "launch": "tsc --watch & firebase emulators:start --import=../.trash/data --export-on-exit",
+    "launch": "firebase emulators:start --import=../.trash/data --export-on-exit",
     "lint": "tslint --project './tsconfig.json'",
     "serve": "cd .. && bash ./build-and-install.sh -lb -nb"
   },

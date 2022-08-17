@@ -20,9 +20,10 @@
 import 'module-alias/register';
 import * as functions from "firebase-functions";
 import {
-	AxiosHttpModule,
 	ForceUpgrade,
 	RouteResolver,
+	ServerApi,
+	ServerApi_Get,
 	Storm
 } from "@intuitionrobotics/thunderstorm/backend";
 import {Environment} from "./config";
@@ -30,18 +31,13 @@ import {
 	DispatchModule,
 	ExampleModule
 } from "@modules/ExampleModule";
-import {Backend_ModulePack_LiveDocs} from "@intuitionrobotics/live-docs/backend";
 import {
 	__stringify,
 	_setTimeout,
+	currentTimeMillies,
 	Minute,
 	Module
 } from "@intuitionrobotics/ts-common";
-import {Backend_ModulePack_Permissions} from "@intuitionrobotics/permissions/backend";
-import {
-	Backend_ModulePack_BugReport,
-	BugReportModule
-} from "@intuitionrobotics/bug-report/backend";
 import {PushPubSubModule} from '@intuitionrobotics/push-pub-sub/backend';
 import {ValueChangedListener} from "@modules/ValueChangedListener";
 import {
@@ -49,7 +45,6 @@ import {
 	SlackModule
 } from "@intuitionrobotics/storm/slack";
 import {
-	Backend_ModulePack_Uploader,
 	PostProcessor,
 	ServerUploaderModule,
 	UploaderModule
@@ -61,7 +56,6 @@ import {
 } from '@intuitionrobotics/firebase/backend';
 import {DB_Temp_File} from '@intuitionrobotics/file-upload/shared/types';
 import {Firebase_ExpressFunction} from '@intuitionrobotics/firebase/backend-functions';
-import {JiraBugReportIntegrator} from "@intuitionrobotics/bug-report/app-backend/modules/JiraBugReportIntegrator";
 import {CollectionChangedListener} from "@modules/CollectionChangedListener"
 import {PubsubExample} from "@modules/PubsubExample";
 
@@ -77,11 +71,8 @@ const modules: Module[] = [
 	Slack_ServerApiError,
 	DispatchModule,
 	PushPubSubModule,
-	AxiosHttpModule,
 	PubsubExample
 ];
-
-AxiosHttpModule.setDefaultConfig({origin: 'https://us-central1-thunderstorm-staging.cloudfunctions.net/api/'});
 
 const postProcessor: { [k: string]: PostProcessor } = {
 	default: async (transaction: FirestoreTransaction, file: FileWrapper, doc: DB_Temp_File) => {
@@ -102,29 +93,31 @@ const postProcessor: { [k: string]: PostProcessor } = {
 UploaderModule.setPostProcessor(postProcessor);
 // BucketListener.setDefaultConfig({memory: "1GB", timeoutSeconds: 540})
 Firebase_ExpressFunction.setConfig({memory: "1GB", timeoutSeconds: 540});
+
+export class ServerApi_Health
+	extends ServerApi_Get<any> {
+
+	constructor(private readonly version: string, private readonly env: string, pathPart: string = '/health') {
+		super(`${pathPart}/check`);
+	}
+
+	protected async process() {
+		return {
+			timestamp: currentTimeMillies(),
+			version: this.version,
+			env: this.env
+		}
+	}
+}
+
+const serverApiHealth: ServerApi<any> = new ServerApi_Health(packageJson.version, Environment.name);
 const _exports = new Storm()
-	.addModules(...Backend_ModulePack_BugReport)
-	.addModules(...Backend_ModulePack_LiveDocs)
-	.addModules(...Backend_ModulePack_Permissions)
-	.addModules(...Backend_ModulePack_Uploader)
 	.addModules(...modules)
 	.setInitialRouteResolver(new RouteResolver(require, __dirname, "api"))
 	.setInitialRoutePath("/api")
 	.setEnvironment(Environment.name)
-	.build(async () => {
-		// const response = await AxiosHttpModule
-		// 	.createRequest<ExampleSetMax>(HttpMethod.POST, 'internal-be-request')
-		// 	.setUrl('http://localhost:5000/thunderstorm-staging/us-central1/api/v1/sample/set-max')
-		// 	.setJsonBody({n: 65})
-		// 	.setOnError((request, errorData) => {
-		// 		console.log('I got error', errorData);
-		// 	})
-		// 	.setTimeout(30000)
-		// 	.execute();
-		// console.log('I got respose', response);
-	});
-
-BugReportModule.addTicketCreator(JiraBugReportIntegrator.openTicket)
+	.registerApis(serverApiHealth)
+	.build();
 
 _exports.logTest = functions.database.ref('triggerLogs').onWrite((change, context) => {
 	console.log('LOG_TEST FUNCTION! -- Logging string');
