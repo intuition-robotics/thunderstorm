@@ -59,8 +59,8 @@ import {Firebase_ExpressFunction} from '@intuitionrobotics/firebase/backend-func
 import {CollectionChangedListener} from "@modules/CollectionChangedListener"
 import {PubsubExample} from "@modules/PubsubExample";
 import defaultConfig from "./defaultConfig.json"
-const version = process.env.npm_package_version as string;
-console.log(`Starting server v${version} with env: ${Environment.name}`);
+const vernpm_package_versionsion = process.env.npm_package_version as string;
+console.log(`Starting server v${vernpm_package_versionsion} with env: ${Environment.name}`);
 
 const modules: Module[] = [
 	ValueChangedListener,
@@ -110,7 +110,7 @@ export class ServerApi_Health
 	}
 }
 
-const serverApiHealth: ServerApi<any> = new ServerApi_Health(version, Environment.name);
+const serverApiHealth: ServerApi<any> = new ServerApi_Health(vernpm_package_versionsion, Environment.name);
 const _exports = new Storm()
 	.addModules(...modules)
 	.setInitialRouteResolver(new RouteResolver(require, __dirname, "api"))
