@@ -58,7 +58,7 @@ export const Header_SessionId = new HeaderKey(HeaderKey_SessionId);
 
 type Config = {
 	projectId: string
-	sessionTTLms: {web: number, app: number}
+	sessionTTLms: { web: number, app: number }
 }
 
 export const Collection_Sessions = "user-account--sessions";
@@ -112,15 +112,21 @@ export class AccountsModule_Class
 
 	async getUser(_email: string): Promise<UI_Account | undefined> {
 		const email = _email.toLowerCase();
-		return this.accounts.queryUnique({where: {email}, select: ["email", "_id"]});
+		return this.accounts.queryUnique({
+			                                 where: {email},
+			                                 select: ["email",
+			                                          "_id"]
+		                                 });
 	}
 
 	async listUsers() {
-		return this.accounts.getAll(["_id", "email"]) as Promise<{ email: string, _id: string }[]>;
+		return this.accounts.getAll(["_id",
+		                             "email"]) as Promise<{ email: string, _id: string }[]>;
 	}
 
 	async listSessions() {
-		return this.sessions.getAll(["userId", "timestamp"]);
+		return this.sessions.getAll(["userId",
+		                             "timestamp"]);
 	}
 
 	async getSession(_email: string) {
@@ -133,7 +139,11 @@ export class AccountsModule_Class
 		if (!account)
 			return;
 
-		const sessions = await this.sessions.query({select: ["userId", "timestamp", "frontType"], where: {userId: account._id}});
+		const sessions = await this.sessions.query({
+			                                           select: ["userId",
+			                                                    "timestamp",
+			                                                    "frontType"], where: {userId: account._id}
+		                                           });
 		return sessions.map((session: DB_Session) => {
 			return {
 				...session,
@@ -161,7 +171,7 @@ export class AccountsModule_Class
 			return this.createImpl(request, transaction);
 		});
 
-		await this.loginValidate(request,false);
+		await this.loginValidate(request, false);
 		await callback()
 		return getUIAccount(account);
 	}
@@ -193,7 +203,7 @@ export class AccountsModule_Class
 			return transaction.upsert(this.accounts, account);
 		};
 
-		if(_transaction)
+		if (_transaction)
 			return processor(_transaction)
 
 		return this.accounts.runInTransaction(processor);
@@ -231,10 +241,12 @@ export class AccountsModule_Class
 	}
 
 	async login(request: Request_LoginAccount): Promise<Response_Auth> {
-		return await (this.loginValidate(request) as Promise<Response_Auth>);
+		return await this.loginValidate(request);
 	}
 
-	private async loginValidate(request: Request_LoginAccount, doCreateSession: boolean = true): Promise<Response_Auth | undefined> {
+	private async loginValidate(request: Request_LoginAccount): Promise<Response_Auth>
+	private async loginValidate(request: Request_LoginAccount, doCreateSession: false): Promise<undefined>
+	private async loginValidate(request: Request_LoginAccount, doCreateSession = true) {
 		request.email = request.email.toLowerCase();
 		const query = {where: {email: request.email}};
 		const account = await this.accounts.queryUnique(query);
@@ -253,7 +265,7 @@ export class AccountsModule_Class
 		}
 
 		let sessionWithAccountId: Response_Auth | undefined
-		if(doCreateSession)
+		if (doCreateSession)
 			sessionWithAccountId = await this.upsertSession(account._id, request.frontType);
 
 		await dispatch_onUserLogin.dispatchModuleAsync([getUIAccount(account)]);
