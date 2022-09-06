@@ -252,21 +252,21 @@ export class AccountsModule_Class
 			await this.accounts.upsert(account);
 		}
 
-		let session: Response_Auth | undefined
+		let sessionWithAccountId: Response_Auth | undefined
 		if(doCreateSession)
-			session = await this.upsertSession(account._id, request.frontType);
+			sessionWithAccountId = await this.upsertSession(account._id, request.frontType);
 
 		await dispatch_onUserLogin.dispatchModuleAsync([getUIAccount(account)]);
-		return session;
+		return sessionWithAccountId;
 	}
 
 	async loginSAML(__email: string): Promise<Response_Auth> {
 		const _email = __email.toLowerCase();
 		const account = await this.createSAML(_email);
 
-		const session = await this.upsertSession(account._id);
+		const sessionWithAccountId = await this.upsertSession(account._id);
 		await dispatch_onUserLogin.dispatchModuleAsync([getUIAccount(account)]);
-		return session;
+		return sessionWithAccountId;
 	}
 
 	private async createSAML(__email: string) {
@@ -352,7 +352,7 @@ export class AccountsModule_Class
 		}
 
 		const account = await this.getUserEmailFromSession(session);
-		return {sessionId: session.sessionId, email: account.email};
+		return {sessionId: session.sessionId, email: account.email, _id: account._id};
 	};
 
 }

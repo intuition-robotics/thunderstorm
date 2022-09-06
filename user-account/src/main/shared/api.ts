@@ -42,9 +42,8 @@ export type DB_Session = {
 	frontType?: FrontType
 }
 
-export type Response_Auth = {
+export type Response_Auth = UI_Account & {
 	sessionId: string
-	email: string
 }
 
 export type Request_UpsertAccount = {
