@@ -35,6 +35,7 @@ import {
 	Module
 } from "@intuitionrobotics/ts-common";
 import {
+	ApiResponse,
 	HttpRequestData,
 	ServerApi
 } from "./server-api";
@@ -76,7 +77,7 @@ type ConfigType = {
 
 export type HttpErrorHandler = (requestData: HttpRequestData, error: ApiException) => Promise<string>;
 
-export type ServerApi_Middleware = (request: ExpressRequest, data: HttpRequestData) => Promise<void>
+export type ServerApi_Middleware = (request: ExpressRequest, data: HttpRequestData, response: ApiResponse) => Promise<void>
 
 type HttpRoute = {
 	methods: string[]

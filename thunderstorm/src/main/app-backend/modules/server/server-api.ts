@@ -78,7 +78,7 @@ export abstract class ServerApi<Binder extends ApiTypeBinder<string, R, B, P>, R
 	extends Logger {
 	public static isDebug: boolean;
 
-	readonly printResponse: boolean = true;
+	private printResponse: boolean = true;
 	readonly headersToLog: string[] = [];
 
 	readonly method: HttpMethod;
@@ -96,6 +96,10 @@ export abstract class ServerApi<Binder extends ApiTypeBinder<string, R, B, P>, R
 		this.method = method;
 		this.relativePath = `${relativePath}`;
 	}
+
+	shouldPrintResponse() {
+		return this.printResponse;
+	};
 
 	addSideEffect(sideEffect: () => Promise<any>) {
 		this.sideEffects.push(sideEffect);
@@ -133,12 +137,10 @@ export abstract class ServerApi<Binder extends ApiTypeBinder<string, R, B, P>, R
 	}
 
 	dontPrintResponse() {
-		// @ts-ignore
 		this.printResponse = false;
 	}
 
 	setMaxResponsePrintSize(printResponseMaxSizeBytes: number) {
-		// @ts-ignore
 		this.printResponse = printResponseMaxSizeBytes > -1;
 	}
 
@@ -207,7 +209,7 @@ export abstract class ServerApi<Binder extends ApiTypeBinder<string, R, B, P>, R
 			this.queryValidator && validate<P>(reqQuery, this.queryValidator);
 
 			if (this.middlewares)
-				await Promise.all(this.middlewares.map(m => m(req, requestData)));
+				await Promise.all(this.middlewares.map(m => m(req, requestData, response)));
 
 			const toReturn: unknown = await this.process(req, response, reqQuery, body as B);
 			if (response.isConsumed())
@@ -391,7 +393,7 @@ export class ApiResponse {
 		if (!response)
 			return this.api.logVerbose(` -- No response body`);
 
-		if (!this.api.printResponse)
+		if (!this.api.shouldPrintResponse())
 			return this.api.logVerbose(` -- Response: -- Not Printing --`);
 
 		this.api.logVerbose(` -- Response:`, response);
