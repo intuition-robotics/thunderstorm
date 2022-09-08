@@ -62,6 +62,10 @@ const DefaultHeaders: string[] = [
 	'content-type',
 	'content-encoding'];
 
+const ExposedHeaders: string[] = [
+	"function-execution-id",
+	"jwt"
+];
 
 type ConfigType = {
 	port: number;
@@ -69,7 +73,8 @@ type ConfigType = {
 	cors: {
 		origins?: string[],
 		methods?: string[],
-		headers: string[]
+		headers: string[],
+		exposedHeaders?: string[]
 	}
 	ssl: { key: string, cert: string }
 	bodyParserLimit: number | string
@@ -142,6 +147,9 @@ export class HttpServer_Class
 		}
 
 		const cors = this.config.cors || {};
+		if(!cors.exposedHeaders)
+			cors.exposedHeaders = ExposedHeaders;
+
 		cors.headers = DefaultHeaders.reduce((toRet, item: string) => {
 			if (!toRet.includes(item))
 				addItemToArray(toRet, item);
@@ -177,6 +185,7 @@ export class HttpServer_Class
 			res.header('Access-Control-Allow-Origin', origin || "N/A");
 			res.header('Access-Control-Allow-Methods', (cors.methods || ALL_Methods).join(","));
 			res.header('Access-Control-Allow-Headers', cors.headers.join(","));
+			res.header('Access-Control-Expose-Headers', cors.exposedHeaders?.join(","));
 
 			next();
 		});
