@@ -26,6 +26,7 @@ import {
 } from "@intuitionrobotics/ts-common";
 import {
 	ApiException,
+	ApiResponse,
 	ExpressRequest,
 	HttpRequestData,
 	ServerApi_Middleware
@@ -61,15 +62,15 @@ type Config = {
 export class PermissionsAssert_Class
 	extends Module<Config> {
 
-	readonly Middleware = (keys: string[]): ServerApi_Middleware => async (req: ExpressRequest, data: HttpRequestData) => {
+	readonly Middleware = (keys: string[]): ServerApi_Middleware => async (req: ExpressRequest, data: HttpRequestData, response: ApiResponse) => {
 		await this.CustomMiddleware(keys, async (projectId: string, customFields: StringMap) => {
 
 			const account = await AccountModule.validateSession(req);
 			return this.assertUserPermissions(projectId, data.url, account._id, customFields);
-		})(req, data);
+		})(req, data, response);
 	};
 
-	readonly CustomMiddleware = (keys: string[], action: (projectId: string, customFields: StringMap) => Promise<void>): ServerApi_Middleware => async (req: ExpressRequest, data: HttpRequestData) => {
+	readonly CustomMiddleware = (keys: string[], action: (projectId: string, customFields: StringMap) => Promise<void>): ServerApi_Middleware => async (req: ExpressRequest, data: HttpRequestData, response: ApiResponse) => {
 		const customFields: StringMap = {};
 		let object: { [k: string]: any };
 		switch (data.method) {
