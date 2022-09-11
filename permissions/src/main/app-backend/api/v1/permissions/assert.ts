@@ -42,7 +42,7 @@ class ServerApi_AssertPermissions
 	protected async process(request: ExpressRequest, response: ApiResponse, queryParams: {}, body: Request_AssertApiForUser) {
 		const account = await AccountModule.validateSession(request);
 		await PermissionsAssert.assertUserPermissions(body.projectId, body.path, account._id, body.requestCustomField);
-		return {userId: account.email};
+		return account;
 	}
 }
 

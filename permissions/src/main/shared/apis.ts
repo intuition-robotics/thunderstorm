@@ -23,6 +23,7 @@ import {
 import {StringMap} from "@intuitionrobotics/ts-common";
 import {DB_PermissionProject} from "./manager-types";
 import {User_Group} from "./assign-types";
+import { UI_Account } from "@intuitionrobotics/user-account";
 
 
 export type UserUrlsPermissions = {
@@ -77,9 +78,7 @@ export type Request_RegisterProject = {
 	predefinedUser?: PredefinedUser
 };
 
-export type Response_User = {
-	userId: string;
-};
+export type Response_User = UI_Account
 
 export type PermissionsApi_AssignAppPermissions = ApiWithBody<"/v1/permissions/assign/app-permissions", Request_AssignAppPermissions, void>;
 export type PermissionsApi_ShareWithUser = ApiWithBody<"/v1/permissions/share-with-user", Request_AssignAppPermissions, void>;
