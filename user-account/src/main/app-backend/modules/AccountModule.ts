@@ -25,7 +25,9 @@ import {
 	generateHex,
 	hashPasswordWithSalt,
 	Module,
-	validate
+	validate,
+    BadImplementationException,
+    Minute
 } from "@intuitionrobotics/ts-common";
 
 
@@ -43,22 +45,26 @@ import {
 	Request_LoginAccount,
 	Request_UpsertAccount,
 	Response_Auth,
+	Response_Validation,
 	UI_Account,
 	UI_Session
 } from "./_imports";
 import {
 	ApiException,
+	ApiResponse,
 	ExpressRequest,
 	HeaderKey,
 	QueryRequestInfo
 } from "@intuitionrobotics/thunderstorm/backend";
 import {validateEmail} from "@intuitionrobotics/db-api-generator/backend";
+import {SecretsModule} from "../../shared/modules/SecretsModule";
 
 export const Header_SessionId = new HeaderKey(HeaderKey_SessionId);
 
 type Config = {
 	projectId: string
 	sessionTTLms: { web: number, app: number }
+	jwtSecretKey: string
 }
 
 export const Collection_Sessions = "user-account--sessions";
@@ -85,7 +91,7 @@ export class AccountsModule_Class
 	implements QueryRequestInfo {
 	constructor() {
 		super();
-		this.setDefaultConfig({sessionTTLms: {web: Day, app: Day}});
+		this.setDefaultConfig({sessionTTLms: {web: Day, app: Day}, jwtSecretKey: "TS_AUTH_SECRET"});
 	}
 
 	async __queryRequestInfo(request: ExpressRequest): Promise<{ key: string; data: any; }> {
@@ -306,6 +312,56 @@ export class AccountsModule_Class
 
 		return toRet;
 	}
+
+	private isAuthRequest = (request: ExpressRequest) => request.header(SecretsModule.AUTHENTICATION_KEY) !== undefined;
+
+	private verifyAccount(account: any): Response_Validation {
+		if (!account)
+			throw new BadImplementationException('Missing account in token payload')
+
+		const email = account['email'];
+		if (!email || typeof email !== 'string')
+			throw new BadImplementationException('Missing email in token payload')
+
+		const _id = account['_id'];
+		if (!_id || typeof _id !== 'string')
+			throw new BadImplementationException('Missing _id in token payload')
+
+		return {_id, email}
+	}
+
+	async validateAuthenticationHeader(request: ExpressRequest, response?: ApiResponse): Promise<Response_Validation> {
+		const token = SecretsModule.validateRequest(request);
+		const payload = token.payload;
+		const isExpired = SecretsModule.isExpired(token);
+		const sessionId = payload.sessionId;
+		if (!sessionId)
+			throw new BadImplementationException(`Missing session id in token ${JSON.stringify(payload)}`)
+
+		if (!isExpired) {
+			const account = payload.account;
+			this.verifyAccount(account);
+			return account
+		}
+
+		const resp = await this.validateSession(sessionId);
+		// Set in header response
+		if (response)
+			response.setHeaders({"jwt": this.generateJWT(resp, sessionId)})
+
+		return resp;
+	}
+
+	public generateJWT(account: UI_Account, sessionId: string): string {
+		return SecretsModule.generateJwt({account, sessionId, exp: currentTimeMillies() + (30 * Minute)}, this.config.jwtSecretKey)
+	}
+
+	validateRequest = async (request: ExpressRequest, response?: ApiResponse): Promise<Response_Validation> => {
+		if (this.isAuthRequest(request))
+			return this.validateAuthenticationHeader(request, response)
+
+		return await this.validateSession(request);
+	};
 
 	async validateSession(request: ExpressRequest): Promise<UI_Account> {
 		const sessionId = Header_SessionId.get(request);

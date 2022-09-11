@@ -18,23 +18,16 @@
  */
 import {
 	BadImplementationException,
-	generateHex,
 	ImplementationMissingException,
 	Module,
+	StringMap,
 	TypedMap
 } from "@intuitionrobotics/ts-common";
 import {
 	ApiException,
-	AxiosHttpModule,
 	promisifyRequest
 } from "@intuitionrobotics/thunderstorm/backend";
 import {HttpMethod} from "@intuitionrobotics/thunderstorm";
-import {
-	CoreOptions,
-	Headers,
-	Response,
-	UriOptions
-} from 'request';
 import {
 	JiraIssueText,
 	JiraUtils
@@ -43,6 +36,7 @@ import {
 	JiraVersion,
 	JiraVersion_Create
 } from "../../shared/version";
+import {AxiosRequestConfig} from "axios";
 
 type Config = {
 	auth: JiraAuth
@@ -145,8 +139,8 @@ const createFormData = (filename: string, buffer: Buffer) => ({file: {value: buf
 
 export class JiraModule_Class
 	extends Module<Config> {
-	private headersJson!: Headers;
-	private headersForm!: Headers;
+	private headersJson!: StringMap;
+	private headersForm!: StringMap;
 	private projects!: JiraProject[];
 	private versions: { [projectId: string]: JiraVersion[] } = {};
 	private restUrl!: string;
@@ -165,7 +159,7 @@ export class JiraModule_Class
 	}
 
 	private buildHeaders = ({apiKey, email}: JiraAuth, check: boolean) => {
-		const headers: Headers = {
+		const headers: StringMap = {
 			Authorization: `Basic ${Buffer.from(email + ':' + apiKey).toString('base64')}`
 		};
 
@@ -190,7 +184,7 @@ export class JiraModule_Class
 				throw new BadImplementationException(`Could not find project: ${projectKey}`);
 
 			return project;
-		},
+		}
 	};
 
 	version = {
@@ -247,7 +241,7 @@ export class JiraModule_Class
 				version = await JiraModule.version.create(project.id, versionName);
 
 			return this.executePutRequest<{ fields: Partial<JiraIssue_Fields> }>(`/issue/${issueKey}`, {fields: {fixVersions: [{id: version.id}]}});
-		},
+		}
 	};
 
 	getIssueTypes = async (id: string) => {
@@ -268,55 +262,35 @@ export class JiraModule_Class
 	};
 
 	private executeFormRequest = async (url: string, buffer: Buffer) => {
-		const request: UriOptions & CoreOptions = {
+		const request: AxiosRequestConfig = {
 			headers: this.headersForm,
-			uri: `${this.restUrl}${url}`,
-			formData: createFormData('logs.zip', buffer),
-			method: HttpMethod.POST,
+			url: `${this.restUrl}${url}`,
+			data: createFormData('logs.zip', buffer),
+			method: HttpMethod.POST
 		};
 		return this.executeRequest(request);
 	};
 
-	private async executePostRequest<Res, Req>(url: string, body: Req, label?:string[]) {
-		const request: UriOptions & CoreOptions = {
+	private async executePostRequest<Res, Req>(url: string, body: Req, label?: string[]) {
+		const request: AxiosRequestConfig = {
 			headers: this.headersJson,
-			uri: `${this.restUrl}${url}`,
-			body,
+			url: `${this.restUrl}${url}`,
+			data: body,
 			method: HttpMethod.POST,
-			json: true
+			responseType: 'json'
 		};
 		return this.executeRequest<Res>(request);
 	}
 
 	private async executePutRequest<T>(url: string, body: T) {
-		const request: UriOptions & CoreOptions = {
+		const request: AxiosRequestConfig = {
 			headers: this.headersJson,
-			uri: `${this.restUrl}${url}`,
-			body,
+			url: `${this.restUrl}${url}`,
+			data: body,
 			method: HttpMethod.PUT,
-			json: true
+			responseType: 'json'
 		};
 		return this.executeRequest(request);
-	}
-
-	async executeGetRequestNew<T>(url: string, _params?: { [k: string]: string }): Promise<T> {
-		if (!this.restUrl)
-			throw new ImplementationMissingException('Need a baseUrl');
-
-		return AxiosHttpModule
-			.createRequest(HttpMethod.GET, generateHex(8))
-			.setOrigin(this.restUrl)
-			.setUrl(url)
-			.setUrlParams(_params)
-			.setHeaders(this.headersJson)
-			.executeSync();
-	}
-
-	private handleResponse<T>(response: Response) {
-		if (`${response.statusCode}`[0] !== '2')
-			throw new ApiException(response.statusCode, response.body);
-
-		return response.toJSON().body as T;
 	}
 
 	private async executeGetRequest<T>(url: string, _params?: { [k: string]: string }) {
@@ -328,19 +302,24 @@ export class JiraModule_Class
 		if (params && params.length > 0)
 			urlParams = `?${params.join("&")}`;
 
-		const request: UriOptions & CoreOptions = {
+		const request: AxiosRequestConfig = {
 			headers: this.headersJson,
-			uri: `${this.restUrl}${url}${urlParams}`,
+			url: `${this.restUrl}${url}${urlParams}`,
 			method: HttpMethod.GET,
-			json: true
+			responseType: "json"
 		};
 
 		return this.executeRequest<T>(request);
 	}
 
-	private async executeRequest<T>(request: UriOptions & CoreOptions) {
-		const response = await promisifyRequest(request, false);
-		return this.handleResponse<T>(response);
+	private async executeRequest<T>(request: AxiosRequestConfig): Promise<T> {
+		const response = await promisifyRequest(request);
+		const statusCode = response.status;
+		// TODO: need to handle 1XX and 3XX
+		if (statusCode < 200 || statusCode >= 300)
+			throw new ApiException(statusCode, response.data);
+
+		return response.data as T
 	}
 }
 

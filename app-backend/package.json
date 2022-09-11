@@ -53,7 +53,6 @@
     "js-base64": "^2.5.1",
     "module-alias": "^2.2.0",
     "moment": "^2.24.0",
-    "request": "^2.88.0",
     "use-strict": "^1.0.1"
   },
   "devDependencies": {
@@ -62,7 +61,6 @@
     "@types/debug": "^4.1.2",
     "@types/express": "^4.16.1",
     "@types/js-base64": "^2.3.1",
-    "@types/request": "^2.48.3",
     "@types/saml2-js": "^1.6.8",
     "firebase-functions-test": "^0.1.6",
     "google-auth-library": "7.12.0",

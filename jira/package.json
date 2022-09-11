@@ -22,13 +22,13 @@
     "@intuitionrobotics/thunderstorm": "~0.0.1",
     "@intuitionrobotics/firebase": "~0.0.1",
     "firebase-admin": "^11.0.0",
+    "axios": "^0.27.2",
     "body-parser": "^1.18.3",
     "compression": "^1.7.4",
     "debug": "^3.1.0",
     "express": "^4.16.1",
     "module-alias": "^2.2.0",
     "moment": "^2.24.0",
-    "request": "^2.88.0",
     "use-strict": "^1.0.1"
   },
   "devDependencies": {
@@ -36,7 +36,6 @@
     "@types/express": "^4.16.1",
     "@types/js-base64": "^2.3.1",
     "@types/node-fetch": "^2.5.7",
-    "@types/request": "^2.48.3",
     "@types/saml2-js": "^1.6.8",
     "node-fetch": "^2.6.0",
     "ts-node": "^8.6.2",

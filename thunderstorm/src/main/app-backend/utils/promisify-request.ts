@@ -19,22 +19,35 @@
  * limitations under the License.
  */
 
-import * as _request from "request";
-import {Response} from "request";
+
 import {ApiException} from "../exceptions";
 import {__stringify} from "@intuitionrobotics/ts-common";
-import {RequestOptions} from "../../backend";
+import axios, {
+	AxiosRequestConfig,
+	AxiosResponse
+} from "axios";
 
-export async function promisifyRequest(request: RequestOptions, throwException: boolean = true): Promise<Response> {
-	return new Promise<Response>((resolve, rejected) => {
-		_request(request, (error, response: Response) => {
-			if (error)
-				return rejected(new ApiException(503, `Error: ${error}\n Request: ${__stringify(request, true)}`));
+export async function promisifyRequest(_request: AxiosRequestConfig): Promise<AxiosResponse> {
+	try {
+		return await axios.request(_request);
+	} catch (error) {
+		const resp = error.response;
+		if (resp) {
+			// The request was made and the server responded with a status code
+			// that falls out of the range of 2xx
+			return resp;
+		}
 
-			if (throwException && response.statusCode !== 200)
-				return rejected(new ApiException(response.statusCode, `Redirect proxy message, ${__stringify(response.body)} \n${__stringify(request, true)}`));
+		// if (error.request)
+		// The request was made but no response was received
+		// `error.request` is an instance of XMLHttpRequest in the browser and an instance of
+		// http.ClientRequest in node.js
 
-			resolve(response);
-		});
-	});
+		throw new ApiException(503, `Error: ${__stringify(error)}\n Request: ${__stringify(_request, true)}`)
+
+		// Something happened in setting up the request that triggered an Error
+		// console.log('Error', error.message);
+		//
+		// console.log(error.config);
+	}
 }

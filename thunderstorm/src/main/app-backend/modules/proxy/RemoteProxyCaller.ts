@@ -21,7 +21,7 @@
 import {
 	__stringify,
 	ImplementationMissingException,
-	Module,
+	Module
 } from "@intuitionrobotics/ts-common";
 // noinspection TypeScriptPreferShortImport
 import {
@@ -31,12 +31,14 @@ import {
 	DeriveQueryType,
 	DeriveResponseType,
 	DeriveUrlType,
-	ErrorResponse,
 	QueryParams
 } from "../../../shared/types";
 import {promisifyRequest} from "../../utils/promisify-request";
 import {ApiException} from "../../exceptions";
-import {RequestOptions} from "../../../backend";
+import {
+	AxiosRequestConfig,
+	AxiosResponse
+} from "axios";
 
 export type RemoteServerConfig = {
 	secretHeaderName: string
@@ -69,7 +71,7 @@ export class RemoteProxyCaller<Config extends RemoteServerConfig>
 			this.config.proxyHeaderName = 'x-proxy';
 	}
 
-	protected executeGetRequest = async <Binder extends ApiWithQuery<U, R, P>, U extends string = DeriveUrlType<Binder>, R = DeriveResponseType<Binder>, P extends QueryParams = DeriveQueryType<Binder>>(url: U, _params: P, _headers?: { [key: string]: string }): Promise<R> => {
+	protected executeGetRequest = async <Binder extends ApiWithQuery<U, R, P>, U extends string = DeriveUrlType<Binder>, R = DeriveResponseType<Binder>, P extends QueryParams = DeriveQueryType<Binder>>(url: U, _params: P, _headers?: { [key: string]: string }): Promise<AxiosResponse<R>> => {
 		const params = _params && Object.keys(_params).map((key) => {
 			return `${key}=${_params[key]}`;
 		});
@@ -78,55 +80,58 @@ export class RemoteProxyCaller<Config extends RemoteServerConfig>
 		if (params && params.length > 0)
 			urlParams = `?${params.join("&")}`;
 
-		const proxyRequest: RequestOptions = {
+		const proxyRequest: AxiosRequestConfig = {
 			headers: {
 				..._headers,
 				[this.config.secretHeaderName]: this.config.secret,
-				[this.config.proxyHeaderName]: this.config.proxyId,
+				[this.config.proxyHeaderName]: this.config.proxyId
 			},
-			uri: `${this.config.url}${url}${urlParams}`,
+			url: `${this.config.url}${url}${urlParams}`,
 			method: 'GET',
-			json: true
+			responseType: 'json'
 		};
 
 		return await this.executeRequest<R>(proxyRequest);
 	};
 
-	protected executePostRequest = async <Binder extends ApiWithBody<U, R, B>, U extends string = DeriveUrlType<Binder>, R = DeriveResponseType<Binder>, B = DeriveBodyType<Binder>>(url: U, body: B, _headers?: { [key: string]: string }): Promise<R> => {
-		const proxyRequest: RequestOptions = {
+	protected executePostRequest = async <Binder extends ApiWithBody<U, R, B>, U extends string = DeriveUrlType<Binder>, R = DeriveResponseType<Binder>, B = DeriveBodyType<Binder>>(url: U, body: B, _headers?: { [key: string]: string }): Promise<AxiosResponse<R>> => {
+		const proxyRequest: AxiosRequestConfig = {
 			headers: {
 				..._headers,
 				'Content-Type': 'application/json',
 				[this.config.secretHeaderName]: this.config.secret,
-				[this.config.proxyHeaderName]: this.config.proxyId,
+				[this.config.proxyHeaderName]: this.config.proxyId
 			},
-			json: true,
-			uri: `${this.config.url}${url}`,
-			body: body,
+			responseType: "json",
+			url: `${this.config.url}${url}`,
+			data: body,
 			method: 'POST'
 		};
 
 		return this.executeRequest<R>(proxyRequest);
 	};
 
-	private executeRequest = async <ResponseType>(proxyRequest: RequestOptions): Promise<ResponseType> => {
-		const response = await promisifyRequest(proxyRequest, false);
+	private executeRequest = async <ResponseType>(proxyRequest: AxiosRequestConfig): Promise<AxiosResponse<ResponseType>> => {
+		const response = await promisifyRequest(proxyRequest);
 		if (proxyRequest.headers)
 			delete proxyRequest.headers[this.config.secretHeaderName];
 
-		if (response.statusCode !== 200) {
-			let errorResponse: ErrorResponse<any>;
-			errorResponse = response.body;
+		const statusCode = response.status;
+		// TODO: need to handle 1XX and 3XX
+		if (statusCode < 200 || statusCode >= 300) {
+			const errorResponse = response.data;
 			if (!errorResponse)
 				throw new ApiException(500, `Extraneous error ${__stringify(response)}, Proxy Request: ${__stringify(proxyRequest, true)}`)
 
-			const e = new ApiException<any>(response.statusCode, `Redirect proxy error: ${errorResponse.debugMessage} \n Proxy Request: ${__stringify(proxyRequest, true)}`);
+			const e = new ApiException<any>(
+				response.status,
+				`Redirect proxy error: ${errorResponse.debugMessage} \n Proxy Request: ${__stringify(proxyRequest, true)}`);
 			if (errorResponse.error)
 				e.setErrorBody(errorResponse.error);
 
 			throw e;
 		}
 
-		return response.toJSON().body as ResponseType;
+		return response;
 	};
 }
