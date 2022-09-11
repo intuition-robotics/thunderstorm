@@ -441,6 +441,10 @@ export class ApiResponse {
 		this.res.end(typeof response !== "string" ? JSON.stringify(response, null, 2) : response);
 	}
 
+	setHeaders(headers: any): void {
+		this.res.header(headers);
+	}
+
 	redirect(responseCode: number, url: string) {
 		this.consume();
 
