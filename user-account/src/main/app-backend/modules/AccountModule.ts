@@ -19,15 +19,15 @@
 import {
 	__stringify,
 	auditBy,
+	BadImplementationException,
 	currentTimeMillies,
 	Day,
 	Dispatcher,
 	generateHex,
 	hashPasswordWithSalt,
+	Minute,
 	Module,
-	validate,
-    BadImplementationException,
-    Minute
+	validate
 } from "@intuitionrobotics/ts-common";
 
 
@@ -59,8 +59,8 @@ import {
 import {validateEmail} from "@intuitionrobotics/db-api-generator/backend";
 import {SecretsModule} from "../../shared/modules/SecretsModule";
 
-export const Header_SessionId = new HeaderKey(HeaderKey_SessionId);
-
+export const Header_SessionId = new HeaderKey(HeaderKey_SessionId, 404);
+export const HeaderKey_JWT = 'jwt';
 type Config = {
 	projectId: string
 	sessionTTLms: { web: number, app: number }
@@ -125,14 +125,12 @@ export class AccountsModule_Class
 		                                 });
 	}
 
-	async listUsers() {
-		return this.accounts.getAll(["_id",
-		                             "email"]) as Promise<{ email: string, _id: string }[]>;
+	async listUsers(): Promise<UI_Account[]> {
+		return this.accounts.getAll(["_id", "email"]);
 	}
 
 	async listSessions() {
-		return this.sessions.getAll(["userId",
-		                             "timestamp"]);
+		return this.sessions.getAll(["userId", "timestamp"]);
 	}
 
 	async getSession(_email: string) {
@@ -334,7 +332,7 @@ export class AccountsModule_Class
 		const token = SecretsModule.validateRequest(request);
 		const payload = token.payload;
 		const isExpired = SecretsModule.isExpired(token);
-		const sessionId = payload.sessionId;
+		const sessionId: string = payload.sessionId;
 		if (!sessionId)
 			throw new BadImplementationException(`Missing session id in token ${JSON.stringify(payload)}`)
 
@@ -344,10 +342,10 @@ export class AccountsModule_Class
 			return account
 		}
 
-		const resp = await this.validateSession(sessionId);
+		const resp = await this.validateSessionId(sessionId);
 		// Set in header response
 		if (response)
-			response.setHeaders({"jwt": this.generateJWT(resp, sessionId)})
+			response.setHeaders({[HeaderKey_JWT]: this.generateJWT(resp, sessionId)})
 
 		return resp;
 	}
@@ -356,20 +354,12 @@ export class AccountsModule_Class
 		return SecretsModule.generateJwt({account, sessionId, exp: currentTimeMillies() + (30 * Minute)}, this.config.jwtSecretKey)
 	}
 
-	validateRequest = async (request: ExpressRequest, response?: ApiResponse): Promise<Response_Validation> => {
+	validateSession = async (request: ExpressRequest, response?: ApiResponse): Promise<Response_Validation> => {
 		if (this.isAuthRequest(request))
 			return this.validateAuthenticationHeader(request, response)
 
-		return await this.validateSession(request);
+		return await this.validateSessionId(Header_SessionId.get(request));
 	};
-
-	async validateSession(request: ExpressRequest): Promise<UI_Account> {
-		const sessionId = Header_SessionId.get(request);
-		if (!sessionId)
-			throw new ApiException(404, 'Missing sessionId');
-
-		return this.validateSessionId(sessionId);
-	}
 
 	async validateSessionId(sessionId: string) {
 		const query = {where: {sessionId}};

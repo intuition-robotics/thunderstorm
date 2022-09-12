@@ -1,5 +1,6 @@
 import {
 	BadImplementationException,
+	currentTimeMillies,
 	ObjectTS
 } from "@intuitionrobotics/ts-common";
 import * as jws from "jws";
@@ -103,9 +104,8 @@ export class JWTBuilder {
 		return this;
 	}
 
-	setIssuedAt(iat: string) {
-		this.payload[ISSUED_AT] = iat;
-		return this;
+	private setIssuedAt() {
+		this.payload[ISSUED_AT] = currentTimeMillies();
 	}
 
 	setJWTID(jti: string) {
@@ -143,6 +143,7 @@ export class JWTBuilder {
 	}
 
 	build(secret: string) {
+		this.setIssuedAt()
 		if (!this.getType())
 			this.setType(TYP_DEFAULT);
 

@@ -65,7 +65,7 @@ export class PermissionsAssert_Class
 	readonly Middleware = (keys: string[]): ServerApi_Middleware => async (req: ExpressRequest, data: HttpRequestData, response: ApiResponse) => {
 		await this.CustomMiddleware(keys, async (projectId: string, customFields: StringMap) => {
 
-			const account = await AccountModule.validateSession(req);
+			const account = await AccountModule.validateSession(req, response);
 			return this.assertUserPermissions(projectId, data.url, account._id, customFields);
 		})(req, data, response);
 	};

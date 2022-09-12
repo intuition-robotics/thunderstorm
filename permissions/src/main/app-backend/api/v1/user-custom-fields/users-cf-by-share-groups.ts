@@ -39,7 +39,7 @@ class ServerApi_UsersCFsByShareGroups
 	}
 
 	protected async process(request: ExpressRequest, response: ApiResponse, queryParams: {}, body: Request_UsersCFsByShareGroups) {
-		await AccountModule.validateSession(request);
+		await AccountModule.validateSession(request, response);
 		return PermissionsModule.getUsersCFsByShareGroups(body.usersEmails, body.groupsIds);
 	}
 }
