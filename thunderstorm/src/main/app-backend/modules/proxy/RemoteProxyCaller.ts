@@ -71,7 +71,12 @@ export class RemoteProxyCaller<Config extends RemoteServerConfig>
 			this.config.proxyHeaderName = 'x-proxy';
 	}
 
-	protected executeGetRequest = async <Binder extends ApiWithQuery<U, R, P>, U extends string = DeriveUrlType<Binder>, R = DeriveResponseType<Binder>, P extends QueryParams = DeriveQueryType<Binder>>(url: U, _params: P, _headers?: { [key: string]: string }): Promise<AxiosResponse<R>> => {
+	protected executeGetRequest = async <Binder extends ApiWithQuery<U, R, P>, U extends string = DeriveUrlType<Binder>, R = DeriveResponseType<Binder>, P extends QueryParams = DeriveQueryType<Binder>>(url: U, _params: P, _headers?: { [key: string]: string }): Promise<R> => {
+		const resp = await this.executeGetRequestImpl(url,_params, _headers);
+		return resp.data as R;
+	};
+
+	protected executeGetRequestImpl = async <Binder extends ApiWithQuery<U, R, P>, U extends string = DeriveUrlType<Binder>, R = DeriveResponseType<Binder>, P extends QueryParams = DeriveQueryType<Binder>>(url: U, _params: P, _headers?: { [key: string]: string }): Promise<AxiosResponse<R>> => {
 		const params = _params && Object.keys(_params).map((key) => {
 			return `${key}=${_params[key]}`;
 		});
@@ -91,10 +96,15 @@ export class RemoteProxyCaller<Config extends RemoteServerConfig>
 			responseType: 'json'
 		};
 
-		return await this.executeRequest<R>(proxyRequest);
+		return this.executeRequest<R>(proxyRequest);
 	};
 
-	protected executePostRequest = async <Binder extends ApiWithBody<U, R, B>, U extends string = DeriveUrlType<Binder>, R = DeriveResponseType<Binder>, B = DeriveBodyType<Binder>>(url: U, body: B, _headers?: { [key: string]: string }): Promise<AxiosResponse<R>> => {
+	protected executePostRequest = async <Binder extends ApiWithBody<U, R, B>, U extends string = DeriveUrlType<Binder>, R = DeriveResponseType<Binder>, B = DeriveBodyType<Binder>>(url: U, body: B, _headers?: { [key: string]: string }): Promise<R> => {
+		const resp = await this.executePostRequestImpl(url, body, _headers);
+		return resp.data as R;
+	};
+
+	protected executePostRequestImpl = async <Binder extends ApiWithBody<U, R, B>, U extends string = DeriveUrlType<Binder>, R = DeriveResponseType<Binder>, B = DeriveBodyType<Binder>>(url: U, body: B, _headers?: { [key: string]: string }): Promise<AxiosResponse<R>> => {
 		const proxyRequest: AxiosRequestConfig = {
 			headers: {
 				..._headers,
@@ -109,7 +119,7 @@ export class RemoteProxyCaller<Config extends RemoteServerConfig>
 		};
 
 		return this.executeRequest<R>(proxyRequest);
-	};
+	}
 
 	private executeRequest = async <ResponseType>(proxyRequest: AxiosRequestConfig): Promise<AxiosResponse<ResponseType>> => {
 		const response = await promisifyRequest(proxyRequest);
