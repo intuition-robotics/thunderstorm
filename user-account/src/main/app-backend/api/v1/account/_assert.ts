@@ -18,55 +18,26 @@
  */
 
 import {
-	ApiException,
 	ApiResponse,
-	ServerApi,
-	ExpressRequest
+	ExpressRequest,
+	ServerApi
 } from "@intuitionrobotics/thunderstorm/backend";
-
-import {__stringify} from "@intuitionrobotics/ts-common";
 import {
-	AccountModule,
 	AccountApi_AssertLoginSAML,
-	PostAssertBody,
-	QueryParam_Email,
-	QueryParam_RedirectUrl,
-	QueryParam_SessionId,
-	RequestBody_SamlAssertOptions,
-	SamlModule
+	AccountModule,
+	PostAssertBody
 } from "./_imports";
 import {HttpMethod} from "@intuitionrobotics/thunderstorm";
 
 
-class AssertSamlToken
+export class AssertSamlToken
 	extends ServerApi<AccountApi_AssertLoginSAML> {
 
-	constructor() {
-		super(HttpMethod.POST, "assert");
+	constructor(pathPart: string = "assert") {
+		super(HttpMethod.POST, pathPart);
 	}
 
 	protected async process(request: ExpressRequest, response: ApiResponse, queryParams: {}, body: PostAssertBody) {
-		const options: RequestBody_SamlAssertOptions = {
-			request_body: body
-		};
-
-		try {
-			const data = await SamlModule.assert(options);
-			this.logDebug(`Got data from assertion ${__stringify(data)}`);
-
-			const userEmail = data.userId;
-			const {sessionId: userToken} = await AccountModule.loginSAML(userEmail);
-
-			let redirectUrl = data.loginContext[QueryParam_RedirectUrl];
-
-			redirectUrl = redirectUrl.replace(new RegExp(QueryParam_SessionId.toUpperCase(), "g"), userToken);
-			redirectUrl = redirectUrl.replace(new RegExp(QueryParam_Email.toUpperCase(), "g"), userEmail);
-
-			return await response.redirect(302, redirectUrl);
-		} catch (error) {
-			throw new ApiException(401, 'Error authenticating user', error);
-		}
+		return await AccountModule.assertApi(body, response);
 	}
 }
-
-module.exports = new AssertSamlToken();

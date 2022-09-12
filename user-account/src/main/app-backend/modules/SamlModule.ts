@@ -20,6 +20,7 @@
 import {
 	IdentityProvider,
 	IdentityProviderOptions,
+	SAMLAssertResponse,
 	ServiceProvider,
 	ServiceProviderOptions
 } from "saml2-js";
@@ -38,23 +39,23 @@ type SamlConfig = {
 	spConfig: ServiceProviderOptions
 };
 
-type _SamlAssertResponse = {
-	"response_header": {
-		"version": "2.0",
-		"destination": string,
-		"in_response_to": string,
-		"id": string
-	},
-	"type": "authn_response",
-	"user": {
-		"name_id": string,
-		"session_index": string,
-		"attributes": {}
-	}
-}
+// type _SamlAssertResponse = {
+// 	"response_header": {
+// 		"version": "2.0",
+// 		"destination": string,
+// 		"in_response_to": string,
+// 		"id": string
+// 	},
+// 	"type": "authn_response",
+// 	"user": {
+// 		"name_id": string,
+// 		"session_index": string,
+// 		"attributes": {}
+// 	}
+// }
 
 type SamlAssertResponse = {
-	fullResponse: _SamlAssertResponse
+	fullResponse: SAMLAssertResponse
 	userId: string
 	loginContext: RequestParams_LoginSAML
 }
@@ -96,16 +97,17 @@ export class SamlModule_Class
 
 	assert = async (options: RequestBody_SamlAssertOptions): Promise<SamlAssertResponse> => new Promise<SamlAssertResponse>((resolve, rejected) => {
 		const sp = new ServiceProvider(this.config.spConfig);
-		sp.post_assert(this.identityProvider, options, async (error, response: _SamlAssertResponse) => {
+		sp.post_assert(this.identityProvider, options, async (error, response: SAMLAssertResponse) => {
 			if (error)
 				return rejected(error);
 
+			const userId = response.user.name_id;
 			const relay_state = options.request_body.RelayState;
 			if (!relay_state)
-				return rejected('LoginContext lost along the way');
+				return rejected(`LoginContext lost along the way for userId '${userId}'`);
 
 			resolve({
-				        userId: response.user.name_id,
+				        userId: userId,
 				        loginContext: JSON.parse(relay_state),
 				        fullResponse: response
 			        });

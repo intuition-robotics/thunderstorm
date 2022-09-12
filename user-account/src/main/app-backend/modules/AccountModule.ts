@@ -41,9 +41,15 @@ import {
 	DB_Session,
 	FrontType,
 	HeaderKey_SessionId,
+	PostAssertBody,
+	QueryParam_Email,
+	QueryParam_JWT,
+	QueryParam_RedirectUrl,
+	QueryParam_SessionId,
 	Request_CreateAccount,
 	Request_LoginAccount,
 	Request_UpsertAccount,
+	RequestBody_SamlAssertOptions,
 	Response_Auth,
 	Response_Validation,
 	UI_Account,
@@ -58,12 +64,13 @@ import {
 } from "@intuitionrobotics/thunderstorm/backend";
 import {validateEmail} from "@intuitionrobotics/db-api-generator/backend";
 import {SecretsModule} from "../../shared/modules/SecretsModule";
+import {SamlModule} from "./SamlModule";
 
 export const Header_SessionId = new HeaderKey(HeaderKey_SessionId, 404);
 export const HeaderKey_JWT = 'jwt';
 type Config = {
 	projectId: string
-	sessionTTLms: { web: number, app: number }
+	sessionTTLms: { web: number, app: number, jwt: number }
 	jwtSecretKey: string
 }
 
@@ -91,7 +98,7 @@ export class AccountsModule_Class
 	implements QueryRequestInfo {
 	constructor() {
 		super();
-		this.setDefaultConfig({sessionTTLms: {web: Day, app: Day}, jwtSecretKey: "TS_AUTH_SECRET"});
+		this.setDefaultConfig({sessionTTLms: {web: Day, app: Day, jwt: 30 * Minute}, jwtSecretKey: "TS_AUTH_SECRET"});
 	}
 
 	async __queryRequestInfo(request: ExpressRequest): Promise<{ key: string; data: any; }> {
@@ -342,16 +349,16 @@ export class AccountsModule_Class
 			return account
 		}
 
-		const resp = await this.validateSessionId(sessionId);
+		const dbAccount = await this.validateSessionId(sessionId);
 		// Set in header response
 		if (response)
-			response.setHeaders({[HeaderKey_JWT]: this.generateJWT(resp, sessionId)})
+			response.setHeaders({[HeaderKey_JWT]: this.generateJWT(dbAccount, sessionId)})
 
-		return resp;
+		return dbAccount;
 	}
 
 	public generateJWT(account: UI_Account, sessionId: string): string {
-		return SecretsModule.generateJwt({account, sessionId, exp: currentTimeMillies() + (30 * Minute)}, this.config.jwtSecretKey)
+		return SecretsModule.generateJwt({account, sessionId, exp: currentTimeMillies() + this.config.sessionTTLms.jwt}, this.config.jwtSecretKey)
 	}
 
 	validateSession = async (request: ExpressRequest, response?: ApiResponse): Promise<Response_Validation> => {
@@ -412,6 +419,31 @@ export class AccountsModule_Class
 		const account = await this.getUserEmailFromSession(session);
 		return {sessionId: session.sessionId, email: account.email, _id: account._id};
 	};
+
+	async assertApi(body: PostAssertBody, response: ApiResponse) {
+		const options: RequestBody_SamlAssertOptions = {
+			request_body: body
+		};
+
+		try {
+			const data = await SamlModule.assert(options);
+			this.logDebug(`Got data from assertion ${__stringify(data)}`);
+
+			const email = data.userId;
+			const {sessionId, _id} = await AccountModule.loginSAML(email);
+
+			let redirectUrl = data.loginContext[QueryParam_RedirectUrl];
+
+			const jwt = AccountModule.generateJWT({email, _id}, sessionId);
+			redirectUrl = redirectUrl.replace(new RegExp(QueryParam_SessionId.toUpperCase(), "g"), sessionId);
+			redirectUrl = redirectUrl.replace(new RegExp(QueryParam_Email.toUpperCase(), "g"), email);
+			redirectUrl = redirectUrl.replace(new RegExp(QueryParam_JWT.toUpperCase(), "g"), jwt);
+
+			return await response.redirect(302, redirectUrl);
+		} catch (error) {
+			throw new ApiException(401, 'Error authenticating user', error);
+		}
+	}
 
 }
 

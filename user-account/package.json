@@ -32,10 +32,10 @@
   "dependencies": {
     "@intuitionrobotics/ts-common": "~0.0.1",
     "@types/jws": "^3.2.4",
-    "@types/saml2-js": "^1.6.8",
+    "@types/saml2-js": "^3.0.0",
     "jws": "^4.0.0",
     "moment": "^2.24.0",
-    "saml2-js": "^2.0.5",
+    "saml2-js": "^3.0.1",
     "xmlbuilder": "^15.1.1"
   },
   "devDependencies": {
