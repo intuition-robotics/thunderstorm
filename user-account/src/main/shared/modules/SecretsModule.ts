@@ -90,7 +90,7 @@ export class SecretsModule_Class
 	validateRequest(request: ExpressRequest, keyId?: string) {
 		const authToken = this.extractAuthToken(request);
 		const token = this.decodeJwt(authToken);
-		const kid = keyId || token.header.kid;
+		const kid = token.header.kid || keyId;
 		if(!kid)
 			throw new BadImplementationException("Could not deduce which key to use in order to verify the token, please specify a key ID");
 

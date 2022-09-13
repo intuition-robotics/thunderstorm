@@ -6,14 +6,13 @@ import {
 import * as jws from "jws";
 import {
 	Algorithm,
-	ALGORITHMS
+	ALGORITHMS,
+    Header
 } from "jws";
 import {SecretsModule} from "../modules/SecretsModule";
 
-export type AlgType = 'alg';
-
 //Header
-export const ALGORITHM: AlgType = "alg";
+export const ALGORITHM = "alg";
 export const CONTENT_TYPE = "cty";
 export const TYPE = "typ";
 export const KEY_ID = "kid";
@@ -31,9 +30,7 @@ export const TYP_DEFAULT: string = "JWT";
 
 export class JWTBuilder {
 	private payload: ObjectTS = {};
-	private readonly header: ObjectTS & {
-		[k in AlgType]: Algorithm
-	};
+	private readonly header: Header;
 
 	constructor(alg: Algorithm) {
 		this.assertAlg(alg);
@@ -60,12 +57,6 @@ export class JWTBuilder {
 	}
 
 	// End Generic
-
-	setAlgorithm = (alg: Algorithm) => {
-		this.assertAlg(alg);
-		this.header[ALGORITHM] = alg;
-		return this;
-	};
 
 	setContentType = (cty: string) => {
 		this.header[CONTENT_TYPE] = cty;
