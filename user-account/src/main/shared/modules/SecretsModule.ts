@@ -29,7 +29,7 @@ type Config = {
 	secrets?: {
 		[k: string]: any
 	},
-	authSecretKey: string
+	validateKeyId: string
 	issuer: string
 }
 
@@ -47,7 +47,7 @@ export class SecretsModule_Class
 
 	constructor(tag?: string, name?: string) {
 		super(tag, name);
-		this.setDefaultConfig({authSecretKey: "AUTH_SECRET"})
+		this.setDefaultConfig({validateKeyId: "AUTH_SECRET"})
 	}
 
 	getSecret(k: string): Secret {
@@ -75,8 +75,8 @@ export class SecretsModule_Class
 		return this.config.secrets;
 	};
 
-	validateRequestAndCheckExpiration(request: ExpressRequest, keyId?: string) {
-		const token = this.validateRequest(request, keyId);
+	validateRequestAndCheckExpiration(request: ExpressRequest) {
+		const token = this.validateRequest(request);
 
 		if (this.isExpired(token)) {
 			const cause = `The JWT passed is not valid, check. With payload: ${__stringify(token.payload)}. The JWT passed is expired`;
@@ -87,10 +87,10 @@ export class SecretsModule_Class
 	}
 
 	// Specify a kid to force the usage of it
-	validateRequest(request: ExpressRequest, keyId?: string) {
+	validateRequest(request: ExpressRequest) {
 		const authToken = this.extractAuthToken(request);
 		const token = this.decodeJwt(authToken);
-		const kid = token.header.kid || keyId;
+		const kid = token.header.kid || this.config.validateKeyId;
 		if(!kid)
 			throw new BadImplementationException("Could not deduce which key to use in order to verify the token, please specify a key ID");
 
