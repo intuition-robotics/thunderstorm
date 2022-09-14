@@ -56,15 +56,12 @@ const ALL_Methods: string[] = [
 	'PATCH',
 	'POST',
 	'DELETE',
-	'OPTIONS'];
+	'OPTIONS'
+];
 
 const DefaultHeaders: string[] = [
 	'content-type',
-	'content-encoding'];
-
-const ExposedHeaders: string[] = [
-	"function-execution-id",
-	"jwt"
+	'content-encoding'
 ];
 
 type ConfigType = {
@@ -147,8 +144,8 @@ export class HttpServer_Class
 		}
 
 		const cors = this.config.cors || {};
-		if(!cors.exposedHeaders)
-			cors.exposedHeaders = ExposedHeaders;
+		if (!cors.exposedHeaders)
+			cors.exposedHeaders = ["*"]
 
 		cors.headers = DefaultHeaders.reduce((toRet, item: string) => {
 			if (!toRet.includes(item))

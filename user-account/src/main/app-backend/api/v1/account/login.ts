@@ -41,7 +41,7 @@ class ServerApi_Account_Login
 	protected async process(request: ExpressRequest, response: ApiResponse, queryParams: {}, body: Request_LoginAccount) {
 		this.assertProperty(body, ["email", "password"]);
 
-		return AccountModule.login(body);
+		return AccountModule.login(body, response);
 	}
 }
 

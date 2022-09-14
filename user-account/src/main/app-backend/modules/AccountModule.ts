@@ -133,11 +133,13 @@ export class AccountsModule_Class
 	}
 
 	async listUsers(): Promise<UI_Account[]> {
-		return this.accounts.getAll(["_id", "email"]);
+		return this.accounts.getAll(["_id",
+		                             "email"]);
 	}
 
 	async listSessions() {
-		return this.sessions.getAll(["userId", "timestamp"]);
+		return this.sessions.getAll(["userId",
+		                             "timestamp"]);
 	}
 
 	async getSession(_email: string) {
@@ -163,10 +165,10 @@ export class AccountsModule_Class
 		});
 	}
 
-	async create(request: Request_CreateAccount) {
+	async create(request: Request_CreateAccount, response: ApiResponse) {
 		const account = await this.createAccount(request);
 
-		const session = await this.login(request);
+		const session = await this.login(request, response);
 		await dispatch_onNewUserRegistered.dispatchModuleAsync([getUIAccount(account)]);
 		return session;
 	}
@@ -182,7 +184,7 @@ export class AccountsModule_Class
 			return this.createImpl(request, transaction);
 		});
 
-		await this.loginValidate(request, false);
+		await this.loginValidate(request);
 		await callback()
 		return getUIAccount(account);
 	}
@@ -251,13 +253,13 @@ export class AccountsModule_Class
 		await this.sessions.deleteUnique(query);
 	}
 
-	async login(request: Request_LoginAccount): Promise<Response_Auth> {
-		return await this.loginValidate(request);
+	async login(request: Request_LoginAccount, response: ApiResponse): Promise<Response_Auth> {
+		return await this.loginValidate(request, response);
 	}
 
-	private async loginValidate(request: Request_LoginAccount): Promise<Response_Auth>
-	private async loginValidate(request: Request_LoginAccount, doCreateSession: false): Promise<undefined>
-	private async loginValidate(request: Request_LoginAccount, doCreateSession = true) {
+	private async loginValidate(request: Request_LoginAccount): Promise<undefined>
+	private async loginValidate(request: Request_LoginAccount, response?: ApiResponse): Promise<Response_Auth>
+	private async loginValidate(request: Request_LoginAccount, response?: ApiResponse) {
 		request.email = request.email.toLowerCase();
 		const query = {where: {email: request.email}};
 		const account = await this.accounts.queryUnique(query);
@@ -276,9 +278,10 @@ export class AccountsModule_Class
 		}
 
 		let sessionWithAccountId: Response_Auth | undefined
-		if (doCreateSession)
+		if (response) {
 			sessionWithAccountId = await this.upsertSession(account._id, request.frontType);
-
+			this.setJWTinResp(sessionWithAccountId, sessionWithAccountId.sessionId, response);
+		}
 		await dispatch_onUserLogin.dispatchModuleAsync([getUIAccount(account)]);
 		return sessionWithAccountId;
 	}
@@ -350,11 +353,15 @@ export class AccountsModule_Class
 		}
 
 		const dbAccount = await this.validateSessionId(sessionId);
+		this.setJWTinResp(dbAccount, sessionId, response);
+
+		return dbAccount;
+	}
+
+	setJWTinResp(dbAccount: UI_Account, sessionId: string, response?: ApiResponse) {
 		// Set in header response
 		if (response)
 			response.setHeaders({[HeaderKey_JWT]: this.generateJWT(dbAccount, sessionId)})
-
-		return dbAccount;
 	}
 
 	public generateJWT(account: UI_Account, sessionId: string): string {

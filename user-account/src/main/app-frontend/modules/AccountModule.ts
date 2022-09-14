@@ -24,10 +24,10 @@ import {
 import {
 	BaseComponent,
 	BrowserHistoryModule,
-	XhrHttpModule,
 	StorageKey,
 	ThunderDispatcher,
-	ToastModule
+	ToastModule,
+	XhrHttpModule
 } from "@intuitionrobotics/thunderstorm/frontend";
 import {
 	AccountApi_Create,
@@ -37,7 +37,7 @@ import {
 	AccountApi_ValidateSession,
 	HeaderKey_SessionId,
 	QueryParam_Email,
-	QueryParam_SessionId,
+	QueryParam_JWT,
 	Request_CreateAccount,
 	Request_LoginAccount,
 	RequestParams_LoginSAML,
@@ -47,10 +47,11 @@ import {
 	UI_Account
 } from "../../shared/api";
 import {HttpMethod} from "@intuitionrobotics/thunderstorm";
+import {SecretsModule} from "../../shared/modules/SecretsModule";
 
 export const StorageKey_SessionId: StorageKey<string> = new StorageKey<string>(`storage-${HeaderKey_SessionId}`);
 export const StorageKey_UserEmail: StorageKey<string> = new StorageKey<string>(`storage-${QueryParam_Email}`);
-
+export const StorageKey_JWT: StorageKey<string> = new StorageKey<string>(`storage-${QueryParam_JWT}`);
 
 export const RequestKey_AccountCreate = "account-create";
 export const RequestKey_AccountLogin = "account-login";
@@ -107,23 +108,22 @@ export class AccountModule_Class
 
 
 	protected init(): void {
-		XhrHttpModule.addDefaultHeader(HeaderKey_SessionId, () => StorageKey_SessionId.get());
-		// XhrHttpModule.addDefaultHeader(HeaderKey_Email, () => StorageKey_UserEmail.get());
+		XhrHttpModule.addDefaultHeader(SecretsModule.AUTHENTICATION_KEY, () => `${SecretsModule.AUTHENTICATION_PREFIX} ${StorageKey_JWT.get()}`);
 
 		this.dispatchUI_loginChanged = new ThunderDispatcher<OnLoginStatusUpdated, "onLoginStatusUpdated">("onLoginStatusUpdated");
 		const email = BaseComponent.getQueryParameter(QueryParam_Email);
-		const sessionId = BaseComponent.getQueryParameter(QueryParam_SessionId);
+		const jwt = BaseComponent.getQueryParameter(QueryParam_JWT);
 
-		if (email && sessionId) {
-			StorageKey_SessionId.set(sessionId);
+		if (email && jwt) {
+			StorageKey_JWT.set(jwt);
 			StorageKey_UserEmail.set(email);
 
 			BrowserHistoryModule.removeQueryParam(QueryParam_Email);
-			BrowserHistoryModule.removeQueryParam(QueryParam_SessionId);
+			BrowserHistoryModule.removeQueryParam(QueryParam_JWT);
 		}
 
-		if (StorageKey_SessionId.get())
-			return this.validateToken();
+		if (StorageKey_JWT.get())
+			return AccountModule.validateToken();
 
 		this.logDebug("login out user.... ");
 		this.setLoggedStatus(LoggedStatus.LOGGED_OUT)
@@ -182,22 +182,21 @@ export class AccountModule_Class
 			.setOnError((request, resError) => {
 				if (request.getStatus() === 0) {
 					ToastModule.toastError("Cannot reach Server... trying in 30 sec");
-					setTimeout(() => this.validateToken(), 30 * Second);
+					setTimeout(() => AccountModule.validateToken(), 30 * Second);
 					return;
 				}
 
-
-				StorageKey_SessionId.delete();
-				return this.setLoggedStatus(LoggedStatus.LOGGED_OUT);
+				StorageKey_JWT.delete();
+				return AccountModule.setLoggedStatus(LoggedStatus.LOGGED_OUT);
 			})
 			.execute(async () => {
-				this.setLoggedStatus(LoggedStatus.LOGGED_IN);
+				AccountModule.setLoggedStatus(LoggedStatus.LOGGED_IN);
 			});
 	};
 
 	logout = (url?: string) => {
-		StorageKey_SessionId.delete();
-		if(url)
+		StorageKey_JWT.delete();
+		if (url)
 			return window.location.href = url;
 
 		this.setLoggedStatus(LoggedStatus.LOGGED_OUT);
