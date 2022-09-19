@@ -45,8 +45,8 @@ export class SecretsModule_Class
 	public AUTHENTICATION_PREFIX = "Bearer";
 	public AUTHENTICATION_KEY = "Authorization";
 
-	constructor(tag?: string, name?: string) {
-		super(tag, name);
+	constructor() {
+		super("SecretsModule", "SecretsModule_Class");
 		this.setDefaultConfig({validateKeyId: "AUTH_SECRET"})
 	}
 
