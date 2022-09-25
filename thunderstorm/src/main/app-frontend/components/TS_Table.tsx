@@ -33,9 +33,9 @@ export type ActionsRenderer<A extends ObjectTS> = {
 	[P in keyof A]: ActionItemRenderer<P>
 };
 
-export type CellRenderer<P, V> = (cellValue: V, rowIndex: number, columnKey: P) => React.ReactNode;
+export type CellRenderer<P, V, T> = (cellValue: V, rowIndex: number, columnKey: P, rowObject: T) => React.ReactNode;
 export type RowRenderer<T extends ObjectTS> = {
-	[P in keyof T]: CellRenderer<P, T[P]>
+	[P in keyof T]: CellRenderer<P, T[P], T>
 };
 
 export type TableProps<T extends ObjectTS, A extends ObjectTS = never> = Stylable & {
@@ -43,7 +43,7 @@ export type TableProps<T extends ObjectTS, A extends ObjectTS = never> = Stylabl
 	header: (keyof T)[],
 	rows: T[],
 	headerRenderer: ((columnKey: keyof T) => React.ReactNode) | HeaderRenderer<T>,
-	cellRenderer: CellRenderer<keyof T, T[keyof T]> | RowRenderer<T>
+	cellRenderer: CellRenderer<keyof T, T[keyof T], T> | RowRenderer<T>
 	actions?: (keyof A)[],
 	actionsRenderer?: ActionsRenderer<A> | ActionItemRenderer<keyof A>
 	body?: Stylable
@@ -92,7 +92,7 @@ export class TS_Table<T extends ObjectTS, A extends ObjectTS = never>
 			renderers = this.props.cellRenderer;
 		else
 			renderers = this.props.header.reduce((toRet, headerProp) => {
-				toRet[headerProp] = this.props.cellRenderer as CellRenderer<keyof T, T[keyof T]>;
+				toRet[headerProp] = this.props.cellRenderer as CellRenderer<keyof T, T[keyof T], T>;
 				return toRet;
 			}, {} as RowRenderer<T>);
 
@@ -110,7 +110,7 @@ export class TS_Table<T extends ObjectTS, A extends ObjectTS = never>
 			<tr key={`${this.props.id}-${rowIndex}`} className={this.props.tr?.className} style={this.props.tr?.style as CSSProperties}>
 				{this.props.header.map((header, columnIndex) => {
 					return <td key={`${this.props.id}-${columnIndex}`} className={this.props.td?.className} style={this.props.td?.style as CSSProperties}>
-						{renderers[header](row[header], rowIndex, this.props.header[columnIndex])}
+						{renderers[header](row[header], rowIndex, this.props.header[columnIndex], row)}
 					</td>;
 				})}
 				{this.props.actions?.map((actionKey, index) => {
