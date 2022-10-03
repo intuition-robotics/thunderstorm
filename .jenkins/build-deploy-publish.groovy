@@ -44,7 +44,7 @@ class Pipeline_Build
 		if (cause) {
 			workflow.terminate("Detected push from Jenkins")
 		}
-    
+
 
 		super.postInit()
 	}
@@ -79,6 +79,6 @@ class Pipeline_Build
 	}
 }
 
-node() {
+node("ci") {
 	Workflow.createWorkflow(Pipeline_Build.class, this)
 }
