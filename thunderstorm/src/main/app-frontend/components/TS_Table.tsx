@@ -38,6 +38,7 @@ export type RowRenderer<T extends ObjectTS> = {
 	[P in keyof T]: CellRenderer<P, T[P], T>
 };
 
+export type CellStyle<P, V, T> = (rowObject: T, rowIndex: number, cellValue?: V, columnKey?: P) => Stylable;
 export type TableProps<T extends ObjectTS, A extends ObjectTS = never> = Stylable & {
 	id: string,
 	header: (keyof T)[],
@@ -47,8 +48,8 @@ export type TableProps<T extends ObjectTS, A extends ObjectTS = never> = Stylabl
 	actions?: (keyof A)[],
 	actionsRenderer?: ActionsRenderer<A> | ActionItemRenderer<keyof A>
 	body?: Stylable
-	tr?: Stylable
-	td?: Stylable
+	tr?: Stylable | ((rowValue: T, rowIndex: number) => Stylable)
+	td?: Stylable | CellStyle<keyof T, T[keyof T], T>
 };
 
 export class TS_Table<T extends ObjectTS, A extends ObjectTS = never>
@@ -76,12 +77,22 @@ export class TS_Table<T extends ObjectTS, A extends ObjectTS = never>
 				return toRet;
 			}, {} as HeaderRenderer<T>);
 
+		const trClassName = typeof this.props.tr === 'object' ? this.props.tr?.className : '';
+		const trStyle = (typeof this.props.tr === 'object' ? this.props.tr?.style : {}) as CSSProperties;
+		const tdClassName = typeof this.props.td === 'object' ? this.props.td?.className : '';
+		const tdStyle = (typeof this.props.td === 'object' ? this.props.td?.style : {}) as CSSProperties;
 		return (
-			<tr key={`${this.props.id}-0`} className={this.props.tr?.className} style={this.props.tr?.style as CSSProperties}>
+			<tr key={`${this.props.id}-0`} className={trClassName} style={trStyle}>
 				{this.props.header.map(
-					(header, index) => <td key={`${this.props.id}-${index}`} className={this.props.td?.className}
-					                       style={this.props.td?.style as CSSProperties}>{renderers[header](header)}</td>)}
-				{this.props.actions?.map((action, index) => <td key={`${this.props.id}-${this.props.header.length + index}`}/>)}
+					(header, index) => <td
+						key={`${this.props.id}-${index}`}
+						className={tdClassName}
+						style={tdStyle}>
+						{renderers[header](header)}
+					</td>)}
+				{this.props.actions?.map((action, index) => <td
+					key={`${this.props.id}-${this.props.header.length + index}`}/>
+				)}
 			</tr>
 		);
 	}
@@ -106,20 +117,45 @@ export class TS_Table<T extends ObjectTS, A extends ObjectTS = never>
 			}, {} as ActionsRenderer<A>);
 
 
-		return this.props.rows.map((row, rowIndex) => (
-			<tr key={`${this.props.id}-${rowIndex}`} className={this.props.tr?.className} style={this.props.tr?.style as CSSProperties}>
+		return this.props.rows.map((row, rowIndex) => {
+			const trStyleable = this.resolveTRStyleable(row, rowIndex);
+			return <tr key={`${this.props.id}-${rowIndex}`} className={trStyleable?.className} style={trStyleable?.style}>
 				{this.props.header.map((header, columnIndex) => {
-					return <td key={`${this.props.id}-${columnIndex}`} className={this.props.td?.className} style={this.props.td?.style as CSSProperties}>
+					const tdStyleable = this.resolveTDStyleable(row, rowIndex, row[header], header);
+					return <td key={`${this.props.id}-${columnIndex}`}
+					           className={tdStyleable?.className}
+					           style={tdStyleable?.style}>
 						{renderers[header](row[header], rowIndex, this.props.header[columnIndex], row)}
 					</td>;
 				})}
 				{this.props.actions?.map((actionKey, index) => {
-					return <td key={`${this.props.id}-${this.props.header.length + index}`} className={this.props.td?.className}
-					           style={this.props.td?.style as CSSProperties}>
+					const actionStyleable = this.resolveTDStyleable(row, rowIndex);
+					return <td key={`${this.props.id}-${this.props.header.length + index}`} className={actionStyleable?.className}
+					           style={actionStyleable?.style}>
 						{actionsRenderers?.[actionKey](rowIndex, actionKey)}
 					</td>;
 				})}
-			</tr>
-		));
+			</tr>;
+		});
+	}
+
+	private resolveTDStyleable(rowObject: T, rowIndex: number, cellValue?: T[keyof T], columnKey?: keyof T): Stylable | undefined {
+		if (!this.props.td)
+			return;
+
+		if (typeof this.props.td === 'function')
+			return this.props.td(rowObject, rowIndex, cellValue, columnKey)
+
+		return this.props.td;
+	}
+
+	private resolveTRStyleable(row: T, rowIndex: number): Stylable | undefined {
+		if (!this.props.tr)
+			return;
+
+		if (typeof this.props.tr === 'function')
+			return this.props.tr(row, rowIndex)
+
+		return this.props.tr;
 	}
 }
