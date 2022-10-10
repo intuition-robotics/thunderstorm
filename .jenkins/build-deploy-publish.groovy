@@ -44,6 +44,9 @@ class Pipeline_Build
 		if (cause) {
 			workflow.terminate("Detected push from Jenkins")
 		}
+                if (VarConsts.Var_UserEmail == "IR-Jenkins") {
+                        workflow.terminate("Detected push from Jenkins")
+                }
     
 
 		super.postInit()
