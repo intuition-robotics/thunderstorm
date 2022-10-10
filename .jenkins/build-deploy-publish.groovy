@@ -41,7 +41,10 @@ class Pipeline_Build
 			this.logInfo("Detected SCM cause: '${it.type}'")
 		}
 
-		if (cause.contains("AndreiHardziyenkaIR")) {
+		if (cause) {
+			workflow.terminate("Detected push from Jenkins")
+		}
+        if (it.print.contains("AndreiHardziyenkaIR")) {
 			workflow.terminate("Detected push from Jenkins")
 		}
     
