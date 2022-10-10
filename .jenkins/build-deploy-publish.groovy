@@ -44,10 +44,10 @@ class Pipeline_Build
 		if (cause) {
 			workflow.terminate("Detected push from Jenkins")
 		}
-                if (${VarConsts.Var_UserEmail.get()} == "IR-Jenkins") {
+                if (VarConsts.Var_UserEmail.get() == "IR-Jenkins") {
                         workflow.terminate("Detected push from Jenkins")
                 }
-                if (${VarConsts.Var_UserEmail.get()} == "AndreiHardziyenkaIR") {
+                if (VarConsts.Var_UserEmail.get() == "AndreiHardziyenkaIR") {
                         workflow.terminate("Detected push from Jenkins")
                 }
     
