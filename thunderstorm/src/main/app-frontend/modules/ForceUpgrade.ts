@@ -26,8 +26,8 @@ import {
 import {XhrHttpModule} from "./http/XhrHttpModule";
 import {
 	ApiBinder_AssertAppVersion,
-	HeaderKey_AppVersion,
-	HeaderKey_BrowserType,
+	HeaderKey_PlatformVersion,
+	HeaderKey_PlatformName,
 	UpgradeRequired
 } from "../../shared/force-upgrade";
 import {HttpMethod} from "../../shared/types";
@@ -48,8 +48,8 @@ class ForceUpgrade_Class
 	extends Module<Config> {
 
 	protected init(): void {
-		XhrHttpModule.addDefaultHeader(HeaderKey_AppVersion, `${process.env.appVersion}`);
-		XhrHttpModule.addDefaultHeader(HeaderKey_BrowserType, `${browserType()}`);
+		XhrHttpModule.addDefaultHeader(HeaderKey_PlatformVersion, `${process.env.appVersion}`);
+		XhrHttpModule.addDefaultHeader(HeaderKey_PlatformName, `${browserType()}`);
 	}
 
 	compareVersion = () => {

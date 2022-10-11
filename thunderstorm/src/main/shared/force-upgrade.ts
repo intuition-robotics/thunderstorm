@@ -21,13 +21,11 @@
 
 import {ApiWithQuery} from "./types";
 
-export const HeaderKey_AppVersion = "x-app-version";
-export const HeaderKey_BrowserType = "x-browser-type";
-export const HeaderKey_UserAgent = "user-agent";
+export const HeaderKey_PlatformVersion = "x-platform-version";
+export const HeaderKey_PlatformName = "x-platform-name";
 
 export type UpgradeRequired = {
-	browser: boolean,
-	app: boolean
+	upgradeRequired: boolean
 };
 
 export type ApiBinder_AssertAppVersion = ApiWithQuery<string, UpgradeRequired>;
