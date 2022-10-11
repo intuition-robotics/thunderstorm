@@ -58,11 +58,6 @@ class ForceUpgrade_Class
 	static readonly Middleware: ServerApi_Middleware = async (request: ExpressRequest) => ForceUpgrade.assertVersion(request);
 
 	compareVersion(request: ExpressRequest): UpgradeRequired {
-		if (!this.config.regexp)
-			return {
-				upgradeRequired: false
-			};
-
 		const platformVersion = Header_PlatformVersion.get(request) as string;
 		const platformName: PlatformName = Header_PlatformName.get(request) as PlatformName;
 
@@ -75,8 +70,8 @@ class ForceUpgrade_Class
 		const platformNameConfig = this.config[platformName];
 		if (!platformNameConfig || !platformNameConfig.regexp)
 			return {
-				upgradeRequired: false
-			};
+			upgradeRequired: false
+		};
 
 		const regex = new RegExp(platformNameConfig.regexp)
 		const match: RegExpMatchArray | null = platformVersion.match(regex);
@@ -89,9 +84,8 @@ class ForceUpgrade_Class
 				upgradeRequired: false
 			};
 
-		// @ts-ignore
 		const matchGroups = match.groups;
-		if (!matchGroups || !matchGroups.length)
+		if (!matchGroups)
 			throw new BadImplementationException(
 				`If minimumValidVersion is provided ${platformNameConfig.minimumValidVersion}, then groups in regex have to be defined ${__stringify(
 					match)}. i.e. "(?<first>[0-9]+).(?<second>[0-9]+).(?<third>[0-9]+)"`);
@@ -99,17 +93,17 @@ class ForceUpgrade_Class
 		const minimumVersionMatch: RegExpMatchArray | null = minimumValidVersion.match(regex);
 		if (!minimumVersionMatch)
 			throw new BadImplementationException(
-				`Error extracting minimum valid version.. \nVersion: '${minimumValidVersion}'\n config: '${__stringify(this.config)}'`);
+				`Error extracting minimum valid version. \nVersion: '${minimumValidVersion}'\n config: '${__stringify(this.config)}'`);
 
-		// @ts-ignore
 		const versionsGroups = minimumVersionMatch.groups;
-		if (!versionsGroups || !versionsGroups.length)
+		if (!versionsGroups)
 			throw new BadImplementationException(
 				`If minimumValidVersion is provided ${platformNameConfig.minimumValidVersion}, then groups in regex have to be defined ${__stringify(
 					minimumVersionMatch)}. i.e. "(?<first>[0-9]+).(?<second>[0-9]+).(?<third>[0-9]+)"`);
 
 		const versions: string[] = Object.values(matchGroups);
 		const minimumVersions: string[] = Object.values(versionsGroups);
+
 		for (let i = 0; i < versions.length; i++) {
 			const v = versions[i];
 			const minV = minimumVersions[i];
