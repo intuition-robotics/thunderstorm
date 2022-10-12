@@ -19,6 +19,7 @@
 import {
 	BadImplementationException,
 	batchAction,
+	encode,
 	generateHex,
 	Subset
 } from "@intuitionrobotics/ts-common";
@@ -36,7 +37,6 @@ import {FirestoreWrapper} from "./FirestoreWrapper";
 import {FirestoreInterface} from "./FirestoreInterface";
 import {FirestoreTransaction} from "./FirestoreTransaction";
 import admin = require("firebase-admin");
-import {encode} from "firebase-functions/lib/common/providers/https";
 
 export class FirestoreCollection<Type extends object> {
 	readonly name: string;
@@ -70,7 +70,7 @@ export class FirestoreCollection<Type extends object> {
 		};
 	}
 
-	public getExternalFilterKeys(){
+	public getExternalFilterKeys() {
 		return this.externalFilterKeys;
 	}
 
