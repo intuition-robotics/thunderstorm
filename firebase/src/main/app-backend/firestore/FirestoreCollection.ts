@@ -70,10 +70,6 @@ export class FirestoreCollection<Type extends object> {
 		};
 	}
 
-	public getExternalFilterKeys() {
-		return this.externalFilterKeys;
-	}
-
 	private async _query(ourQuery?: FirestoreQuery<Type>): Promise<FirestoreType_DocumentSnapshot[]> {
 		const myQuery = FirestoreInterface.buildQuery(this, ourQuery);
 		return (await myQuery.get()).docs;
@@ -168,7 +164,7 @@ export class FirestoreCollection<Type extends object> {
 	getUniqueFilter = () => this.externalUniqueFilter;
 
 	getUniqueIdForDoc = (instance: Type) => {
-		const extFilters = this.getExternalFilterKeys();
+		const extFilters = this.externalFilterKeys;
 		if (!extFilters?.length)
 			return generateHex(16);
 		return encode(extFilters.reduce((str: string, key: keyof Type) => {
