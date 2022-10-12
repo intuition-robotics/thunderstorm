@@ -21,7 +21,7 @@ import * as admin from "firebase-admin";
 export type FirestoreType_Collection = admin.firestore.CollectionReference ;
 export type FirestoreType_DocumentSnapshot = admin.firestore.QueryDocumentSnapshot ;
 export type FirestoreType_Query = admin.firestore.Query;
-export type FirestoreType_DocumentReference = admin.firestore.DocumentReference ;
+export type FirestoreType_DocumentReference<T> = admin.firestore.DocumentReference<T> ;
 export type FirestoreType = admin.firestore.Firestore ;
 export type FirestoreType_Transaction = admin.firestore.Transaction;
 

@@ -21,6 +21,7 @@ import {
 	FirestoreQuery
 } from "../..";
 import {
+	FirestoreType_DocumentReference,
 	FirestoreType_DocumentSnapshot,
 	FirestoreType_Query
 } from "./types";
@@ -34,6 +35,10 @@ import {
 import * as admin from "firebase-admin";
 
 export class FirestoreInterface {
+
+	static getDoc<Type extends object>(collection: FirestoreCollection<Type>, id: string): FirestoreType_DocumentReference<Type> {
+		return collection.collection.doc(id) as FirestoreType_DocumentReference<Type>;
+	}
 
 	static buildQuery<Type extends object>(collection: FirestoreCollection<Type>, query?: FirestoreQuery<Type>): admin.firestore.Query {
 		let myQuery: FirestoreType_Query = collection.collection;
