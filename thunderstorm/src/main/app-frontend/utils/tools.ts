@@ -19,14 +19,14 @@
  * limitations under the License.
  */
 
-import {Browser} from "../../shared/consts";
+import {PlatformName} from "../../shared/consts";
 import {
 	BadImplementationException,
 	ImplementationMissingException
 } from "@intuitionrobotics/ts-common";
 import * as React from "react";
 
-export function browserType(): Browser {
+export function browserType(): PlatformName {
 	if (navigator?.vendor.includes("Google")) {
 		return 'chrome';
 	}

@@ -23,4 +23,4 @@ export const HeaderKey_Env = "x-env";
 export const HeaderKey_CurrentPage = "x-current-page";
 
 
-export type Browser = "chrome" ;//| "firefox" | "blink" | "edge" | "ie" | "safari" | "opera"
+export type PlatformName = string;//| "firefox" | "blink" | "edge" | "ie" | "safari" | "opera" | "elliqConnect"
