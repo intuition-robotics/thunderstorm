@@ -69,9 +69,7 @@ class ForceUpgrade_Class
 
 		const platformNameConfig = this.config[platformName];
 		if (!platformNameConfig || !platformNameConfig.regexp)
-			return {
-			upgradeRequired: false
-		};
+			return {}; // no info about this platformName
 
 		const regex = new RegExp(platformNameConfig.regexp)
 		const match: RegExpMatchArray | null = platformVersion.match(regex);
