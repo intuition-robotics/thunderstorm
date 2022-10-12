@@ -58,8 +58,8 @@ class ForceUpgrade_Class
 	static readonly Middleware: ServerApi_Middleware = async (request: ExpressRequest) => ForceUpgrade.assertVersion(request);
 
 	compareVersion(request: ExpressRequest): UpgradeRequired {
-		const platformVersion = Header_PlatformVersion.get(request) as string;
-		const platformName: PlatformName = Header_PlatformName.get(request) as PlatformName;
+		const platformVersion = Header_PlatformVersion.get(request);
+		const platformName: PlatformName = Header_PlatformName.get(request);
 
 		if (!platformName)
 			throw new ApiException(500, `Platform name was not specified`);
