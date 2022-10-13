@@ -19,6 +19,7 @@
 import {
 	BadImplementationException,
 	batchAction,
+	encode,
 	generateHex,
 	Subset
 } from "@intuitionrobotics/ts-common";
@@ -46,6 +47,7 @@ export class FirestoreCollection<Type extends object> {
 	 * External unique as in there must never ever be two that answer the same query
 	 */
 	readonly externalUniqueFilter: ((object: Subset<Type>) => Clause_Where<Type>);
+	private readonly externalFilterKeys?: FilterKeys<Type>;
 
 	constructor(name: string, wrapper: FirestoreWrapper, externalFilterKeys?: FilterKeys<Type>) {
 		this.name = name;
@@ -54,6 +56,8 @@ export class FirestoreCollection<Type extends object> {
 			console.log("Please follow name pattern for collections /[a-z-]{3,}/")
 
 		this.collection = wrapper.firestore.collection(name);
+
+		this.externalFilterKeys = externalFilterKeys;
 		this.externalUniqueFilter = (instance: Type) => {
 			if (!externalFilterKeys)
 				throw new BadImplementationException("In order to use a unique query your collection MUST have a unique filter");
@@ -69,6 +73,11 @@ export class FirestoreCollection<Type extends object> {
 	private async _query(ourQuery?: FirestoreQuery<Type>): Promise<FirestoreType_DocumentSnapshot[]> {
 		const myQuery = FirestoreInterface.buildQuery(this, ourQuery);
 		return (await myQuery.get()).docs;
+	}
+
+	async getDocument(id: string): Promise<Type | undefined> {
+		const myQuery = FirestoreInterface.getDoc(this, id);
+		return (await myQuery.get()).data();
 	}
 
 	private async _queryUnique(ourQuery: FirestoreQuery<Type>): Promise<FirestoreType_DocumentSnapshot | undefined> {
@@ -148,11 +157,18 @@ export class FirestoreCollection<Type extends object> {
 		});
 	}
 
-	createDocumentReference() {
-		const id = generateHex(16);
+	createDocumentReference(id: string) {
 		return this.wrapper.firestore.doc(`${this.name}/${id}`);
 	}
 
 	getUniqueFilter = () => this.externalUniqueFilter;
 
+	getUniqueIdForDoc = (instance: Type) => {
+		const extFilters = this.externalFilterKeys;
+		if (!extFilters?.length)
+			return generateHex(16);
+		return encode(extFilters.reduce((str: string, key: keyof Type) => {
+			return `${str}${instance[key]}`;
+		}, ""))
+	};
 }

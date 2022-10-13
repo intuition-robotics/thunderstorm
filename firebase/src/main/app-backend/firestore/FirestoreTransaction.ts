@@ -18,7 +18,7 @@
 
 import * as admin from "firebase-admin";
 import {FirestoreType_DocumentSnapshot} from "./types";
-import {FirestoreCollection,} from "./FirestoreCollection";
+import {FirestoreCollection} from "./FirestoreCollection";
 import {
 	BadImplementationException,
 	merge,
@@ -37,6 +37,11 @@ export class FirestoreTransaction {
 	private async _query<Type extends object>(collection: FirestoreCollection<Type>, ourQuery: FirestoreQuery<Type>): Promise<FirestoreType_DocumentSnapshot[]> {
 		const query = FirestoreInterface.buildQuery(collection, ourQuery);
 		return (await this.transaction.get(query)).docs;
+	}
+
+	async getDocument<Type extends object>(collection: FirestoreCollection<Type>, id: string): Promise<Type | undefined> {
+		const myQuery = FirestoreInterface.getDoc(collection, id);
+		return (await myQuery.get()).data();
 	}
 
 	private async _queryUnique<Type extends object>(collection: FirestoreCollection<Type>, ourQuery: FirestoreQuery<Type>): Promise<FirestoreType_DocumentSnapshot | undefined> {
@@ -68,7 +73,8 @@ export class FirestoreTransaction {
 	}
 
 	async insert<Type extends object>(collection: FirestoreCollection<Type>, instance: Type) {
-		const doc = collection.createDocumentReference();
+		const id = collection.getUniqueIdForDoc(instance);
+		const doc = collection.createDocumentReference(id);
 		await this.transaction.set(doc, instance);
 		return instance;
 	}
@@ -93,8 +99,10 @@ export class FirestoreTransaction {
 
 	private async getOrCreateDocument<Type extends object>(collection: FirestoreCollection<Type>, instance: Type) {
 		let ref = (await this._queryItem(collection, instance))?.ref;
-		if (!ref)
-			ref = collection.createDocumentReference();
+		if (!ref) {
+			const id = collection.getUniqueIdForDoc(instance);
+			ref = collection.createDocumentReference(id);
+		}
 		return ref;
 	}
 
