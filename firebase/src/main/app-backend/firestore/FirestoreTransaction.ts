@@ -73,9 +73,8 @@ export class FirestoreTransaction {
 	}
 
 	async insert<Type extends object>(collection: FirestoreCollection<Type>, instance: Type) {
-		const id = collection.getUniqueIdForDoc(instance);
-		const doc = collection.createDocumentReference(id);
-		await this.transaction.set(doc, instance);
+		const doc = collection.createDocumentReference(instance);
+		await this.transaction.create(doc, instance);
 		return instance;
 	}
 
@@ -100,8 +99,7 @@ export class FirestoreTransaction {
 	private async getOrCreateDocument<Type extends object>(collection: FirestoreCollection<Type>, instance: Type) {
 		let ref = (await this._queryItem(collection, instance))?.ref;
 		if (!ref) {
-			const id = collection.getUniqueIdForDoc(instance);
-			ref = collection.createDocumentReference(id);
+			ref = collection.createDocumentReference(instance);
 		}
 		return ref;
 	}

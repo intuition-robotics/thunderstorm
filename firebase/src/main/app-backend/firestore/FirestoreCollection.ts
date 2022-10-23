@@ -157,13 +157,14 @@ export class FirestoreCollection<Type extends object> {
 		});
 	}
 
-	createDocumentReference(id: string) {
+	createDocumentReference(instance: Type) {
+		const id = this.getUniqueIdForDoc(instance);
 		return this.wrapper.firestore.doc(`${this.name}/${id}`);
 	}
 
 	getUniqueFilter = () => this.externalUniqueFilter;
 
-	getUniqueIdForDoc = (instance: Type) => {
+	protected getUniqueIdForDoc = (instance: Type) => {
 		const extFilters = this.externalFilterKeys;
 		if (!extFilters?.length)
 			return generateHex(16);
