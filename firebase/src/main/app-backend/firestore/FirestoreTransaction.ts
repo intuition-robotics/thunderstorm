@@ -87,7 +87,8 @@ export class FirestoreTransaction {
 		return (await this.upsert_Read(collection, instance))();
 	}
 
-	async upsert_Read<Type extends object>(collection: FirestoreCollection<Type>, instance: Type) {
+	async upsert_Read<Type extends object>(collection: FirestoreCollection<Type>, instance: Type):Promise<() => Promise<Type>> {
+		// const ref = collection.createDocumentReference(instance);
 		const ref = await this.getOrCreateDocument(collection, instance);
 
 		return async () => {
@@ -96,12 +97,20 @@ export class FirestoreTransaction {
 		}
 	}
 
+	// Once migrated we can remove this function
 	private async getOrCreateDocument<Type extends object>(collection: FirestoreCollection<Type>, instance: Type) {
 		let ref = (await this._queryItem(collection, instance))?.ref;
 		if (!ref) {
 			ref = collection.createDocumentReference(instance);
 		}
 		return ref;
+	}
+
+	// Helper but once migrated we won't need this anymore
+	async set<Type extends object>(collection: FirestoreCollection<Type>, instance: Type): Promise<Type>{
+		const ref = collection.createDocumentReference(instance);
+		await this.transaction.set(ref, instance);
+		return instance;
 	}
 
 	async upsertAll<Type extends object>(collection: FirestoreCollection<Type>, instances: Type[]): Promise<Type[]> {
