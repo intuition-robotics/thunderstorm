@@ -26,7 +26,7 @@ import {
 	HttpMethod
 } from "../../../shared/types";
 
-import {BadImplementationException} from "@intuitionrobotics/ts-common";
+import {BadImplementationException, currentTimeMillies} from "@intuitionrobotics/ts-common";
 import {gzipSync} from "zlib";
 // noinspection TypeScriptPreferShortImport
 import {HttpException} from "../../../shared/request-types";
@@ -68,6 +68,8 @@ class XhrHttpRequest<Binder extends ApiTypeBinder<any, any, any, any>>
 	extends BaseHttpRequest<Binder> {
 
 	private readonly xhr?: XMLHttpRequest;
+	private startTime?: number;
+	private elapsedMS?: number;
 
 	constructor(requestKey: string, requestData?: string, shouldCompress?: boolean) {
 		super(requestKey, requestData);
@@ -124,6 +126,9 @@ class XhrHttpRequest<Binder extends ApiTypeBinder<any, any, any, any>>
 			this.xhr.onreadystatechange = () => {
 				if (xhr.readyState !== 4)
 					return;
+
+				if (this.startTime)
+					this.elapsedMS = currentTimeMillies() - this.startTime;
 
 				resolve();
 			};
@@ -191,6 +196,7 @@ class XhrHttpRequest<Binder extends ApiTypeBinder<any, any, any, any>>
 					return reject(error);
 				}
 
+			this.startTime = currentTimeMillies();
 			return this.xhr.send(body);
 		});
 	}
@@ -213,4 +219,6 @@ class XhrHttpRequest<Binder extends ApiTypeBinder<any, any, any, any>>
 
 		return header;
 	}
+
+	getElapsedTime = () => this.elapsedMS;
 }
