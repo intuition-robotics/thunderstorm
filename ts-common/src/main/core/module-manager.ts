@@ -56,6 +56,10 @@ export class ModuleManager
 		return this.modules.filter(filter) as unknown as T[];
 	}
 
+	getModule<T>(moduleName: string) {
+		return this.modules.find(module => module.getName() === moduleName) as unknown as T;
+	}
+
 	public setConfig(config: object) {
 		this.config = config || {};
 		return this;
