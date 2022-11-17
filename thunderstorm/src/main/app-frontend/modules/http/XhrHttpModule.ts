@@ -201,6 +201,10 @@ class XhrHttpRequest<Binder extends ApiTypeBinder<any, any, any, any>>
 		});
 	}
 
+	getAllResponseHeaders() {
+		return this.xhr?.getAllResponseHeaders();
+	}
+
 	getResponseHeader(headerKey: string): string | string[] | undefined {
 		if (!this.xhr)
 			throw new BadImplementationException("No xhr object!");
