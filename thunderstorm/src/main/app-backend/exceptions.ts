@@ -40,7 +40,7 @@ export class ApiException<E extends object | void = void>
 		super(ApiException, `${responseCode}-${JSON.stringify(debugMessage)}`, cause);
 
 		this.responseCode = responseCode;
-		this.responseBody.debugMessage = debugMessage;
+		this.responseBody.debugMessage = JSON.stringify(debugMessage);
 	}
 
 }

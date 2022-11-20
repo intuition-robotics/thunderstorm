@@ -50,7 +50,7 @@ export class FirestoreCollection<Type extends object> {
 	constructor(name: string, wrapper: FirestoreWrapper, externalFilterKeys?: FilterKeys<Type>) {
 		this.name = name;
 		this.wrapper = wrapper;
-		if(!/[a-z-]{3,}/.test(name))
+		if (!/[a-z-]{3,}/.test(name))
 			console.log("Please follow name pattern for collections /[a-z-]{3,}/")
 
 		this.collection = wrapper.firestore.collection(name);
@@ -117,20 +117,20 @@ export class FirestoreCollection<Type extends object> {
 		return this.runInTransaction((transaction) => transaction.deleteUnique(this, query))
 	}
 
-	async delete(query: FirestoreQuery<Type>) {
+	async delete(query: FirestoreQuery<Type>): Promise<Type[]> {
 		const docRefs = await this._query(query);
 		return this.deleteBatch(docRefs);
 	}
 
-	private async deleteBatch(docRefs: FirestoreType_DocumentSnapshot[]) {
+	private async deleteBatch(docRefs: FirestoreType_DocumentSnapshot[]): Promise<Type[]> {
 		await batchAction(docRefs, 200, async (temp) => {
 			const initialValue = this.wrapper.firestore.batch();
-			// @ts-ignore
 			await temp.reduce((batch, val) => batch.delete(val.ref), initialValue).commit();
 		})
+		return docRefs.map(d => d.data() as Type);
 	}
 
-	async deleteAll() {
+	async deleteAll(): Promise<Type[]> {
 		const docRefs = await this._query();
 		return this.deleteBatch(docRefs);
 	}

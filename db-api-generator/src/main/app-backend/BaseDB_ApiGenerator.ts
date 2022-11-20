@@ -514,7 +514,7 @@ export abstract class BaseDB_ApiGenerator<DBType extends DB_Object, ConfigType e
 	 * @param query - The query to be executed for the deletion.
 	 * @param request - The request in order to possibly obtain more info.
 	 */
-	async delete(query: FirestoreQuery<DBType>, request?: ExpressRequest) {
+	async delete(query: FirestoreQuery<DBType>, request?: ExpressRequest): Promise<DBType[]> {
 		return this.collection.delete(query);
 	}
 

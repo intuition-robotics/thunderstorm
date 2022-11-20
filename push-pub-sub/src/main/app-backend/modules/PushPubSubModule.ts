@@ -283,7 +283,7 @@ export class PushPubSubModule_Class
 		const toDelete = filterDuplicates(_toDelete);
 		const _sessions = await batchActionParallel(toDelete, 10, async elements => this.pushSessions.query({where: {firebaseToken: {$in: elements}}}))
 		const sessions = filterDuplicates(_sessions.map(s => s.pushSessionId));
-		const async = [
+		const async: Promise<any>[] = [
 			batchActionParallel(toDelete, 10, async elements => this.pushSessions.delete({where: {firebaseToken: {$in: elements}}})),
 			batchActionParallel(sessions, 10, async elements => this.pushKeys.delete({where: {pushSessionId: {$in: elements}}}))
 		];
