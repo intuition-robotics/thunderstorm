@@ -171,8 +171,8 @@ export abstract class BaseDB_ApiGeneratorCaller<DBType extends DB_Object, UType 
 	}
 
 	private dispatch = () => {
-		this.defaultDispatcher?.dispatchUI([]);
-		this.defaultDispatcher?.dispatchModule([]);
+		this.defaultDispatcher?.dispatchUI();
+		this.defaultDispatcher?.dispatchModule();
 	};
 
 	protected async onEntryDeleted(item: DBType): Promise<void> {

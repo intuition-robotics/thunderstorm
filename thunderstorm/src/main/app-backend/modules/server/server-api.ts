@@ -282,9 +282,9 @@ export abstract class ServerApi<Binder extends ApiTypeBinder<string, R, B, P>, R
 
 			const message = await HttpServer.errorMessageComposer(requestData, apiException);
 			try {
-				await dispatch_onServerError.dispatchModuleAsync([severity,
+				await dispatch_onServerError.dispatchModuleAsync(severity,
 				                                                  HttpServer,
-				                                                  message]);
+				                                                  message);
 			} catch (e) {
 				this.logError("Error while handing server error", e);
 			}

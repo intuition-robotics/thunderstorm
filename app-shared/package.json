@@ -22,6 +22,6 @@
   "devDependencies": {
     "@intuitionrobotics/thunderstorm": "~0.0.1",
     "@intuitionrobotics/ts-common": "~0.0.1",
-    "typescript": "~4.1.0"
+    "typescript": "^4.1.0"
   }
 }

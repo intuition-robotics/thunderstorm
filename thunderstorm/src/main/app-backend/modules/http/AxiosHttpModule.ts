@@ -19,13 +19,10 @@
  * limitations under the License.
  */
 // noinspection TypeScriptPreferShortImport
-import axios from 'axios';
+import axios, {AxiosError} from 'axios';
 import {
-	ApiTypeBinder,
-	DeriveErrorType,
-	DeriveResponseType,
 	ErrorResponse,
-	HttpMethod
+	HttpMethod, TypedApi
 } from "../../../shared/types";
 import {
 	BadImplementationException,
@@ -91,9 +88,9 @@ export type DeriveRealBinder<Binder> = Binder extends ApiTypeBinder<infer U, inf
 
 export const AxiosHttpModule = new AxiosHttpModule_Class();
 
-class AxiosHttpRequest<Binder extends ApiTypeBinder<any, any, any, any>>
-	extends BaseHttpRequest<Binder> {
-	private response?: Axios_Response<DeriveResponseType<DeriveRealBinder<Binder>>>;
+class AxiosHttpRequest<API extends TypedApi<any, any, any, any>>
+	extends BaseHttpRequest<API> {
+	private response?: Axios_Response<DeriveResponseType<DeriveRealBinder<API>>>;
 	private cancelSignal: Axios_CancelTokenSource;
 	protected status?: number;
 	private requestOption: Axios_RequestConfig = {};
@@ -124,7 +121,7 @@ class AxiosHttpRequest<Binder extends ApiTypeBinder<any, any, any, any>>
 		this.cancelSignal.cancel(`Request with key: '${this.key}' aborted by the user.`);
 	}
 
-	getErrorResponse(): ErrorResponse<DeriveErrorType<Binder>> {
+	getErrorResponse(): ErrorResponse<DeriveErrorType<API>> {
 		return {debugMessage: this.getResponse()};
 	}
 
@@ -191,7 +188,8 @@ class AxiosHttpRequest<Binder extends ApiTypeBinder<any, any, any, any>>
 				this.response = await axios.request(options);
 				this.status = this.response?.status || 200;
 				return resolve();
-			} catch (e) {
+			} catch (er) {
+				const e = er as AxiosError
 				// console.log('In catch');
 				// TODO handle this here
 				// 	if (xhr.readyState === 4 && xhr.status === 0) {

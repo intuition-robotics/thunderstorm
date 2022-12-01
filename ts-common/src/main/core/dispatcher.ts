@@ -16,36 +16,62 @@
  * limitations under the License.
  */
 
-import {
-	FunctionKeys,
-	ReturnPromiseType
-} from "../utils/types";
+import {FunctionKeys, ReturnPromiseType} from '../utils/types';
+import {Logger} from './logger/Logger';
 
-export class Dispatcher<T extends object, K extends FunctionKeys<T>> {
+
+export type ParamResolver<T, K extends keyof T> = T[K] extends (...args: any) => any ? Parameters<T[K]> : never
+export type ReturnTypeResolver<T, K extends keyof T> = T[K] extends (...args: any) => any ? ReturnPromiseType<T[K]> : never
+
+export class Processor<T, K extends FunctionKeys<T>>
+	extends Logger {
 
 	static modulesResolver: () => any[];
 
-	protected readonly method: K;
+	readonly method: K;
 	protected readonly filter: (listener: any) => boolean;
 
 	constructor(method: K) {
+		super(method as string);
 		this.method = method;
 		this.filter = (listener: any) => !!listener[this.method];
 	}
 
-	public dispatchModule(p: Parameters<T[K]>): ReturnPromiseType<T[K]>[] {
-		const listeners = Dispatcher.modulesResolver();
-		const params: any = p;
-		return listeners.filter(this.filter).map((listener: T) => listener[this.method](...params));
+	public processModules<R>(processor: (item: T) => R): R[] {
+		return this.filterModules().filter(this.filter).map(processor);
 	}
 
-	public async dispatchModuleAsync(p: Parameters<T[K]>): Promise<ReturnPromiseType<T[K]>[]> {
+	public async processModulesAsync<R>(processor: (item: T) => Promise<R>): Promise<R[]> {
+		return Promise.all(this.filterModules().map(processor));
+	}
+
+	filterModules() {
 		const listeners = Dispatcher.modulesResolver();
-		return Promise.all(listeners.filter(this.filter).map(async (listener: T) => {
-			const params: any = p;
-			return listener[this.method](...params);
-		}));
+		return listeners.filter(this.filter);
 	}
 }
 
+export class Dispatcher<T,
+	K extends FunctionKeys<T>,
+	P extends ParamResolver<T, K> = ParamResolver<T, K>,
+	R extends ReturnTypeResolver<T, K> = ReturnTypeResolver<T, K>>
+	extends Processor<T, K> {
 
+	constructor(method: K) {
+		super(method);
+	}
+
+	public dispatchModule(...p: P): R[] {
+		return this.processModules((listener: T) => {
+			// @ts-ignore
+			return (listener[this.method])(...p);
+		});
+	}
+
+	public async dispatchModuleAsync(...p: P): Promise<R[]> {
+		return this.processModulesAsync<R>((listener: T) => {
+			// @ts-ignore
+			return listener[this.method](...p);
+		});
+	}
+}

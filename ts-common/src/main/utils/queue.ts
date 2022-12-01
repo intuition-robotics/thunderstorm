@@ -57,13 +57,15 @@ export class Queue
 			try {
 				const output: T = await toExecute();
 				onCompleted && onCompleted(output);
-			} catch (e) {
+			} catch (e1) {
+				const err1 = e1 as Error;
 				try {
-					onError && onError(e);
-				} catch (e1) {
+					onError && onError(err1);
+				} catch (e2) {
+					const err2 = e2 as Error;
 					this.logError("Error while calling onError");
-					this.logError("--- Original: ", e);
-					this.logError("-- Secondary: ", e1);
+					this.logError("--- Original: ", err1);
+					this.logError("-- Secondary: ", err2);
 				}
 			}
 			this.running--;

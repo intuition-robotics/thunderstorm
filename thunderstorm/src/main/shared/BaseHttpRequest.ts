@@ -24,15 +24,9 @@ import {
 	BadImplementationException
 } from "@intuitionrobotics/ts-common";
 import {
-	ApiTypeBinder,
-	DeriveBodyType,
-	DeriveErrorType,
-	DeriveQueryType,
-	DeriveResponseType,
-	DeriveUrlType,
 	ErrorResponse,
 	HttpMethod,
-	QueryParams
+	QueryParams, TypedApi
 } from "./types";
 import {
 	HttpException,
@@ -41,12 +35,7 @@ import {
 	TS_Progress
 } from "./request-types";
 
-export abstract class BaseHttpRequest<Binder extends ApiTypeBinder<U, R, B, P, E>,
-	U extends string = DeriveUrlType<Binder>,
-	R extends any = DeriveResponseType<Binder>,
-	B extends any = DeriveBodyType<Binder>,
-	P extends QueryParams = DeriveQueryType<Binder>,
-	E extends void | object = DeriveErrorType<Binder>> {
+export abstract class BaseHttpRequest<API extends TypedApi<any, any, any, any>> {
 
 	key: string;
 	requestData!: string | undefined;
@@ -57,9 +46,9 @@ export abstract class BaseHttpRequest<Binder extends ApiTypeBinder<U, R, B, P, E
 	protected headers: { [s: string]: string[] } = {};
 	protected method: HttpMethod = HttpMethod.GET;
 	protected timeout: number = 10000;
-	protected body!: B;
+	protected body!: API['B'];
 	protected url!: string;
-	protected params: { [K in keyof P]?: P[K] } = {};
+	protected params:  { [K in keyof API['P']]?: API['P'][K] } = {};
 	protected responseType!: string;
 
 	protected label!: string;

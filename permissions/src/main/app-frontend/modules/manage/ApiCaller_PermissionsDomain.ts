@@ -62,7 +62,7 @@ export class PermissionsDomainModule_Class
 			this.domains[domain.projectId] = domainArray
 		});
 
-		dispatch_onPermissionsDomainsLoaded.dispatchUI([]);
+		dispatch_onPermissionsDomainsLoaded.dispatchUI();
 	}
 
 	getDomains(projectId: string): DB_PermissionDomain[] {

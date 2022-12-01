@@ -44,7 +44,7 @@ export class FirestoreBackupScheduler_Class
 		const backupStatusCollection = FirebaseModule.createAdminSession().getFirestore().getCollection<BackupDoc>('firestore-backup-status',
 		                                                                                                           ["moduleKey", "timestamp"]);
 		const backups: FirestoreBackupDetails<any>[] = [];
-		filterInstances(dispatch_onFirestoreBackupSchedulerAct.dispatchModule([])).forEach(backupArray => {
+		filterInstances(dispatch_onFirestoreBackupSchedulerAct.dispatchModule()).forEach(backupArray => {
 			backups.push(...backupArray);
 		});
 
@@ -79,9 +79,9 @@ export class FirestoreBackupScheduler_Class
 
 			} catch (e) {
 				this.logWarning(`backup of ${backupItem.moduleKey} has failed with error`,e);
-				const errorMessage = `Error backing up firestore collection config:\n ${__stringify(backupItem, true)}\nError: ${_logger_logException(e)}`;
+				const errorMessage = `Error backing up firestore collection config:\n ${__stringify(backupItem, true)}\nError: ${_logger_logException(e as Error)}`;
 
-				await dispatch_onServerError.dispatchModuleAsync([ServerErrorSeverity.Critical, this, errorMessage]);
+				await dispatch_onServerError.dispatchModuleAsync(ServerErrorSeverity.Critical, this, errorMessage);
 
 			}
 		}));

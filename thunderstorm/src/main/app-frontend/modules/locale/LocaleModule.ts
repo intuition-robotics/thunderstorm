@@ -67,7 +67,7 @@ export class LocaleModule_Class
 			throw new ImplementationMissingException(`Unsupported language: ${locale}`);
 
 		this.activeLocale = localeDef;
-		dispatch_onLanguageChanged.dispatchUI([]);
+		dispatch_onLanguageChanged.dispatchUI();
 		this.selectedLanguage.set(localeDef.locale);
 		return localeDef
 	}

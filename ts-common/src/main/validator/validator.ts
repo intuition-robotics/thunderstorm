@@ -99,10 +99,10 @@ export const validateObjectValues = <V, T = { [k: string]: V }>(validator: Valid
 				if (!objectValidator)
 					return;
 
-				return objectValidator(`${path}/${key}`, inputValue as unknown as { [k: string]: V });
+				return objectValidator(`${path}/${String(key)}`, inputValue as unknown as { [k: string]: V });
 			}
 
-			validate(inputValue as unknown as V, validator, `${path}/${key}`);
+			validate(inputValue as unknown as V, validator, `${path}/${String(key)}`);
 		}
 	};
 

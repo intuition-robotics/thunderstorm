@@ -54,7 +54,7 @@ export class UploaderModule_Class
 	}
 
 	protected dispatchFileStatusChange(id?: string) {
-		this.dispatch_fileStatusChange.dispatchUI([id]);
+		this.dispatch_fileStatusChange.dispatchUI(id);
 		super.dispatchFileStatusChange(id);
 	}
 

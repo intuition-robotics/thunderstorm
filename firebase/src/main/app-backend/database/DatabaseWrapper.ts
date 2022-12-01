@@ -57,7 +57,7 @@ export class DatabaseWrapper
 		try {
 			return this.database.ref(path).on("value", (snapshot: Firebase_DataSnapshot) => callback(snapshot ? snapshot.val() : undefined));
 		} catch (e) {
-			throw new BadImplementationException(`Error while getting value from path: ${path}`, e);
+			throw new BadImplementationException(`Error while getting value from path: ${path}`, e as Error);
 		}
 	}
 
@@ -65,7 +65,7 @@ export class DatabaseWrapper
 		try {
 			this.database.ref(path).off("value", listener);
 		} catch (e) {
-			throw new BadImplementationException(`Error while getting value from path: ${path}`, e);
+			throw new BadImplementationException(`Error while getting value from path: ${path}`, e as Error);
 		}
 	}
 
@@ -73,7 +73,7 @@ export class DatabaseWrapper
 		try {
 			return await this.database.ref(path).set(value);
 		} catch (e) {
-			throw new BadImplementationException(`Error while setting value to path: ${path}`, e);
+			throw new BadImplementationException(`Error while setting value to path: ${path}`, e as Error);
 		}
 	}
 
@@ -87,17 +87,18 @@ export class DatabaseWrapper
 		}
 	};
 
-	public async update<T>(path: string, value: T) {
+	public async update<T extends Object>(path: string, value: T) {
 		this.logWarning("update will be deprecated!! please use patch");
 		return this.patch(path, value);
 	}
 
-	public async patch<T>(path: string, value: T) {
+	public async patch<T extends Object>(path: string, value: T) {
 		try {
 			return await this.database.ref(path).update(value);
 		} catch (e) {
-			this.logError(e);
-			throw new BadImplementationException(`Error while updating value to path: ${path}`, e);
+			const e1 = e as Error;
+			this.logError(e1);
+			throw new BadImplementationException(`Error while updating value to path: ${path}`, e1);
 		}
 	}
 
@@ -135,7 +136,7 @@ export class DatabaseWrapper
 				reject()
 			})
 		} catch (e) {
-			throw new BadImplementationException(`Error while removing path: ${path}`, e);
+			throw new BadImplementationException(`Error while removing path: ${path}`, e as Error);
 		}
 	}
 }

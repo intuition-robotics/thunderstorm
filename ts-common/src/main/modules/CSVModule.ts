@@ -63,7 +63,7 @@ class CSVModule_Class
 		return this.csvExporter.generateCsv(items, returnCsv);
 	}
 
-	async saveToFile<T>(outputFile: string, items: T[], columnsToProps?: WritePropsMap<T>) {
+	async saveToFile<T extends ObjectTS>(outputFile: string, items: T[], columnsToProps?: WritePropsMap<T>) {
 		const csv = this.csvExporter.generateCsv(items, true);
 		return fs.writeFile(outputFile, csv, {encoding: "utf8"});
 	}
@@ -83,7 +83,7 @@ class CSVModule_Class
 		})
 	}
 
-	private createReadParserOptions<T>(columnsToProps?: ReadPropsMap<T>) {
+	private createReadParserOptions<T extends ObjectTS>(columnsToProps?: ReadPropsMap<T>) {
 		return {
 			mapHeaders: (args: { header: string }) => {
 				return columnsToProps?.[args.header] as string || args.header;

@@ -43,7 +43,7 @@ export class BucketListener_Class
 
 	async onFinalize(object: ObjectMetadata, context: EventContext): Promise<any> {
 		const filePath = object.name;
-		await dispatcher_onFileUploaded.dispatchModuleAsync([filePath]);
+		await dispatcher_onFileUploaded.dispatchModuleAsync(filePath);
 		this.logInfo("Object is ", object);
 		this.logInfo("Context is ", context);
 	}
