@@ -38,10 +38,7 @@ import {
 
 import {Stream} from "stream";
 import {parse} from "url";
-import {
-	HttpServer,
-	ServerApi_Middleware
-} from "./HttpServer";
+import {HttpServer, ServerApi_Middleware} from "./HttpServer";
 import {IncomingHttpHeaders} from "http";
 // noinspection TypeScriptPreferShortImport
 import {
@@ -57,11 +54,7 @@ import {
 } from "../../../shared/types";
 import {assertProperty} from "../../utils/to-be-removed";
 import {ApiException} from "../../exceptions";
-import {
-	ExpressRequest,
-	ExpressResponse,
-	ExpressRouter
-} from "../../utils/types";
+import {ExpressRequest, ExpressResponse, ExpressRouter} from "../../utils/types";
 import {RemoteProxy} from "../proxy/RemoteProxy";
 
 export type HttpRequestData = {
@@ -443,6 +436,10 @@ export class ApiResponse {
 
 	setHeaders(headers: any): void {
 		this.res.header(headers);
+	}
+
+	setHeader(headerKey: string, value: string | string[]): void {
+		this.res.header(headerKey, value);
 	}
 
 	redirect(responseCode: number, url: string) {
