@@ -58,7 +58,7 @@ export class AxiosHttpModule_Class
 			.setOrigin(this.origin)
 			.setMethod(method)
 			.setTimeout(this.timeout)
-			.addHeaders(this.getDefaultHeaders())
+			.setDefaultHeaders(this.defaultHeaders)
 			.setHandleRequestSuccess(this.handleRequestSuccess)
 			.setHandleRequestFailure(this.handleRequestFailure)
 			.setDefaultRequestHandler(this.processDefaultResponseHandlers)

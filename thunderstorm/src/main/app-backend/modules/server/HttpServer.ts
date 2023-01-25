@@ -144,8 +144,7 @@ export class HttpServer_Class
 		}
 
 		const cors = this.config.cors || {};
-		if (!cors.exposedHeaders)
-			cors.exposedHeaders = ["*"]
+		const exposedHeaders = cors.exposedHeaders || ["*"];
 
 		cors.headers = DefaultHeaders.reduce((toRet, item: string) => {
 			if (!toRet.includes(item))
@@ -182,7 +181,7 @@ export class HttpServer_Class
 			res.header('Access-Control-Allow-Origin', origin || "N/A");
 			res.header('Access-Control-Allow-Methods', (cors.methods || ALL_Methods).join(","));
 			res.header('Access-Control-Allow-Headers', cors.headers.join(","));
-			res.header('Access-Control-Expose-Headers', cors.exposedHeaders?.join(","));
+			res.header('Access-Control-Expose-Headers', exposedHeaders.join(","));
 
 			next();
 		});
