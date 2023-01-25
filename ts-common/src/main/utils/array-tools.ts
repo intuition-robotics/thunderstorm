@@ -92,10 +92,13 @@ export function sortArray<T>(array: T[], map: (item: T) => any, invert = false) 
 	return array.sort(compareFn);
 }
 
-export async function batchAction<T extends any = any, R extends any = any>(arr: T[], chunk: number, action: (elements: T[]) => Promise<R | R[]>): Promise<R[]> {
+export async function batchAction<T extends any = any, R extends any = any>(arr: T[], chunk: number, action: (elements: T[], chunkNumber: number) => Promise<R | R[]>): Promise<R[]> {
+	if (chunk <= 0)
+		return []
+
 	const result: R[] = [];
 	for (let i = 0, j = arr.length; i < j; i += chunk) {
-		const items: R[] | R = await action(arr.slice(i, i + chunk));
+		const items: R[] | R = await action(arr.slice(i, i + chunk), i / chunk);
 		if (Array.isArray(items))
 			addAllItemToArray(result, items);
 		else
@@ -104,10 +107,14 @@ export async function batchAction<T extends any = any, R extends any = any>(arr:
 	return result;
 }
 
-export async function batchActionParallel<T extends any = any, R extends any = any>(arr: T[], chunk: number, action: (elements: T[]) => Promise<R | R[]>): Promise<R[]> {
+export async function batchActionParallel<T extends any = any, R extends any = any>(arr: T[], chunk: number, action: (elements: T[], chunkNumber: number) => Promise<R | R[]>): Promise<R[]> {
+
+	if (chunk <= 0)
+		return []
+
 	const promises: Promise<R>[] = [];
 	for (let i = 0, j = arr.length; i < j; i += chunk) {
-		addItemToArray(promises, action(arr.slice(i, i + chunk)));
+		addItemToArray(promises, action(arr.slice(i, i + chunk), i / chunk));
 	}
 
 	const toRet: R[] = [];
