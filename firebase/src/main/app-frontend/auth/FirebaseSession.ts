@@ -40,7 +40,7 @@ import {DatabaseWrapper} from "../database/DatabaseWrapper";
 import {getMessaging} from "firebase/messaging";
 import {getAnalytics} from "firebase/analytics";
 import {getDatabase} from "firebase/database";
-import { getFirestore } from "firebase-admin/firestore";
+import { getFirestore } from "firebase/firestore";
 
 export class FirebaseSession
 	extends Logger {
