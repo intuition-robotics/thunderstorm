@@ -21,10 +21,10 @@
  */
 
 import {
+	_keys,
 	BadImplementationException,
 	ImplementationMissingException,
 	Module,
-	_keys,
 	moduleResolver,
 	ThisShouldNotHappenException
 } from "@intuitionrobotics/ts-common";
@@ -45,7 +45,6 @@ export class FirebaseModule_Class
 
 	// private readonly tokenSessions: { [s: string]: FirebaseSession_UserPassword; } = {};
 	private readonly adminSessions: { [s: string]: FirebaseSession_Admin; } = {};
-	private localAdmin!: FirebaseSession_Admin;
 	public static localAdminConfigId: string;
 	private localProjectId!: string;
 
@@ -109,39 +108,29 @@ export class FirebaseModule_Class
 	// 	return session;
 	// }
 
-	private createLocalAdminSession() {
-		if (this.localAdmin)
-			return this.localAdmin;
-
-		this.logInfo("Creating local admin session");
-		this.localAdmin = new FirebaseSession_Admin("local-admin");
-		this.localAdmin.connect();
-
-		return this.localAdmin;
-	}
-
-	public createAdminSession(_projectId?: string) {
+	public createAdminSession(_projectId?: string, _sessionName?: string) {
 		let projectId = _projectId;
 		if (!projectId)
 			projectId = this.localProjectId;
 
-		let session = this.adminSessions[projectId];
+		const sessionName = _sessionName || projectId || "local-admin";
+		let session = this.adminSessions[sessionName];
 		if (session)
 			return session;
 
 		this.logInfo(`Creating Firebase session for project id: ${projectId}`);
-		let config = this.getProjectAuth(projectId) as JWTInput | string;
-		if (!config)
-			return this.createLocalAdminSession();
+		let config = this.getProjectAuth(projectId) as JWTInput | string | undefined;
+		// if (!config)
+		// 	return this.createLocalAdminSession();
 
 		if (typeof config === "string")
 			config = JSON.parse(readFileSync(config, "utf8")) as JWTInput;
 
-		if (!config || !config.client_email || !config.private_key)
+		if (config && (!config.client_email || !config.private_key))
 			throw new BadImplementationException(`Config for key ${projectId} is not an Admin credentials pattern`);
 
-		session = new FirebaseSession_Admin(projectId, config);
-		this.adminSessions[projectId] = session;
+		session = new FirebaseSession_Admin(sessionName, config);
+		this.adminSessions[sessionName] = session;
 
 		session.connect();
 		return session;
