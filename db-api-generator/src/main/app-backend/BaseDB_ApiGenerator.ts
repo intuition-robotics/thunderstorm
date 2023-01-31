@@ -108,7 +108,7 @@ export abstract class BaseDB_ApiGenerator<DBType extends DB_Object, ConfigType e
 	implements OnFirestoreBackupSchedulerAct {
 
 	public readonly collection!: FirestoreCollection<DBType>;
-	private validator: ValidatorTypeResolver<DBType>;
+	protected validator: ValidatorTypeResolver<DBType>;
 
 	protected constructor(collectionName: string, validator: ValidatorTypeResolver<DBType>, itemName: string) {
 		super();
@@ -194,7 +194,7 @@ export abstract class BaseDB_ApiGenerator<DBType extends DB_Object, ConfigType e
 		this.collection = firestore.getCollection<DBType>(this.config.collectionName, this.config.externalFilterKeys);
 	}
 
-	private async assertExternalQueryUnique(instance: DBType, transaction: FirestoreTransaction): Promise<DBType> {
+	async assertExternalQueryUnique(instance: DBType, transaction: FirestoreTransaction): Promise<DBType> {
 		const dbInstance: DBType | undefined = await transaction.queryItem(this.collection, instance);
 		if (!dbInstance) {
 			const uniqueQuery = FirestoreInterface.buildUniqueQuery(this.collection, instance);
@@ -429,7 +429,7 @@ export abstract class BaseDB_ApiGenerator<DBType extends DB_Object, ConfigType e
 	 * @returns
 	 * A promise of the document that was upserted.
 	 */
-	private async upsertImpl(transaction: FirestoreTransaction, dbInstance: DBType, request?: ExpressRequest): Promise<DBType> {
+	protected async upsertImpl(transaction: FirestoreTransaction, dbInstance: DBType, request?: ExpressRequest): Promise<DBType> {
 		return (await this.upsertImpl_Read(transaction, dbInstance, request))();
 	};
 

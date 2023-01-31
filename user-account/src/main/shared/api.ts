@@ -44,7 +44,7 @@ export type DB_Session = {
 }
 
 export type Response_Auth = UI_Account & {
-	sessionId: string
+	jwt: string
 }
 
 export type Request_UpsertAccount = {

@@ -17,50 +17,46 @@
  * limitations under the License.
  */
 import {
-	__stringify,
-	auditBy,
-	BadImplementationException,
-	currentTimeMillies,
-	Day,
-	Dispatcher,
-	generateHex,
-	hashPasswordWithSalt,
-	Minute,
-	Module,
-	validate
+    __stringify,
+    auditBy,
+    BadImplementationException,
+    currentTimeMillies,
+    Day,
+    Dispatcher,
+    generateHex,
+    hashPasswordWithSalt,
+    Minute,
+    Module,
+    validate
 } from "@intuitionrobotics/ts-common";
 
 
+import {FirebaseModule, FirestoreCollection, FirestoreTransaction} from "@intuitionrobotics/firebase/backend";
 import {
-	FirebaseModule,
-	FirestoreCollection,
-	FirestoreTransaction
-} from "@intuitionrobotics/firebase/backend";
-import {
-	DB_Account,
-	DB_Session,
-	FrontType,
-	HeaderKey_SessionId,
-	PostAssertBody,
-	QueryParam_Email,
-	QueryParam_JWT,
-	QueryParam_RedirectUrl,
-	QueryParam_SessionId,
-	Request_CreateAccount,
-	Request_LoginAccount,
-	Request_UpsertAccount,
-	RequestBody_SamlAssertOptions,
-	Response_Auth,
-	Response_Validation,
-	UI_Account,
-	UI_Session
+    DB_Account,
+    DB_Session,
+    FrontType,
+    HeaderKey_SessionId,
+    PostAssertBody,
+    QueryParam_Email,
+    QueryParam_JWT,
+    QueryParam_RedirectUrl,
+    QueryParam_SessionId,
+    Request_CreateAccount,
+    Request_LoginAccount,
+    Request_UpsertAccount,
+    RequestBody_SamlAssertOptions,
+    Response_Auth,
+    Response_Validation,
+    UI_Account,
+    UI_Session
 } from "./_imports";
 import {
-	ApiException,
-	ApiResponse,
-	ExpressRequest,
-	HeaderKey,
-	QueryRequestInfo
+    ApiException,
+    ApiResponse,
+    ExpressRequest,
+    HeaderKey,
+    QueryRequestInfo
 } from "@intuitionrobotics/thunderstorm/backend";
 import {validateEmail} from "@intuitionrobotics/db-api-generator/backend";
 import {SecretsModule} from "../../shared/modules/SecretsModule";
@@ -253,8 +249,12 @@ export class AccountsModule_Class
 		await this.sessions.deleteUnique(query);
 	}
 
+	async logoutAccount(accountId: string) {
+		await this.sessions.delete({ where: {userId: accountId}})
+	}
+
 	async login(request: Request_LoginAccount, response: ApiResponse): Promise<Response_Auth> {
-		return await this.loginValidate(request, response);
+		return this.loginValidate(request, response);
 	}
 
 	private async loginValidate(request: Request_LoginAccount): Promise<undefined>
@@ -280,7 +280,7 @@ export class AccountsModule_Class
 		let sessionWithAccountId: Response_Auth | undefined
 		if (response) {
 			sessionWithAccountId = await this.upsertSession(account._id, request.frontType);
-			this.setJWTinResp(sessionWithAccountId, sessionWithAccountId.sessionId, response);
+			this.setJWTinResp(response, sessionWithAccountId.jwt);
 		}
 		await dispatch_onUserLogin.dispatchModuleAsync([getUIAccount(account)]);
 		return sessionWithAccountId;
@@ -353,15 +353,17 @@ export class AccountsModule_Class
 		}
 
 		const dbAccount = await this.validateSessionId(sessionId);
-		this.setJWTinResp(dbAccount, sessionId, response);
+        if (response) {
+            const jwt = this.generateJWT(dbAccount, sessionId);
+            this.setJWTinResp(response, jwt);
+        }
 
 		return dbAccount;
 	}
 
-	setJWTinResp(dbAccount: UI_Account, sessionId: string, response?: ApiResponse) {
+	setJWTinResp(response: ApiResponse, jwt: string) {
 		// Set in header response
-		if (response)
-			response.setHeaders({[HeaderKey_JWT]: this.generateJWT(dbAccount, sessionId)})
+        response.setHeaders({[HeaderKey_JWT]: jwt})
 	}
 
 	public generateJWT(account: UI_Account, sessionId: string): string {
@@ -408,7 +410,7 @@ export class AccountsModule_Class
 		return delta > sessionTTLms || delta < 0;
 	};
 
-	public upsertSession = async (userId: string, frontType?: FrontType): Promise<Response_Auth> => {
+	public upsertSession = async (userId: string, frontType?: FrontType): Promise<Response_Auth & {sessionId: string}> => {
 		let session = await this.sessions.queryUnique({where: {userId}});
 		if (!session || this.TTLExpired(session)) {
 			session = {
@@ -424,7 +426,8 @@ export class AccountsModule_Class
 		}
 
 		const account = await this.getUserEmailFromSession(session);
-		return {sessionId: session.sessionId, email: account.email, _id: account._id};
+        const sessionId = session.sessionId;
+        return {sessionId, jwt: this.generateJWT(account, sessionId), email: account.email, _id: account._id};
 	};
 
 	async assertApi(body: PostAssertBody, response: ApiResponse) {
@@ -437,12 +440,13 @@ export class AccountsModule_Class
 			this.logDebug(`Got data from assertion ${__stringify(data)}`);
 
 			const email = data.userId;
-			const {sessionId, _id} = await AccountModule.loginSAML(email);
+			const loginData = await AccountModule.loginSAML(email);
 
 			let redirectUrl = data.loginContext[QueryParam_RedirectUrl];
 
-			const jwt = AccountModule.generateJWT({email, _id}, sessionId);
-			redirectUrl = redirectUrl.replace(new RegExp(QueryParam_SessionId.toUpperCase(), "g"), sessionId);
+			const jwt = loginData.jwt;
+            const replaceValue = loginData.jwt;
+            redirectUrl = redirectUrl.replace(new RegExp(QueryParam_SessionId.toUpperCase(), "g"), replaceValue);
 			redirectUrl = redirectUrl.replace(new RegExp(QueryParam_Email.toUpperCase(), "g"), email);
 			redirectUrl = redirectUrl.replace(new RegExp(QueryParam_JWT.toUpperCase(), "g"), jwt);
 
