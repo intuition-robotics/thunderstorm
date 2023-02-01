@@ -410,7 +410,7 @@ export class AccountsModule_Class
 		return delta > sessionTTLms || delta < 0;
 	};
 
-	public upsertSession = async (userId: string, frontType?: FrontType): Promise<Response_Auth & {sessionId: string}> => {
+	public upsertSession = async (userId: string, frontType?: FrontType): Promise<Response_Auth> => {
 		let session = await this.sessions.queryUnique({where: {userId}});
 		if (!session || this.TTLExpired(session)) {
 			session = {
