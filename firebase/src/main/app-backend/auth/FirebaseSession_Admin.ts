@@ -59,7 +59,7 @@ export class FirebaseSession_Admin
 
 	private createApp() {
 		if (!this.config)
-			return initializeApp();
+			return initializeApp(undefined, this.sessionName);
 
 		const databaseURL = this.config.databaseURL || `https://${this.config.project_id}.firebaseio.com`;
 		return initializeApp({

@@ -40,6 +40,7 @@ import {DatabaseWrapper} from "../database/DatabaseWrapper";
 import {getMessaging} from "firebase/messaging";
 import {getAnalytics} from "firebase/analytics";
 import {getDatabase} from "firebase/database";
+import { getFirestore } from "firebase/firestore";
 
 export class FirebaseSession
 	extends Logger {
@@ -85,6 +86,10 @@ export class FirebaseSession
 	async signInWithToken(token: string) {
 		return signInWithCustomToken(getAuth(this.app),token)
 	};
+
+	getFirestore() {
+		return getFirestore(this.app)
+	}
 
 	async signOut() {
 		return signOut(getAuth(this.app))
