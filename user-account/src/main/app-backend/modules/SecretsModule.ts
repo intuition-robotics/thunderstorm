@@ -9,7 +9,8 @@ import {
 import {ApiException, ExpressRequest} from "@intuitionrobotics/thunderstorm/backend";
 import * as jws from "jws";
 import {Algorithm, Signature} from "jws";
-import {EXPIRES_AT, JWTBuilder} from "../utils/JWTBuilder";
+import {EXPIRES_AT, JWTBuilder} from "./JWTBuilder";
+import {AUTHENTICATION_KEY, AUTHENTICATION_PREFIX} from "../..";
 
 export class TokenExpiredException
     extends ApiException {
@@ -35,8 +36,8 @@ export class SecretsModule_Class
     extends Module<Config> {
     private DEFAULT_ISS = "TOOLS";
 
-    public AUTHENTICATION_PREFIX = "Bearer";
-    public AUTHENTICATION_KEY = "Authorization";
+    public AUTHENTICATION_PREFIX = AUTHENTICATION_PREFIX;
+    public AUTHENTICATION_KEY = AUTHENTICATION_KEY;
 
     constructor() {
         super("SecretsModule", "SecretsModule_Class");

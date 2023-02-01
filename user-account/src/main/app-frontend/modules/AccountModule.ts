@@ -43,7 +43,7 @@ import {
     UI_Account
 } from "../../shared/api";
 import {HttpMethod} from "@intuitionrobotics/thunderstorm";
-import {SecretsModule} from "../../shared/modules/SecretsModule";
+import {AUTHENTICATION_KEY, AUTHENTICATION_PREFIX} from "../..";
 
 export const StorageKey_UserEmail: StorageKey<string> = new StorageKey<string>(`storage-${QueryParam_Email}`);
 export const StorageKey_JWT: StorageKey<string> = new StorageKey<string>(`storage-${QueryParam_JWT}`);
@@ -103,7 +103,7 @@ export class AccountModule_Class
 
 
     protected init(): void {
-        XhrHttpModule.addDefaultHeader(SecretsModule.AUTHENTICATION_KEY, () => `${SecretsModule.AUTHENTICATION_PREFIX} ${StorageKey_JWT.get()}`);
+        XhrHttpModule.addDefaultHeader(AUTHENTICATION_KEY, () => `${AUTHENTICATION_PREFIX} ${StorageKey_JWT.get()}`);
 
         this.dispatchUI_loginChanged = new ThunderDispatcher<OnLoginStatusUpdated, "onLoginStatusUpdated">("onLoginStatusUpdated");
         const email = BaseComponent.getQueryParameter(QueryParam_Email);

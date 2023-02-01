@@ -9,7 +9,7 @@ import {
 	ALGORITHMS,
     Header
 } from "jws";
-import {SecretsModule} from "../modules/SecretsModule";
+import {SecretsModule} from "../../app-backend/modules/SecretsModule";
 
 //Header
 export const ALGORITHM = "alg";

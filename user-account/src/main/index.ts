@@ -18,4 +18,4 @@
  */
 
 export * from "./shared/api";
-export * from "./shared/modules/SecretsModule";
+export * from "./shared/utils/AuthenticationConsts";

@@ -59,7 +59,7 @@ import {
     QueryRequestInfo
 } from "@intuitionrobotics/thunderstorm/backend";
 import {validateEmail} from "@intuitionrobotics/db-api-generator/backend";
-import {SecretsModule} from "../../shared/modules/SecretsModule";
+import {SecretsModule} from "./SecretsModule";
 import {SamlModule} from "./SamlModule";
 
 export const Header_SessionId = new HeaderKey(HeaderKey_SessionId, 404);
