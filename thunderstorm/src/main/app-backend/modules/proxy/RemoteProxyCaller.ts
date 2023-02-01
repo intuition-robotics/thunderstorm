@@ -133,9 +133,10 @@ export class RemoteProxyCaller<Config extends RemoteServerConfig>
 			if (!errorResponse)
 				throw new ApiException(500, `Extraneous error ${__stringify(response)}, Proxy Request: ${__stringify(proxyRequest, true)}`)
 
+			const debugMessage = typeof errorResponse === 'object' ? errorResponse['debugMessage'] : errorResponse;
 			const e = new ApiException<any>(
 				response.status,
-				`Redirect proxy error: ${errorResponse.debugMessage} \n Proxy Request: ${__stringify(proxyRequest, true)}`);
+				`Redirect proxy error: ${debugMessage} \n Proxy Request: ${__stringify(proxyRequest, true)}`);
 			if (errorResponse.error)
 				e.setErrorBody(errorResponse.error);
 
