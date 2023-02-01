@@ -444,11 +444,9 @@ export class AccountsModule_Class
 
 			let redirectUrl = data.loginContext[QueryParam_RedirectUrl];
 
-			const jwt = loginData.jwt;
-            const replaceValue = loginData.jwt;
-            redirectUrl = redirectUrl.replace(new RegExp(QueryParam_SessionId.toUpperCase(), "g"), replaceValue);
+            redirectUrl = redirectUrl.replace(new RegExp(QueryParam_SessionId.toUpperCase(), "g"), loginData.sessionId);
 			redirectUrl = redirectUrl.replace(new RegExp(QueryParam_Email.toUpperCase(), "g"), email);
-			redirectUrl = redirectUrl.replace(new RegExp(QueryParam_JWT.toUpperCase(), "g"), jwt);
+			redirectUrl = redirectUrl.replace(new RegExp(QueryParam_JWT.toUpperCase(), "g"), loginData.jwt);
 
 			return await response.redirect(302, redirectUrl);
 		} catch (error) {
