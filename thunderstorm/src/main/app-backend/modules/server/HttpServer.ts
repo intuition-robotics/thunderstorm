@@ -28,26 +28,12 @@ import * as compression from 'compression';
 import {Server} from "http";
 import {Socket} from "net";
 import * as fs from "fs";
-import {
-	addAllItemToArray,
-	addItemToArray,
-	LogLevel,
-	Module
-} from "@intuitionrobotics/ts-common";
-import {
-	ApiResponse,
-	HttpRequestData,
-	ServerApi
-} from "./server-api";
+import {addAllItemToArray, addItemToArray, LogLevel, Module} from "@intuitionrobotics/ts-common";
+import {ApiResponse, HttpRequestData, ServerApi} from "./server-api";
 import {ApiException} from "../../exceptions";
 import * as express from "express";
 
-import {
-	Express,
-	ExpressRequest,
-	ExpressRequestHandler,
-	ExpressResponse
-} from "../../utils/types";
+import {Express, ExpressRequest, ExpressRequestHandler, ExpressResponse} from "../../utils/types";
 import {DefaultApiErrorMessageComposer} from "./server-errors";
 
 const ALL_Methods: string[] = [
@@ -144,7 +130,7 @@ export class HttpServer_Class
 		}
 
 		const cors = this.config.cors || {};
-		const exposedHeaders = cors.exposedHeaders || ["*"];
+		const exposedHeaders = cors.exposedHeaders || ["function-execution-id", 'jwt'];
 
 		cors.headers = DefaultHeaders.reduce((toRet, item: string) => {
 			if (!toRet.includes(item))
@@ -299,10 +285,9 @@ export class HttpServer_Class
 
 	public resolveApi(routeResolver: RouteResolver, urlPrefix: string) {
 		console.time('Resolving Apis')
-		// @ts-ignore
-		routeResolver.express = this.express;
-		// @ts-ignore
-		routeResolver.resolveApi(urlPrefix, routeResolver.rootDir + urlPrefix);
+
+		routeResolver.setExpressInstance(this.express);
+		routeResolver.resolveApi(urlPrefix);
 
 		const resolveRoutes = (stack: any[]): any[] => {
 			return stack.map((layer: any) => {
@@ -331,7 +316,7 @@ export class HttpServer_Class
 }
 
 export class RouteResolver {
-	readonly express!: express.Express;
+	private express!: express.Express;
 	readonly require: NodeRequire;
 	readonly rootDir: string;
 	readonly apiFolder: string;
@@ -343,12 +328,16 @@ export class RouteResolver {
 		this.apiFolder = apiFolder || "";
 	}
 
+    setExpressInstance(_exp: express.Express){
+        this.express = _exp;
+    }
+
 	setMiddlewares(...middlewares: ServerApi_Middleware[]) {
 		this.middlewares = middlewares;
 		return this;
 	}
 
-	private resolveApi(urlPrefix: string) {
+	public resolveApi(urlPrefix: string) {
 		this.resolveApiImpl(urlPrefix, this.rootDir + "/" + this.apiFolder)
 	}
 
@@ -378,8 +367,7 @@ export class RouteResolver {
 					throw e;
 				}
 
-				// @ts-ignore
-				routeResolver.express = this.express;
+				routeResolver.setExpressInstance(this.express);
 				routeResolver.resolveApi(urlPrefix);
 				return;
 			}

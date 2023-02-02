@@ -20,35 +20,24 @@
  */
 
 import * as React from "react";
-import {
-	renderApp,
-	WrapperProps
-} from "./AppWrapper";
-import {
-	BeLogged,
-	LogClient_Browser,
-	Module
-} from "@intuitionrobotics/ts-common";
+import {renderApp, WrapperProps} from "./AppWrapper";
+import {BeLogged, LogClient_Browser, Module} from "@intuitionrobotics/ts-common";
 import {XhrHttpModule} from "../modules/http/XhrHttpModule";
 import {ToastModule} from "../modules/toaster/ToasterModule";
 import {RoutingModule} from "../modules/routing/RoutingModule";
 import {BrowserHistoryModule} from "../modules/HistoryModule";
 import {StorageModule} from "../modules/StorageModule";
 import {ResourcesModule} from "../modules/ResourcesModule";
-import {
-	RequestErrorHandler,
-	RequestSuccessHandler
-} from "../../shared/request-types";
-import {
-	AbstractThunder,
-	dispatch_requestCompleted
-} from "./AbstractThunder";
+import {RequestErrorHandler, RequestSuccessHandler} from "../../shared/request-types";
+import {AbstractThunder, dispatch_requestCompleted} from "./AbstractThunder";
 import {ThunderstormModule} from "../modules/ThunderstormModule";
 import {DialogModule} from "../modules/dialog/DialogModule";
+import {BaseHttpRequest} from "../../shared/BaseHttpRequest";
+import {ThunderDispatcher} from "./thunder-dispatcher";
 
 export const ErrorHandler_Toast: RequestErrorHandler<any> = (request, resError?) => {
-	const errorMessage = request.errorMessage || resError?.debugMessage;
-	return errorMessage && ToastModule.toastError(errorMessage);
+    const errorMessage = request.errorMessage || resError?.debugMessage;
+    return errorMessage && ToastModule.toastError(errorMessage);
 };
 export const SuccessHandler_Toast: RequestSuccessHandler = (request) => request.successMessage && ToastModule.toastSuccess(request.successMessage);
 
@@ -56,55 +45,66 @@ export const ErrorHandler_Dispatch: RequestErrorHandler<any> = (request) => disp
 export const SuccessHandler_Dispatch: RequestSuccessHandler = (request) => dispatch_requestCompleted.dispatchUI([request.key, true, request.requestData]);
 
 const modules: Module[] = [
-	ThunderstormModule,
-	XhrHttpModule,
+    ThunderstormModule,
+    XhrHttpModule,
 
-	RoutingModule,
-	BrowserHistoryModule,
+    RoutingModule,
+    BrowserHistoryModule,
 
-	ToastModule,
-	DialogModule,
+    ToastModule,
+    DialogModule,
 
-	StorageModule,
-	ResourcesModule
+    StorageModule,
+    ResourcesModule
 ];
 
+export interface OnUnauthenticatedResponse {
+    onUnauthenticatedResponse: () => void
+}
+
 export class Thunder
-	extends AbstractThunder {
+    extends AbstractThunder {
 
-	private mainApp!: React.ElementType<WrapperProps>;
+    private mainApp!: React.ElementType<WrapperProps>;
 
-	constructor() {
-		super();
-		this.addModules(...modules);
-	}
+    constructor() {
+        super();
+        this.addModules(...modules);
+    }
 
-	static getInstance(): Thunder {
-		return Thunder.instance as Thunder;
-	}
+    static getInstance(): Thunder {
+        return Thunder.instance as Thunder;
+    }
 
-	init() {
-		BeLogged.addClient(LogClient_Browser);
+    init() {
+        BeLogged.addClient(LogClient_Browser);
 
-		super.init();
-		// @ts-ignore
-		XhrHttpModule.setErrorHandlers([ErrorHandler_Toast, ErrorHandler_Dispatch]);
-		XhrHttpModule.setSuccessHandlers([SuccessHandler_Toast, SuccessHandler_Dispatch]);
+        super.init();
 
-		return this;
-	}
+        XhrHttpModule.setErrorHandlers([ErrorHandler_Toast, ErrorHandler_Dispatch]);
+        XhrHttpModule.setSuccessHandlers([SuccessHandler_Toast, SuccessHandler_Dispatch]);
+        XhrHttpModule.addDefaultResponseHandler((request: BaseHttpRequest<any>) => {
+            if (request.getStatus() !== 401)
+                return false;
 
-	protected renderApp = (): void => {
-		renderApp();
-	};
+            new ThunderDispatcher<OnUnauthenticatedResponse, "onUnauthenticatedResponse">("onUnauthenticatedResponse").dispatchUI([]);
+            return true;
+        });
 
-	public setMainApp(mainApp: React.ElementType<WrapperProps>): Thunder {
-		this.mainApp = mainApp;
-		return this;
-	}
+        return this;
+    }
 
-	public getMainApp(): React.ElementType<WrapperProps> {
-		return this.mainApp;
-	}
+    protected renderApp = (): void => {
+        renderApp();
+    };
+
+    public setMainApp(mainApp: React.ElementType<WrapperProps>): Thunder {
+        this.mainApp = mainApp;
+        return this;
+    }
+
+    public getMainApp(): React.ElementType<WrapperProps> {
+        return this.mainApp;
+    }
 }
 

@@ -61,6 +61,9 @@ import {
 import {validateEmail} from "@intuitionrobotics/db-api-generator/backend";
 import {SecretsModule} from "./SecretsModule";
 import {SamlModule} from "./SamlModule";
+import { XhrHttpModule } from "@intuitionrobotics/thunderstorm/frontend";
+import { StorageKey_JWT } from "../../app-frontend/modules/AccountModule";
+import { BaseHttpRequest } from "@intuitionrobotics/thunderstorm";
 
 export const Header_SessionId = new HeaderKey(HeaderKey_SessionId, 404);
 export const HeaderKey_JWT = 'jwt';
@@ -95,6 +98,17 @@ export class AccountsModule_Class
 	constructor() {
 		super();
 		this.setDefaultConfig({sessionTTLms: {web: Day, app: Day, jwt: 30 * Minute}, jwtSecretKey: "TS_AUTH_SECRET"});
+		XhrHttpModule.addDefaultResponseHandler((request: BaseHttpRequest<any>) => {
+			const _jwt: string | string[] | undefined = request.getResponseHeader('jwt');
+			if (_jwt) {
+				const jwt = Array.isArray(_jwt) ? _jwt[0] : _jwt;
+				if (jwt)
+					StorageKey_JWT.set(jwt);
+			}
+			const functionExecutionId = request?.getResponseHeader?.('function-execution-id')
+			XhrHttpModule.logDebug(`${request.key} Function execution id: ${functionExecutionId}`)
+			return true;
+		});
 	}
 
 	async __queryRequestInfo(request: ExpressRequest): Promise<{ key: string; data: any; }> {
