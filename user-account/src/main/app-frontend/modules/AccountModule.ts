@@ -42,7 +42,7 @@ import {
     Response_LoginSAML,
     UI_Account
 } from "../../shared/api";
-import {HttpMethod} from "@intuitionrobotics/thunderstorm";
+import {BaseHttpRequest, HttpMethod} from "@intuitionrobotics/thunderstorm";
 import {AUTHENTICATION_KEY, AUTHENTICATION_PREFIX} from "../..";
 
 export const StorageKey_UserEmail: StorageKey<string> = new StorageKey<string>(`storage-${QueryParam_Email}`);
@@ -80,6 +80,17 @@ export class AccountModule_Class
 
     constructor() {
         super();
+        XhrHttpModule.addDefaultResponseHandler((request: BaseHttpRequest<any>) => {
+            const _jwt: string | string[] | undefined = request.getResponseHeader('jwt');
+            if (_jwt) {
+                const jwt = Array.isArray(_jwt) ? _jwt[0] : _jwt;
+                if (jwt)
+                    StorageKey_JWT.set(jwt);
+            }
+            const functionExecutionId = request?.getResponseHeader?.('function-execution-id')
+            XhrHttpModule.logDebug(`${request.key} Function execution id: ${functionExecutionId}`)
+            return false;
+        });
     }
 
     getAccounts() {
