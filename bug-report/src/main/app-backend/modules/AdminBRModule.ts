@@ -52,7 +52,7 @@ export class AdminBRModule_Class
 	downloadFiles = async (path: Paths) => {
 		const bucket = await this.storage.getOrCreateBucket(this.config?.bucket);
 		const file = await bucket.getFile(path.path);
-		return file.getReadSecuredUrl("application/zip", 600000);
+		return file.getReadSecuredUrl(600000);
 	}
 }
 
