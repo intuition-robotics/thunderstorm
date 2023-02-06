@@ -130,15 +130,9 @@ const dispatch_showToast = new ThunderDispatcher<ToastListener, "__showToast">("
 export class ToastModule_Class
 	extends Module<{}> {
 	private DefaultBuilder: ToastBuilder = new ToastBuilder();
-
-
-	constructor() {
-		super();
+	public setDefaultBuilder(DefaultBuilder: ToastBuilder){
+		this.DefaultBuilder = DefaultBuilder;
 	}
-
-	protected init(): void {
-	}
-
 	public toastError(errorMessage: React.ReactNode, interval: number = Interval_DefaultToast) {
 		this.toast(errorMessage, ToastType.error, interval);
 	}
