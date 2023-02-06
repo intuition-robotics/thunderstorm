@@ -24,20 +24,12 @@
  */
 import * as React from "react";
 
-import {
-	_clearTimeout,
-	_setTimeout,
-	Logger,
-	LogLevel,
-	LogParam,
-	TimerHandler
-} from "@intuitionrobotics/ts-common";
+import {_clearTimeout, _setTimeout, Logger, LogLevel, LogParam, TimerHandler, currentTimeMillies} from "@intuitionrobotics/ts-common";
 import {StorageModule} from "../modules/StorageModule";
 import {ResourcesModule} from "../modules/ResourcesModule";
 import {BrowserHistoryModule} from "../modules/HistoryModule";
 import {Thunder} from "./Thunder";
 
-// @ts-ignore
 export class BaseComponent<P = any, S = any>
 	extends React.Component<P, S> {
 
@@ -71,18 +63,31 @@ export class BaseComponent<P = any, S = any>
 	}
 
 	debounce(handler: TimerHandler, key: string, ms = 0) {
-		_clearTimeout(this.timeoutMap[key]);
-		this.timeoutMap[key] = _setTimeout(handler, ms);
+		const k = "debounce" + key;
+		_clearTimeout(this.timeoutMap[k]);
+		this.timeoutMap[k] = _setTimeout(handler, ms);
 	}
 
 	throttle(handler: TimerHandler, key: string, ms = 0) {
-		if (this.timeoutMap[key])
+        const k = "throttle" + key;
+        if (this.timeoutMap[k])
 			return;
-		this.timeoutMap[key] = _setTimeout(() => {
+		this.timeoutMap[k] = _setTimeout(() => {
 			handler();
-			delete this.timeoutMap[key];
+			delete this.timeoutMap[k];
 		}, ms);
 	}
+
+	throttleV2(handler: TimerHandler, key: string, ms: number, force = false) {
+        const k = "throttle_v2" + key;
+        const now = currentTimeMillies();
+        const timeoutMapElement = this.timeoutMap[k];
+        if (timeoutMapElement && now - timeoutMapElement <= ms && !force)
+            return;
+
+        handler();
+        this.timeoutMap[k] = currentTimeMillies();
+    }
 
 	setStateKeysToUpdate(stateKeysToUpdate?: (keyof S)[]) {
 		this.stateKeysToUpdate = stateKeysToUpdate;

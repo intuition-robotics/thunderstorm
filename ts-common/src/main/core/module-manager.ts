@@ -83,11 +83,9 @@ export class ModuleManager
 	public init(): this {
 		this.logInfo(`---------  initializing app  ---------`);
 		this.modules.forEach((module: Module) => {
-			// @ts-ignore
 			module.setManager(this);
 
 			if (this.config)
-				// @ts-ignore
 				module.setConfig(this.config[module.getName()]);
 		});
 
@@ -99,7 +97,6 @@ export class ModuleManager
 			module.initiated = true;
 		});
 
-		// @ts-ignore
 		this.modules.forEach(module => module.validate());
 
 		this.logInfo(`---------  INITIALIZED  ---------`);
