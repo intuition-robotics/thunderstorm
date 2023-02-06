@@ -215,14 +215,14 @@ export class JiraModule_Class
 			return this.executeGetRequest(`/issue/${issueId}`);
 		},
 		comment: this.comment,
-		create: async (project: JiraProject, issueType: IssueType, summary: string, descriptions: JiraIssueText[], label: string[]): Promise<ResponsePostIssue> => {
+		create: async (project: JiraProject, issueType: IssueType, summary: string, descriptions: JiraIssueText[], label?: string[]): Promise<ResponsePostIssue> => {
 			const issue = await this.executePostRequest<ResponsePostIssue, Pick<JiraIssue, "fields">>('/issue', {
 				fields: {
 					project,
 					issuetype: issueType,
 					description: JiraUtils.createText(...descriptions),
 					summary,
-					labels: label,
+					labels: label || [],
 					assignee: {
 						accountId: this.config.defaultAssignee.accountId
 					}
