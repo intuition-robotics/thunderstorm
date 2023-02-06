@@ -45,7 +45,7 @@ export class SecretsModule_Class
     }
 
     getSecret(k: string): Secret {
-        const secret: string = this.getConfig()?.[k] || process.env?.[k];
+        const secret: string = process.env?.[k] || this.getConfig()?.[k];
         if (!secret)
             throw new BadImplementationException(`Missing secret with key ${k} in SecretsModule`);
 
