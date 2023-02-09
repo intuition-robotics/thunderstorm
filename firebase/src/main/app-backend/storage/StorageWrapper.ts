@@ -132,7 +132,7 @@ export class FileWrapper {
 		return this.getSignedUrl(options);
 	}
 
-	async getReadSecuredUrl(contentType: string, expiresInMs: number) {
+	async getReadSecuredUrl(expiresInMs: number) {
 		const options: GetSignedUrlConfig = {
 			action: 'read',
 			expires: currentTimeMillies() + expiresInMs,
