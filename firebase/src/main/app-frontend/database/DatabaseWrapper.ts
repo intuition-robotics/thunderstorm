@@ -59,6 +59,12 @@ export class DatabaseWrapper
 		}, {onlyOnce: false});
 	}
 
+	public listenWithError<T>(path: string, callback: (value: T) => void, errorCallback: (error: Error) => void) {
+		return onValue(this.getRef(path), snapshot => {
+			callback(!snapshot || snapshot.val());
+		}, (error: Error) => errorCallback(error), {onlyOnce: false});
+	}
+
 	private getRef = (path: string) => ref(this.database, path);
 
 	public async set<T>(path: string, value: T) {
