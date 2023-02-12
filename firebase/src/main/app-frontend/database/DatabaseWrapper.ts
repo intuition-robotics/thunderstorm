@@ -53,7 +53,7 @@ export class DatabaseWrapper
 
 	public listen<T>(path: string, callback: (value: T) => void) {
 		return onValue(this.getRef(path), snapshot => {
-			callback(!snapshot || snapshot.val());
+			callback(snapshot.val());
 		}, (error: Error) => {
 			throw new BadImplementationException(`Error while getting value from path: ${path}`, error);
 		}, {onlyOnce: false});
@@ -61,7 +61,7 @@ export class DatabaseWrapper
 
 	public listenWithError<T>(path: string, callback: (value: T) => void, errorCallback: (error: Error) => void) {
 		return onValue(this.getRef(path), snapshot => {
-			callback(!snapshot || snapshot.val());
+			callback(snapshot.val());
 		}, (error: Error) => errorCallback(error), {onlyOnce: false});
 	}
 
