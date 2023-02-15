@@ -47,7 +47,9 @@ const ALL_Methods: string[] = [
 
 const DefaultHeaders: string[] = [
 	'content-type',
-	'content-encoding'
+	'content-encoding',
+	'x-session-id',
+	'authorization'
 ];
 
 type ConfigType = {
