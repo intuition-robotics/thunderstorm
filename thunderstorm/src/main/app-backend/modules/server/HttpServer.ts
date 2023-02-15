@@ -60,7 +60,10 @@ const ALL_Methods: string[] = [
 
 const DefaultHeaders: string[] = [
 	'content-type',
-	'content-encoding'];
+	'content-encoding',
+	'x-session-id',
+	'authorization'
+]
 
 const ExposedHeaders: string[] = [
 	"function-execution-id",
