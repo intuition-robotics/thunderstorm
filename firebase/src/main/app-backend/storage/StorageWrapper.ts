@@ -233,7 +233,7 @@ export class FileWrapper {
 		return {
 			fileName: this.path,
 			securedUrl: url,
-			publicUrl: encodeURI(`https://storage.googleapis.com/${this.bucket.bucketName.replace(`gs://`, '')}${this.path}`)
+			publicUrl: encodeURI(`https://storage.googleapis.com/${this.bucket.bucketName.replace(`gs://`, '')}/${this.path}`)
 		};
 	}
 
