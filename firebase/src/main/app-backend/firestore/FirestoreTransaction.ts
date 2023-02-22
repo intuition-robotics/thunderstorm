@@ -121,7 +121,7 @@ export class FirestoreTransaction {
 			throw new BadImplementationException(`Patching a non existent doc for query ${FirestoreInterface.buildUniqueQuery(collection, instance)}`);
 
 		return async () => {
-			const patchedInstance = merge(await doc.data() as Type, instance);
+			const patchedInstance = merge(doc.data() as Type, instance);
 			this.transaction.set(doc.ref, patchedInstance);
 			return patchedInstance;
 		}
@@ -167,5 +167,9 @@ export class FirestoreTransaction {
 
 			return result;
 		}
+	}
+
+	getSdkInstance(){
+		return this.transaction;
 	}
 }

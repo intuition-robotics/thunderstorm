@@ -138,4 +138,8 @@ export class DatabaseWrapper
 			throw new BadImplementationException(`Error while removing path: ${path}`, e);
 		}
 	}
+
+	getSdkInstance(){
+		return this.database;
+	}
 }

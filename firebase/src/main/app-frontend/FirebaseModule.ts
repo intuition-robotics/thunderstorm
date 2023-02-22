@@ -108,24 +108,23 @@ export class FirebaseModule_Class
 	}
 
 	private async createSessionWithConfigs(config: FirebaseConfig, token?: string): Promise<FirebaseSession> {
-		if (!config || !config.projectId || !config.databaseURL || !config.authDomain || !config.apiKey)
-			throw new BadImplementationException(`Config: ${__stringify(config)} is not a credentials pattern`);
+		this.checkConfig(config, config.projectId);
 
-		const projectId = config.projectId + (token || '');
+		const sessionName = config.projectId + (token || '');
+		const session = this.sessions[sessionName];
+		if (session)
+			return session;
 
-		// @ts-ignore
-		this.setConfig({[projectId]: config});
-
-		return this.createSession(projectId, token);
+		return this.initiateSession(sessionName, config, token);
 	}
 
 	private getProjectAuth(projectId: string) {
 		return this.config?.[projectId];
 	}
 
-	private async initiateSession(projectId: string, config: FirebaseConfig, token?: string) {
-		const session = new FirebaseSession(projectId, config);
-		this.sessions[projectId] = session;
+	private async initiateSession(sessionName: string, config: FirebaseConfig, token?: string) {
+		const session = new FirebaseSession(sessionName, config);
+		this.sessions[sessionName] = session;
 
 		session.connect();
 
