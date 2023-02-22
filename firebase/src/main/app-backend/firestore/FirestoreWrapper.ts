@@ -17,10 +17,7 @@
  */
 
 import {FirestoreCollection,} from "./FirestoreCollection";
-import {
-	FirestoreType,
-	FirestoreType_Collection,
-} from "./types";
+import {FirestoreType, FirestoreType_Collection,} from "./types";
 import {FilterKeys} from "../../shared/types";
 import {FirebaseSession} from "../auth/firebase-session";
 import {FirebaseBaseWrapper} from "../auth/FirebaseBaseWrapper";
@@ -50,6 +47,10 @@ export class FirestoreWrapper
 		collection.wrapper.firestore.doc(`${collection.name}/${doc}`).onSnapshot(_snapshot => {
 			console.log('recieved snapshot!')
 		})
+	}
+
+	getSdkInstance(){
+		return this.firestore;
 	}
 
 	public async deleteCollection(name: string) {
