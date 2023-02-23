@@ -38,6 +38,7 @@
     "@intuitionrobotics/testelot": "~0.0.1",
     "@intuitionrobotics/thunderstorm": "~0.0.1",
     "@slack/events-api": "^2.3.0",
+    "@types/node": "^16.0.0",
     "@types/redis": "^2.8.10",
     "firebase": "^9.9.1",
     "firebase-admin": "^11.0.0",

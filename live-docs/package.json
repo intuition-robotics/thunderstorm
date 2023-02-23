@@ -38,6 +38,7 @@
     "@intuitionrobotics/thunderstorm": "~0.0.1",
     "@types/express": "^4.16.1",
     "@types/history": "^4.7.2",
+    "@types/node": "^16.0.0",
     "@types/react": "^16.8.7",
     "@types/request": "^2.48.1",
     "express": "^4.16.4",
