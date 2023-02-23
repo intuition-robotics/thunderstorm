@@ -87,7 +87,9 @@ export class Thunder
             if (request.getStatus() !== 401)
                 return false;
 
-            new ThunderDispatcher<OnUnauthenticatedResponse, "onUnauthenticatedResponse">("onUnauthenticatedResponse").dispatchUI([]);
+            const unauthenticatedDispatcher = new ThunderDispatcher<OnUnauthenticatedResponse, "onUnauthenticatedResponse">("onUnauthenticatedResponse");
+            unauthenticatedDispatcher.dispatchUI([]);
+            unauthenticatedDispatcher.dispatchModule([]);
             return true;
         });
 

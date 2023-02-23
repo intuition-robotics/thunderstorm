@@ -21,6 +21,7 @@ import {Module, Second} from "@intuitionrobotics/ts-common";
 import {
     BaseComponent,
     BrowserHistoryModule,
+    OnUnauthenticatedResponse,
     StorageKey,
     ThunderDispatcher,
     ToastModule,
@@ -72,7 +73,7 @@ export interface OnAccountsLoaded {
 const dispatch_onAccountsLoaded = new ThunderDispatcher<OnAccountsLoaded, "__onAccountsLoaded">("__onAccountsLoaded");
 
 export class AccountModule_Class
-    extends Module<Config> {
+    extends Module<Config> implements OnUnauthenticatedResponse{
 
     private status: LoggedStatus = LoggedStatus.VALIDATING;
     private dispatchUI_loginChanged!: ThunderDispatcher<OnLoginStatusUpdated, "onLoginStatusUpdated">;
@@ -92,6 +93,10 @@ export class AccountModule_Class
             return false;
         });
     }
+
+    onUnauthenticatedResponse = () => {
+        this.logout();
+    };
 
     getAccounts() {
         return this.accounts;
