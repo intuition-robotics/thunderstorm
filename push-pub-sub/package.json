@@ -30,6 +30,7 @@
   },
   "devDependencies": {
     "@intuitionrobotics/testelot": "~0.0.1",
+    "@types/node": "^16.0.0",
     "firebase": "^9.9.1",
     "firebase-admin": "^11.0.0",
     "ts-node": "^8.6.2",
