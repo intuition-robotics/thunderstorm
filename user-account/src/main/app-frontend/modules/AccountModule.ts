@@ -86,14 +86,15 @@ export class AccountModule_Class
                 return false;
 
             try {
+                const functionExecutionId = request?.getResponseHeader?.(HeaderKey_FunctionExecutionId)
+                XhrHttpModule.logDebug(`${request.key} Function execution id: ${functionExecutionId}`)
+
                 const _jwt: string | string[] | undefined = request.getResponseHeader(HeaderKey_JWT);
                 if (_jwt) {
                     const jwt = Array.isArray(_jwt) ? _jwt[0] : _jwt;
                     if (jwt)
                         StorageKey_JWT.set(jwt);
                 }
-                const functionExecutionId = request?.getResponseHeader?.(HeaderKey_FunctionExecutionId)
-                XhrHttpModule.logDebug(`${request.key} Function execution id: ${functionExecutionId}`)
             }catch (e) {
                 XhrHttpModule.logError(`${request.key} - Failed to retrieve headers from xhr call`, e)
             }
