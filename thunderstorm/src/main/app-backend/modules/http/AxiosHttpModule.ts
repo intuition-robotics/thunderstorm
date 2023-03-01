@@ -212,7 +212,7 @@ class AxiosHttpRequest<Binder extends ApiTypeBinder<any, any, any, any>>
 		});
 	}
 
-	getResponseHeader(headerKey: string): string | string[] | undefined {
+	getResponseHeader(headerKey: string): string | undefined {
 		if (!this.response)
 			throw new BadImplementationException(`axios didn't return yet`);
 

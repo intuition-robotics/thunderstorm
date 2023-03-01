@@ -340,7 +340,7 @@ export abstract class BaseHttpRequest<Binder extends ApiTypeBinder<U, R, B, P, E
 
     abstract getStatus(): number;
 
-    abstract getResponseHeader(headerKey: string): string | string[] | undefined;
+    abstract getResponseHeader(headerKey: string): string | undefined;
 
     abort() {
         this.aborted = true;
