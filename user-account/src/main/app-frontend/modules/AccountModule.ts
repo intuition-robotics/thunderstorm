@@ -43,7 +43,7 @@ import {
     Response_LoginSAML,
     UI_Account
 } from "../../shared/api";
-import {BaseHttpRequest, HttpMethod} from "@intuitionrobotics/thunderstorm";
+import {BaseHttpRequest, HttpMethod, HeaderKey_FunctionExecutionId, HeaderKey_JWT} from "@intuitionrobotics/thunderstorm";
 import {AUTHENTICATION_KEY, AUTHENTICATION_PREFIX} from "../..";
 
 export const StorageKey_UserEmail: StorageKey<string> = new StorageKey<string>(`storage-${QueryParam_Email}`);
@@ -71,7 +71,6 @@ export interface OnAccountsLoaded {
 }
 
 const dispatch_onAccountsLoaded = new ThunderDispatcher<OnAccountsLoaded, "__onAccountsLoaded">("__onAccountsLoaded");
-
 export class AccountModule_Class
     extends Module<Config> implements OnUnauthenticatedResponse{
 
@@ -82,14 +81,22 @@ export class AccountModule_Class
     constructor() {
         super();
         XhrHttpModule.addDefaultResponseHandler((request: BaseHttpRequest<any>) => {
-            const _jwt: string | string[] | undefined = request.getResponseHeader('jwt');
-            if (_jwt) {
-                const jwt = Array.isArray(_jwt) ? _jwt[0] : _jwt;
-                if (jwt)
-                    StorageKey_JWT.set(jwt);
+            const status = request.getStatus();
+            if (status < 200 || status >= 300)
+                return false;
+
+            try {
+                const _jwt: string | string[] | undefined = request.getResponseHeader(HeaderKey_JWT);
+                if (_jwt) {
+                    const jwt = Array.isArray(_jwt) ? _jwt[0] : _jwt;
+                    if (jwt)
+                        StorageKey_JWT.set(jwt);
+                }
+                const functionExecutionId = request?.getResponseHeader?.(HeaderKey_FunctionExecutionId)
+                XhrHttpModule.logDebug(`${request.key} Function execution id: ${functionExecutionId}`)
+            }catch (e) {
+                XhrHttpModule.logError(`${request.key} - Failed to retrieve headers from xhr call`, e)
             }
-            const functionExecutionId = request?.getResponseHeader?.('function-execution-id')
-            XhrHttpModule.logDebug(`${request.key} Function execution id: ${functionExecutionId}`)
             return false;
         });
     }

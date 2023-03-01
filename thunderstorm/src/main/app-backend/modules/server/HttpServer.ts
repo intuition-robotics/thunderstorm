@@ -35,6 +35,7 @@ import * as express from "express";
 
 import {Express, ExpressRequest, ExpressRequestHandler, ExpressResponse} from "../../utils/types";
 import {DefaultApiErrorMessageComposer} from "./server-errors";
+import {HeaderKey_FunctionExecutionId, HeaderKey_JWT} from '../_imports';
 
 const ALL_Methods: string[] = [
 	'GET',
@@ -68,7 +69,6 @@ type ConfigType = {
 export type HttpErrorHandler = (requestData: HttpRequestData, error: ApiException) => Promise<string>;
 
 export type ServerApi_Middleware = (request: ExpressRequest, data: HttpRequestData, response: ApiResponse) => Promise<void>
-
 type HttpRoute = {
 	methods: string[]
 	path: string
@@ -132,7 +132,7 @@ export class HttpServer_Class
 		}
 
 		const cors = this.config.cors || {};
-		const exposedHeaders = cors.exposedHeaders || ["function-execution-id", 'jwt'];
+		const exposedHeaders = cors.exposedHeaders || [HeaderKey_FunctionExecutionId, HeaderKey_JWT];
 
 		cors.headers = DefaultHeaders.reduce((toRet, item: string) => {
 			if (!toRet.includes(item))

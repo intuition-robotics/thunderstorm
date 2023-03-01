@@ -61,9 +61,10 @@ import {
 import {validateEmail} from "@intuitionrobotics/db-api-generator/backend";
 import {SecretsModule} from "./SecretsModule";
 import {SamlModule} from "./SamlModule";
+import { HeaderKey_JWT } from "@intuitionrobotics/thunderstorm";
 
 export const Header_SessionId = new HeaderKey(HeaderKey_SessionId, 404);
-export const HeaderKey_JWT = 'jwt';
+
 type Config = {
     projectId: string
     sessionTTLms: { web: number, app: number, jwt: number }
