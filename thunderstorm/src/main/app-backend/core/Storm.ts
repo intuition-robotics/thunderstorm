@@ -90,8 +90,7 @@ export class Storm
 	startServer(onStarted?: () => Promise<void>) {
 		const modulesAsFunction: FirebaseFunction[] = this.modules.filter((module: Module): module is FirebaseFunction => module instanceof FirebaseFunction);
 
-		this.functions = [new Firebase_ExpressFunction(HttpServer.express),
-		                  ...modulesAsFunction];
+		this.functions = [new Firebase_ExpressFunction(HttpServer.express),...modulesAsFunction];
 
 		this.startServerImpl(onStarted)
 		    .then(() => console.log("Server Started!!"))

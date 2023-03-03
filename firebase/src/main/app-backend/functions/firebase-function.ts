@@ -43,6 +43,7 @@ import {ObjectMetadata} from "firebase-functions/lib/providers/storage";
 import {Message} from "firebase-functions/lib/providers/pubsub";
 import {firestore} from "firebase-admin";
 import DocumentSnapshot = firestore.DocumentSnapshot;
+import {CallableContext} from "firebase-functions/lib/common/providers/https";
 
 const functions = require("firebase-functions");
 
@@ -356,6 +357,45 @@ export abstract class Firebase_PubSubFunction<T>
 
 			return this.handleCallback(() => this._onPublish(data, originalMessage, context));
 		});
+	};
+}
+
+export abstract class Firebase_HTTPSCallableFunction<T>
+	extends FirebaseFunction {
+
+	private function!: CloudFunction<ObjectMetadata>;
+
+	protected constructor(tag?: string) {
+		super(tag);
+	}
+
+	abstract onCall(object: T | undefined, context: CallableContext): Promise<any>;
+
+	private _onCall = async (object: T | undefined, context: CallableContext) => {
+		try {
+			return await this.onCall(object, context);
+		} catch (e) {
+			const _message = `Error calling function` + __stringify(object) +  "\n" + __stringify(e);
+			this.logError(_message);
+			try {
+				await dispatch_onServerError.dispatchModuleAsync([ServerErrorSeverity.Critical,
+					this,
+					_message]);
+			} catch (_e) {
+				this.logError("Error in server while handing https callable function", _e);
+			}
+			throw e;
+		}
+	}
+
+	getFunction = () => {
+		if (this.function)
+			return this.function;
+
+		return this.function = functions.https.onCall((data: T, context: CallableContext) => {
+				return this.handleCallback(() => this._onCall(data, context));
+			}
+		)
 	};
 }
 
