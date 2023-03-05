@@ -37,15 +37,21 @@ export abstract class Module<Config = any>
     protected configValidator?: ValidatorTypeResolver<Config>;
     protected timeoutMap: { [k: string]: number } = {};
 
-    // noinspection TypeScriptAbstractClassConstructorCanBeMadeProtected
-    constructor(tag?: string, name?: string) {
-        super(tag);
-        this.name = name || this.constructor["name"];
-        if (!this.name.endsWith("_Class"))
-            throw new BadImplementationException(`Module class MUST end with '_Class' e.g. MyModule_Class, check class named: ${this.name}`);
+	// noinspection TypeScriptAbstractClassConstructorCanBeMadeProtected
+	constructor(tag?: string, name?: string) {
+		super(tag);
+		this.name = this.deduceName(name).replace("_Class", "");
+	}
 
-        this.name = this.name.replace("_Class", "");
-    }
+	private deduceName(name: string | undefined) {
+		if (name)
+			return name
+
+		const tempName = this.constructor["name"];
+		if (!tempName.endsWith("_Class"))
+			throw new BadImplementationException(`Module class MUST end with '_Class' e.g. MyModule_Class, check class named: ${tempName}`);
+		return tempName
+	}
 
     // // possibly to add
     // public async debounceSync(handler: TimerHandler, key: string, ms = 0) {
