@@ -59,8 +59,8 @@ export abstract class FirebaseFunction<Config = any>
 	protected toBeExecuted: (() => Promise<any>)[] = [];
 	protected toBeResolved!: (value?: (PromiseLike<any>)) => void;
 
-	protected constructor(tag?: string) {
-		super(tag);
+	protected constructor(tag?: string, name?: string) {
+		super(tag, name);
 		this.onFunctionReady = this.onFunctionReady.bind(this);
 	}
 
@@ -100,11 +100,12 @@ export class Firebase_ExpressFunction
 	private toBeExecuted: (() => Promise<any>)[] = [];
 	private isReady: boolean = false;
 	private toBeResolved!: (value?: (PromiseLike<any>)) => void;
-	private name: string = "api";
+	private readonly name: string;
 	static config: RuntimeOptions = {};
 
-	constructor(_express: express.Express) {
+	constructor(_express: express.Express, name = "api") {
 		this.express = _express;
+		this.name = name;
 	}
 
 	static setConfig(config: RuntimeOptions) {
@@ -143,6 +144,29 @@ export class Firebase_ExpressFunction
 		}
 
 		this.toBeResolved && this.toBeResolved();
+	};
+}
+
+
+export abstract class Firebase_HttpsFunction
+	extends FirebaseFunction {
+	private function!: HttpsFunction;
+
+	protected constructor(name: string) {
+		super(name, name.toLowerCase());
+	}
+
+	abstract process(req: Request, res: Response): Promise<any>;
+
+	getFunction = () => {
+		if (this.function)
+			return this.function;
+
+		return this.function = functions.https.onRequest((req: Request, res: Response) => this.process(req, res));
+	};
+
+	onFunctionReady = async () => {
+		return;
 	};
 }
 
