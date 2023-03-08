@@ -106,7 +106,7 @@ class ForceUpgrade_Class
 			const v = versions[i];
 			const minV = minimumVersions[i];
 
-			if (v < minV)
+			if (Number(v) < Number(minV))
 				return {upgradeRequired: true}
 		}
 
