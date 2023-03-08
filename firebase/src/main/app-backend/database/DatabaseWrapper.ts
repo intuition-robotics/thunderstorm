@@ -131,7 +131,7 @@ export class DatabaseWrapper
 
 						resolve(val)
 					}
-				)
+				).catch(reject)
 			})
 		} catch (e) {
 			throw new BadImplementationException(`Error while removing path: ${path}`, e);
