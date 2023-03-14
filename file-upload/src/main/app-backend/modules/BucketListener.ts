@@ -38,6 +38,7 @@ export class BucketListener_Class
 	init() {
 		super.init();
 		// @ts-ignore
+		this.logInfo("Bucket Listener config", this.config)
 		this.logInfo("bucketName", this.config.bucketName);
 	}
 
