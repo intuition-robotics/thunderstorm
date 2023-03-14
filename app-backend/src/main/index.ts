@@ -51,8 +51,7 @@ import {
 } from "@intuitionrobotics/file-upload/backend";
 import {
 	FileWrapper,
-	FirebaseModule,
-	FirestoreTransaction
+	FirebaseModule
 } from '@intuitionrobotics/firebase/backend';
 import {DB_Temp_File} from '@intuitionrobotics/file-upload/shared/types';
 import {Firebase_ExpressFunction} from '@intuitionrobotics/firebase/backend-functions';
@@ -75,7 +74,7 @@ const modules: Module[] = [
 ];
 
 const postProcessor: { [k: string]: PostProcessor } = {
-	default: async (transaction: FirestoreTransaction, file: FileWrapper, doc: DB_Temp_File) => {
+	default: async (file: FileWrapper, doc: DB_Temp_File) => {
 		await FirebaseModule.createAdminSession().getDatabase().set(`/alan/testing/${file.path}`, {path: file.path, name: await file.exists()});
 
 		const resp = ServerUploaderModule.upload([{file: await file.read(), name: 'myTest.txt', mimeType: doc.mimeType}]);

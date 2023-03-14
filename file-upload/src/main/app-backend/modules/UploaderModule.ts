@@ -27,7 +27,6 @@ import {
 import {
 	FileWrapper,
 	FirebaseModule,
-	FirestoreTransaction,
 	StorageWrapper
 } from "@intuitionrobotics/firebase/backend";
 import {
@@ -49,7 +48,7 @@ type Config = {
 	uploaderProjectId?: string
 }
 
-export type PostProcessor = (transaction: FirestoreTransaction, file: FileWrapper, doc: DB_Temp_File) => Promise<void>;
+export type PostProcessor = (file: FileWrapper, doc: DB_Temp_File) => Promise<void>;
 
 export class UploaderModule_Class
 	extends Module<Config>
@@ -124,36 +123,34 @@ export class UploaderModule_Class
 
 		this.logInfo(`Looking for file with path ${filePath}`);
 
-		await UploaderTempFileModule.runInTransaction(async (transaction: FirestoreTransaction) => {
-			// I use collection and not the module directly since I want to handle failure my way
-			const tempMeta = await transaction.queryUnique(UploaderTempFileModule.collection, {where: {path: filePath}});
-			if (!tempMeta)
-				return this.logInfo(`File with path: ${filePath}, not found in temp collection db`);
+		// I use collection and not the module directly since I want to handle failure my way
+		const tempMeta = await UploaderTempFileModule.collection.queryUnique({where: {path: filePath}});
+		if (!tempMeta)
+			return this.logInfo(`File with path: ${filePath}, not found in temp collection db`);
 
-			this.logInfo(`Found temp meta with _id: ${tempMeta._id}`, tempMeta);
-			const val = this.postProcessor[tempMeta.key];
-			this.logInfo(`Found a validator ${!!val}`);
-			if (!val)
-				return this.notifyFrontend(tempMeta.feId, UploadResult.Failure, `Missing a validator for ${tempMeta.key} for file: ${tempMeta.name}`);
+		this.logInfo(`Found temp meta with _id: ${tempMeta._id}`, tempMeta);
+		const val = this.postProcessor[tempMeta.key];
+		this.logInfo(`Found a validator ${!!val}`);
+		if (!val)
+			return this.notifyFrontend(tempMeta.feId, UploadResult.Failure, `Missing a validator for ${tempMeta.key} for file: ${tempMeta.name}`);
 
-			const bucket = await this.storage.getOrCreateBucket(tempMeta.bucketName);
-			const file = await bucket.getFile(tempMeta.path);
-			if (tempMeta.public) {
-				try {
-					await file.makePublic();
-				} catch (e) {
-					await this.notifyFrontend(tempMeta.feId, UploadResult.Failure, `Failed to make the file public: ${tempMeta.name}`, e);
-				}
-			}
-
+		const bucket = await this.storage.getOrCreateBucket(tempMeta.bucketName);
+		const file = await bucket.getFile(tempMeta.path);
+		if (tempMeta.public) {
 			try {
-				await val(transaction, file, tempMeta);
+				await file.makePublic();
 			} catch (e) {
-				//TODO delete the file and the temp doc
-				return await this.notifyFrontend(tempMeta.feId, UploadResult.Failure, `Post-processing failed for file: ${tempMeta.name}`, e);
+				await this.notifyFrontend(tempMeta.feId, UploadResult.Failure, `Failed to make the file public: ${tempMeta.name}`, e);
 			}
-			return this.notifyFrontend(tempMeta.feId, UploadResult.Success, `Successfully parsed and processed file ${tempMeta.name}`);
-		});
+		}
+
+		try {
+			await val(file, tempMeta);
+		} catch (e) {
+			//TODO delete the file and the temp doc
+			return await this.notifyFrontend(tempMeta.feId, UploadResult.Failure, `Post-processing failed for file: ${tempMeta.name}`, e);
+		}
+		return this.notifyFrontend(tempMeta.feId, UploadResult.Success, `Successfully parsed and processed file ${tempMeta.name}`);
 	};
 
 	private notifyFrontend = async (feId: string, result: UploadResult, message: string, cause?: Error) => {
