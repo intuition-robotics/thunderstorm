@@ -305,7 +305,8 @@ export abstract class Firebase_StorageFunction<ConfigType extends BucketConfigs 
 		if (this.function)
 			return this.function;
 
-		this.logInfo(`Initializing ${this.getName()} with configs ${JSON.stringify(this.config)}`)
+		console.log(`Initializing ${this.getName()} with configs ${JSON.stringify(this.config)}`)
+
 		this.runtimeOpts = {
 			timeoutSeconds: this.config?.runtimeOpts?.timeoutSeconds || 300,
 			memory: this.config?.runtimeOpts?.memory || "2GB"
