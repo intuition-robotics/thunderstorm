@@ -81,7 +81,7 @@ export class Firebase_ExpressFunction
 }
 
 
-export abstract class Firebase_HttpsFunction<Config>
+export abstract class Firebase_HttpsFunction<Config = any>
     extends FirebaseFunction<Config> {
     private function!: HttpsFunction;
 
@@ -263,7 +263,7 @@ export type FirebaseEventContext = EventContext;
 
 export type TopicMessage = { data: string, attributes: StringMap };
 
-export abstract class Firebase_PubSubFunction<T, Config>
+export abstract class Firebase_PubSubFunction<T, Config = any>
     extends FirebaseFunction<Config> {
 
     private function!: CloudFunction<ObjectMetadata>;

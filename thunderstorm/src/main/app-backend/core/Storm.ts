@@ -20,10 +20,11 @@
  */
 
 import {FirebaseModule} from "@intuitionrobotics/firebase/backend";
-import {BeLogged, LogClient_Function, LogClient_Terminal, Module, ModuleManager} from "@intuitionrobotics/ts-common";
+import {BeLogged, LogClient_Function, LogClient_Terminal, Module} from "@intuitionrobotics/ts-common";
 import {Firebase_ExpressFunction, FirebaseFunction} from '@intuitionrobotics/firebase/backend-functions';
 import {HttpServer, RouteResolver} from "../modules/server/HttpServer";
 import {ServerApi} from "../modules/server/server-api";
+import {BaseStorm} from "./BaseStorm";
 
 
 const modules: Module[] = [
@@ -33,13 +34,11 @@ const modules: Module[] = [
 
 
 export class Storm
-    extends ModuleManager {
+    extends BaseStorm {
     private routeResolver!: RouteResolver;
     private initialPath!: string;
     private functions: any[] = [];
     private apis: ServerApi<any>[] = [];
-    private envKey: string = "dev";
-
 
     constructor() {
         super();
@@ -65,15 +64,6 @@ export class Storm
     registerApis(...apis: ServerApi<any>[]) {
         this.apis = apis;
         return this;
-    }
-
-    setEnvironment(envKey: string) {
-        this.envKey = envKey;
-        return this;
-    }
-
-    getEnvKey(){
-        return this.envKey;
     }
 
     setInitialRouteResolver(routeResolver: RouteResolver) {
