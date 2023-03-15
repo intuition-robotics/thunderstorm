@@ -19,71 +19,9 @@
  * limitations under the License.
  */
 
-import {
-	DatabaseWrapper,
-	FirebaseModule
-} from "@intuitionrobotics/firebase/backend";
-import {
-	merge,
-	ModuleManager,
-	ObjectTS
-} from "@intuitionrobotics/ts-common";
+import {ModuleManager} from "@intuitionrobotics/ts-common";
 
 export abstract class BaseStorm
-	extends ModuleManager {
+    extends ModuleManager {
 
-	protected envKey: string = "dev";
-	private override: ObjectTS = {};
-
-	setEnvironment(envKey: string) {
-		this.envKey = envKey;
-		return this;
-	}
-
-	setOverride(override?: ObjectTS) {
-		if (override && typeof override === "object" && Object.keys(override).length !== 0)
-			this.override = override
-		return this;
-	}
-
-	protected resolveConfig = async () => {
-		const database: DatabaseWrapper = FirebaseModule.createAdminSession().getDatabase();
-		let initialized = 0;
-
-		const listener = (resolve: (value?: ObjectTS) => void) => (snapshot?: ObjectTS) => {
-			if (initialized > 1) {
-				console.log("CONFIGURATION HAS CHANGED... KILLING PROCESS!!!");
-				process.exit(2);
-			}
-
-			resolve(snapshot || {});
-
-			initialized++;
-		};
-
-		const defaultPromise = new Promise((resolve) => {
-			database.listen(`/_config/default`, listener(resolve));
-		});
-		const envPromise = new Promise((resolve) => {
-			database.listen(`/_config/${this.envKey}`, listener(resolve));
-		});
-		const [
-			      defaultConfig,
-			      envConfig
-		      ] = await Promise.all(
-			[
-				defaultPromise,
-				envPromise
-			]
-		);
-
-		let toBeConfig: ObjectTS = merge(defaultConfig || {}, envConfig || {});
-		if(this.config)
-			toBeConfig = merge(this.config, toBeConfig)
-
-		if(this.override)
-			toBeConfig = merge(toBeConfig, this.override)
-
-		this.setConfig(toBeConfig);
-	};
 }
