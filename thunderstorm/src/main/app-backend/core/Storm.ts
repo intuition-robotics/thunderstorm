@@ -22,16 +22,11 @@
 import {FirebaseModule} from "@intuitionrobotics/firebase/backend";
 import {BeLogged, LogClient_Function, LogClient_Terminal, Module} from "@intuitionrobotics/ts-common";
 import {Firebase_ExpressFunction, FirebaseFunction} from '@intuitionrobotics/firebase/backend-functions';
-import {HttpServer, RouteResolver} from "../modules/server/HttpServer";
+import {HttpServer_Class, RouteResolver} from "../modules/server/HttpServer";
 import {ServerApi} from "../modules/server/server-api";
 import {BaseStorm} from "./BaseStorm";
-
-
-const modules: Module[] = [
-    HttpServer,
-    FirebaseModule
-];
-
+import {Express} from "express";
+import * as express from "express";
 
 export class Storm
     extends BaseStorm {
@@ -39,10 +34,21 @@ export class Storm
     private initialPath!: string;
     private functions: any[] = [];
     private apis: ServerApi<any>[] = [];
+    private express?: Express;
+    private readonly httpServer: HttpServer_Class;
 
     constructor() {
         super();
-        this.addModules(...modules);
+        this.httpServer = new HttpServer_Class(this.express || express());
+        this.addModules(this.httpServer, FirebaseModule);
+    }
+
+    static getInstance(): Storm {
+        return Storm.instance as Storm
+    }
+
+    getHttpServer(){
+        return this.httpServer;
     }
 
     init() {
@@ -53,12 +59,16 @@ export class Storm
 
         const urlPrefix = !process.env.GCLOUD_PROJECT ? this.initialPath : "";
         // Load from folder structure
-        HttpServer.resolveApi(this.routeResolver, urlPrefix);
+        this.httpServer.resolveApi(this.routeResolver, urlPrefix);
         // Load from those passed by init
         this.routeResolver.routeApis(this.apis, urlPrefix)
 
-        HttpServer.printRoutes(process.env.GCLOUD_PROJECT ? this.initialPath : "");
+        this.httpServer.printRoutes(process.env.GCLOUD_PROJECT ? this.initialPath : "");
         return this;
+    }
+
+    setMainExpressApp(_express: Express){
+        this.express = _express;
     }
 
     registerApis(...apis: ServerApi<any>[]) {
@@ -79,7 +89,7 @@ export class Storm
     startServer(onStarted?: () => Promise<void>) {
         const modulesAsFunction: FirebaseFunction[] = this.modules.filter((module: Module): module is FirebaseFunction => module instanceof FirebaseFunction);
 
-        this.functions = [new Firebase_ExpressFunction(HttpServer.express),
+        this.functions = [new Firebase_ExpressFunction(this.httpServer.express),
             ...modulesAsFunction];
 
         this.init();

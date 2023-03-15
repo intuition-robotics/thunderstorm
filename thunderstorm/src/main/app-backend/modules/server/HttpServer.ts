@@ -84,9 +84,9 @@ export class HttpServer_Class
     readonly express: Express;
     private routes!: HttpRoute[];
 
-    constructor() {
+    constructor(_express: Express) {
         super("http-server");
-        this.express = express();
+        this.express = _express;
     }
 
     setErrorMessageComposer(errorMessageComposer: HttpErrorHandler) {
@@ -300,8 +300,6 @@ export class RouteResolver {
         });
     }
 }
-
-export const HttpServer = new HttpServer_Class();
 
 export class HeaderKey {
     private readonly key: string;

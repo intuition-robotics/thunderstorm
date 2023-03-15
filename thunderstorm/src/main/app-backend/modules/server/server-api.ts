@@ -38,7 +38,7 @@ import {
 
 import {Stream} from "stream";
 import {parse} from "url";
-import {HttpServer, ServerApi_Middleware} from "./HttpServer";
+import {HttpServer_Class, ServerApi_Middleware} from "./HttpServer";
 import {IncomingHttpHeaders} from "http";
 // noinspection TypeScriptPreferShortImport
 import {
@@ -56,6 +56,7 @@ import {assertProperty} from "../../utils/to-be-removed";
 import {ApiException} from "../../exceptions";
 import {ExpressRequest, ExpressResponse, ExpressRouter} from "../../utils/types";
 import {RemoteProxy} from "../proxy/RemoteProxy";
+import { Storm } from "../../core/Storm";
 
 export type HttpRequestData = {
 	originalUrl: string
@@ -81,6 +82,7 @@ export abstract class ServerApi<Binder extends ApiTypeBinder<string, R, B, P>, R
 	private bodyValidator?: ValidatorTypeResolver<B>;
 	private queryValidator?: ValidatorTypeResolver<P>;
 	private sideEffects: (() => Promise<any>)[] = [];
+	protected readonly httpServer: HttpServer_Class;
 
 	protected constructor(method: HttpMethod, relativePath: string, tag?: string) {
 		super(tag || relativePath);
@@ -88,6 +90,7 @@ export abstract class ServerApi<Binder extends ApiTypeBinder<string, R, B, P>, R
 
 		this.method = method;
 		this.relativePath = `${relativePath}`;
+		this.httpServer = Storm.getInstance().getHttpServer();
 	}
 
 	shouldPrintResponse() {
@@ -141,7 +144,7 @@ export abstract class ServerApi<Binder extends ApiTypeBinder<string, R, B, P>, R
 		const fullPath = `${prefixUrl ? prefixUrl : ""}/${this.relativePath}`;
 		this.setTag(fullPath);
 		router[this.method](fullPath, this.callWrapper);
-		this.url = `${HttpServer.getBaseUrl()}${fullPath}`;
+		this.url = `${this.httpServer.getBaseUrl()}${fullPath}`;
 	}
 
 	assertProperty = assertProperty;
@@ -273,10 +276,10 @@ export abstract class ServerApi<Binder extends ApiTypeBinder<string, R, B, P>, R
 					break;
 			}
 
-			const message = await HttpServer.errorMessageComposer(requestData, apiException);
+			const message = await this.httpServer.errorMessageComposer(requestData, apiException);
 			try {
 				await dispatch_onServerError.dispatchModuleAsync([severity,
-				                                                  HttpServer,
+				                                                  this.httpServer,
 				                                                  message]);
 			} catch (e) {
 				this.logError("Error while handing server error", e);
@@ -336,7 +339,7 @@ export class ServerApi_Redirect
 
 	protected async process(request: ExpressRequest, response: ApiResponse, queryParams: QueryParams, body: any): Promise<void> {
 		const query = queryParams ? _keys<QueryParams, string>(queryParams).reduce((c: string, k: string) => c + '&' + k + '=' + queryParams[k], '?') : '';
-		response.redirect(this.responseCode, `${HttpServer.getBaseUrl()}${this.redirectUrl}${query}`);
+		response.redirect(this.responseCode, `${this.httpServer.getBaseUrl()}${this.redirectUrl}${query}`);
 	}
 }
 
