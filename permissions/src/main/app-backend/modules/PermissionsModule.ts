@@ -34,7 +34,7 @@ import {
 	ApiPermissionsDB,
 	ProjectPermissionsDB
 } from "./db-types/managment";
-import {HttpServer} from "@intuitionrobotics/thunderstorm/backend";
+import {Storm} from "@intuitionrobotics/thunderstorm/backend";
 import {
 	GroupPermissionsDB,
 	UserPermissionsDB
@@ -119,7 +119,7 @@ export class PermissionsModule_Class
 	}
 
 	async registerProject() {
-		const routes: string[] = HttpServer.getRoutes().reduce((carry: string[], httpRoute) => {
+		const routes: string[] = Storm.getInstance().getHttpServer().getRoutes().reduce((carry: string[], httpRoute) => {
 			if (httpRoute.path !== "*")
 				carry.push(httpRoute.path);
 
