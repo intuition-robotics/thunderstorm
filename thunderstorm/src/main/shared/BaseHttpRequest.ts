@@ -288,7 +288,12 @@ export abstract class BaseHttpRequest<Binder extends ApiTypeBinder<U, R, B, P, E
     async executeSync(): Promise<R> {
         this.addDefaultHeaders();
 
-        await this.executeImpl();
+        try {
+            await this.executeImpl();
+        } catch (e) {
+            this.handleFailure();
+            throw new HttpException(this.getStatus(), this.url, e);
+        }
         if (this.aborted)
             throw new HttpException(this.getStatus(), this.url);// should be status 0
 
