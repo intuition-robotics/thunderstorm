@@ -192,8 +192,7 @@ export class HttpServer_Class
     public resolveApi(routeResolver: RouteResolver, urlPrefix: string) {
         console.time('Resolving Apis')
 
-        routeResolver.setExpressInstance(this.express);
-        routeResolver.resolveApi(urlPrefix);
+        routeResolver.resolveApi(urlPrefix, this.express);
 
         const resolveRoutes = (stack: any[]): any[] => {
             return stack.map((layer: any) => {
@@ -234,16 +233,13 @@ export class RouteResolver {
         this.apiFolder = apiFolder || "";
     }
 
-    setExpressInstance(_exp: express.Express) {
-        this.express = _exp;
-    }
-
     setMiddlewares(...middlewares: ServerApi_Middleware[]) {
         this.middlewares = middlewares;
         return this;
     }
 
-    public resolveApi(urlPrefix: string) {
+    public resolveApi(urlPrefix: string, _exp: express.Express) {
+        this.express = _exp;
         this.resolveApiImpl(urlPrefix, this.rootDir + "/" + this.apiFolder)
     }
 
@@ -273,8 +269,7 @@ export class RouteResolver {
                     throw e;
                 }
 
-                routeResolver.setExpressInstance(this.express);
-                routeResolver.resolveApi(urlPrefix);
+                routeResolver.resolveApi(urlPrefix, this.express);
                 return;
             }
 
