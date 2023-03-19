@@ -84,23 +84,24 @@ export const validateExists = (mandatory = true): Validator<any> => {
 		assertMandatory(mandatory, path, input);
 	};
 };
-export const validateString = (mandatory = true): Validator<any> => {
+
+export const validateType = (type: "undefined" | "object" | "boolean" | "number" | "string" | "function" | "symbol" | "bigint" , mandatory = true): Validator<any> => {
 	return (path: string, input?: any) => {
 		assertMandatory(mandatory, path, input);
 
 		const typeOfInput = typeof input;
-		if(input && typeOfInput !== 'string')
-			throw new ValidationException(`Got ${typeOfInput} when expecting string for field: ${path}\n`, path, input);
+		if(input && typeOfInput !== type)
+			throw new ValidationException(`Got ${typeOfInput} when expecting ${type} for field: ${path}\n`, path, input);
 	};
 };
+export const validateString = (mandatory = true): Validator<any> => {
+	return validateType('string', mandatory);
+};
 export const validateNumber = (mandatory = true): Validator<any> => {
-	return (path: string, input?: any) => {
-		assertMandatory(mandatory, path, input);
-
-		const typeOfInput = typeof input;
-		if(input && typeOfInput !== 'number')
-			throw new ValidationException(`Got ${typeOfInput} when expecting number for field: ${path}\n`, path, input);
-	};
+	return validateType('number', mandatory);
+};
+export const validateBoolean = (mandatory = true): Validator<any> => {
+	return validateType('boolean', mandatory);
 };
 
 export const validateObjectValues = <V, T = { [k: string]: V }>(validator: ValidatorTypeResolver<V>, mandatory = true): Validator<T> =>
