@@ -277,13 +277,15 @@ export abstract class ServerApi<Binder extends ApiTypeBinder<string, R, B, P>, R
             }
 
             try {
-                const httpServer = Storm.getInstance().getHttpServer();
-                const message = await httpServer.errorMessageComposer(requestData, apiException);
-                await dispatch_onServerError.dispatchModuleAsync([
-                    severity,
-                    httpServer,
-                    message
-                ]);
+                const httpServer = Storm.getInstance()?.getHttpServer();
+                if(httpServer) {
+                    const message = await httpServer.errorMessageComposer(requestData, apiException);
+                    await dispatch_onServerError.dispatchModuleAsync([
+                        severity,
+                        httpServer,
+                        message
+                    ]);
+                }
             } catch (e) {
                 this.logError("Error while handing server error", e);
             }
