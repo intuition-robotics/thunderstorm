@@ -147,10 +147,6 @@ export abstract class ServerApi<Binder extends ApiTypeBinder<string, R, B, P>, R
         this.url = `${baseUrl}${fullPath}`;
     }
 
-    protected getHttpServer() {
-        return Storm.getInstance().getHttpServer();
-    }
-
     assertProperty = assertProperty;
 
     callWrapper = async (req: ExpressRequest, res: ExpressResponse) => {
@@ -280,7 +276,7 @@ export abstract class ServerApi<Binder extends ApiTypeBinder<string, R, B, P>, R
                     break;
             }
 
-            const httpServer = this.getHttpServer();
+            const httpServer = Storm.getInstance().getHttpServer();
             const message = await httpServer.errorMessageComposer(requestData, apiException);
             try {
                 await dispatch_onServerError.dispatchModuleAsync([

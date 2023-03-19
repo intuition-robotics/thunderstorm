@@ -19,7 +19,8 @@
 import {
 	ServerApi,
 	ApiResponse,
-	RemoteProxy
+	RemoteProxy,
+    Storm
 } from "@intuitionrobotics/thunderstorm/backend";
 
 // noinspection ES6PreferShortImport
@@ -55,7 +56,7 @@ class ServerApi_RegisterProject
 
 	protected async process(request: ExpressRequest, response: ApiResponse, queryParams: {}, body: void): Promise<void> {
 		// RemoteProxy.assertSecret(request);
-		await PermissionsModule.registerProject();
+		await PermissionsModule.registerProject(Storm.getInstance().getHttpServer());
 	}
 }
 
