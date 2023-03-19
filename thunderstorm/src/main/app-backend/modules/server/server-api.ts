@@ -276,9 +276,9 @@ export abstract class ServerApi<Binder extends ApiTypeBinder<string, R, B, P>, R
                     break;
             }
 
-            const httpServer = Storm.getInstance().getHttpServer();
-            const message = await httpServer.errorMessageComposer(requestData, apiException);
             try {
+                const httpServer = Storm.getInstance().getHttpServer();
+                const message = await httpServer.errorMessageComposer(requestData, apiException);
                 await dispatch_onServerError.dispatchModuleAsync([
                     severity,
                     httpServer,
