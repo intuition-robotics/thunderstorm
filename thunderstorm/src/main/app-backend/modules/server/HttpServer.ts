@@ -189,10 +189,14 @@ export class HttpServer_Class
         console.timeEnd(label)
     }
 
-    public resolveApi(routeResolver: RouteResolver, urlPrefix: string) {
+    public resolveApi(routeResolver: RouteResolver, urlPrefix: string, apis: ServerApi<any>[]) {
         console.time('Resolving Apis')
 
-        routeResolver.resolveApi(urlPrefix, this.express);
+        const baseUrl = this.getBaseUrl();
+        // Load from folder structure
+        routeResolver.resolveApi(urlPrefix, this.express, baseUrl);
+        // Load from those passed by init
+        routeResolver.routeApis(apis, urlPrefix, baseUrl)
 
         const resolveRoutes = (stack: any[]): any[] => {
             return stack.map((layer: any) => {
@@ -238,15 +242,15 @@ export class RouteResolver {
         return this;
     }
 
-    public resolveApi(urlPrefix: string, _exp: express.Express) {
+    public resolveApi(urlPrefix: string, _exp: express.Express, baseUrl: string) {
         this.express = _exp;
-        this.resolveApiImpl(urlPrefix, this.rootDir + "/" + this.apiFolder)
+        this.resolveApiImpl(urlPrefix, this.rootDir + "/" + this.apiFolder, baseUrl)
     }
 
-    private resolveApiImpl(urlPrefix: string, workingDir: string) {
+    private resolveApiImpl(urlPrefix: string, workingDir: string, baseUrl: string) {
         fs.readdirSync(workingDir).forEach((file: string) => {
             if (fs.statSync(`${workingDir}/${file}`).isDirectory()) {
-                this.resolveApiImpl(`${urlPrefix}/${file}`, `${workingDir}/${file}`);
+                this.resolveApiImpl(`${urlPrefix}/${file}`, `${workingDir}/${file}`, baseUrl);
                 return;
             }
 
@@ -269,7 +273,7 @@ export class RouteResolver {
                     throw e;
                 }
 
-                routeResolver.resolveApi(urlPrefix, this.express);
+                routeResolver.resolveApi(urlPrefix, this.express, baseUrl);
                 return;
             }
 
@@ -284,14 +288,14 @@ export class RouteResolver {
             if (!Array.isArray(content))
                 content = [content];
 
-            this.routeApis(content, urlPrefix)
+            this.routeApis(content, urlPrefix, baseUrl)
         });
     }
 
-    public routeApis(apis: ServerApi<any>[], urlPrefix: string) {
+    public routeApis(apis: ServerApi<any>[], urlPrefix: string, baseUrl: string) {
         apis.forEach(api => {
             api.addMiddlewares(...this.middlewares);
-            api.route(this.express, urlPrefix);
+            api.route(this.express, urlPrefix, baseUrl);
         });
     }
 }

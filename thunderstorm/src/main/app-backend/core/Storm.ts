@@ -58,10 +58,8 @@ export class Storm
         super.init();
 
         const urlPrefix = !process.env.GCLOUD_PROJECT ? this.initialPath : "";
-        // Load from folder structure
-        this.httpServer.resolveApi(this.routeResolver, urlPrefix);
-        // Load from those passed by init
-        this.routeResolver.routeApis(this.apis, urlPrefix)
+
+        this.httpServer.resolveApi(this.routeResolver, urlPrefix, this.apis);
 
         this.httpServer.printRoutes(process.env.GCLOUD_PROJECT ? this.initialPath : "");
         return this;

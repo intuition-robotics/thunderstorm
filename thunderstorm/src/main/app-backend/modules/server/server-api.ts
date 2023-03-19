@@ -82,6 +82,7 @@ export abstract class ServerApi<Binder extends ApiTypeBinder<string, R, B, P>, R
     private bodyValidator?: ValidatorTypeResolver<B>;
     private queryValidator?: ValidatorTypeResolver<P>;
     private sideEffects: (() => Promise<any>)[] = [];
+    protected baseUrl?: string;
 
     protected constructor(method: HttpMethod, relativePath: string, tag?: string) {
         super(tag || relativePath);
@@ -138,11 +139,12 @@ export abstract class ServerApi<Binder extends ApiTypeBinder<string, R, B, P>, R
         this.printResponse = printResponseMaxSizeBytes > -1;
     }
 
-    public route(router: ExpressRouter, prefixUrl: string) {
+    public route(router: ExpressRouter, prefixUrl: string, baseUrl: string) {
+        this.baseUrl = baseUrl;
         const fullPath = `${prefixUrl ? prefixUrl : ""}/${this.relativePath}`;
         this.setTag(fullPath);
         router[this.method](fullPath, this.callWrapper);
-        this.url = `${this.getHttpServer().getBaseUrl()}${fullPath}`;
+        this.url = `${baseUrl}${fullPath}`;
     }
 
     protected getHttpServer() {
@@ -344,7 +346,7 @@ export class ServerApi_Redirect
 
     protected async process(request: ExpressRequest, response: ApiResponse, queryParams: QueryParams, body: any): Promise<void> {
         const query = queryParams ? _keys<QueryParams, string>(queryParams).reduce((c: string, k: string) => c + '&' + k + '=' + queryParams[k], '?') : '';
-        response.redirect(this.responseCode, `${this.getHttpServer().getBaseUrl()}${this.redirectUrl}${query}`);
+        response.redirect(this.responseCode, `${this.baseUrl}${this.redirectUrl}${query}`);
     }
 }
 
