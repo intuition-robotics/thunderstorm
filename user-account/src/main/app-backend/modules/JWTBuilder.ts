@@ -96,7 +96,7 @@ export class JWTBuilder {
 	}
 
 	private setIssuedAt() {
-		this.payload[ISSUED_AT] = currentTimeMillies();
+		this.payload[ISSUED_AT] = Math.floor(currentTimeMillies() / 1000);
 	}
 
 	setJWTID(jti: string) {

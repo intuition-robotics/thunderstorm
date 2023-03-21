@@ -25,7 +25,7 @@ import {ModuleManager} from "./module-manager";
 import {BadImplementationException} from "./exceptions";
 import {merge} from "../utils/merge-tools";
 import {Logger} from "./logger/Logger";
-import {ValidatorTypeResolver} from "../validator/validator";
+import {validate, ValidatorTypeResolver} from "../validator/validator";
 import {_clearTimeout, _setTimeout, currentTimeMillies, TimerHandler} from "../utils/date-time-tools";
 
 export abstract class Module<Config = any>
@@ -135,6 +135,7 @@ export abstract class Module<Config = any>
     }
 
     public validate(): void {
-        // ignorance is bliss
+        if(this.configValidator)
+            validate(this.config, this.configValidator)
     }
 }
