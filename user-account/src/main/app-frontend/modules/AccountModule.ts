@@ -43,7 +43,12 @@ import {
     Response_LoginSAML,
     UI_Account
 } from "../../shared/api";
-import {BaseHttpRequest, HttpMethod, HeaderKey_FunctionExecutionId, HeaderKey_JWT} from "@intuitionrobotics/thunderstorm";
+import {
+    BaseHttpRequest,
+    HeaderKey_FunctionExecutionId,
+    HeaderKey_JWT,
+    HttpMethod
+} from "@intuitionrobotics/thunderstorm";
 import {AUTHENTICATION_KEY, AUTHENTICATION_PREFIX} from "../..";
 
 export const StorageKey_UserEmail: StorageKey<string> = new StorageKey<string>(`storage-${QueryParam_Email}`);
@@ -71,8 +76,9 @@ export interface OnAccountsLoaded {
 }
 
 const dispatch_onAccountsLoaded = new ThunderDispatcher<OnAccountsLoaded, "__onAccountsLoaded">("__onAccountsLoaded");
+
 export class AccountModule_Class
-    extends Module<Config> implements OnUnauthenticatedResponse{
+    extends Module<Config> implements OnUnauthenticatedResponse {
 
     private status: LoggedStatus = LoggedStatus.VALIDATING;
     private dispatchUI_loginChanged!: ThunderDispatcher<OnLoginStatusUpdated, "onLoginStatusUpdated">;
@@ -92,7 +98,7 @@ export class AccountModule_Class
                 const jwt: string | undefined = request.getResponseHeader(HeaderKey_JWT);
                 if (jwt)
                     StorageKey_JWT.set(jwt);
-            }catch (e) {
+            } catch (e) {
                 XhrHttpModule.logError(`${request.key} - Failed to retrieve headers from xhr call`, e)
             }
             return false;
@@ -153,7 +159,7 @@ export class AccountModule_Class
             .setLabel(`User register...`)
             .setOnError("Error registering user")
             .execute(async (response: Response_Auth) => {
-                this.setLoginInfo(response);
+                ToastModule.toastSuccess(`Account successfully created with email: ${response.email}`)
             });
     }
 
