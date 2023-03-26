@@ -29,7 +29,9 @@ import {
     isErrorOfType,
     Logger,
     LogLevel,
+    merge,
     MUSTNeverHappenException,
+    ObjectTS,
     ServerErrorSeverity,
     validate,
     ValidationException,
@@ -204,10 +206,9 @@ export abstract class ServerApi<Binder extends ApiTypeBinder<string, R, B, P>, R
             this.bodyValidator && validate<B>(body as B, this.bodyValidator);
             this.queryValidator && validate<P>(reqQuery, this.queryValidator);
 
-            if (this.middlewares)
-                await Promise.all(this.middlewares.map(m => m(req, requestData, response)));
+            const context = await this.applyMiddlewares(req, requestData, response);
 
-            const toReturn: unknown = await this.process(req, response, reqQuery, body as B);
+            const toReturn: unknown = await this.process(req, response, reqQuery, body as B, context);
             if (response.isConsumed())
                 return;
 
@@ -278,7 +279,7 @@ export abstract class ServerApi<Binder extends ApiTypeBinder<string, R, B, P>, R
 
             try {
                 const httpServer = Storm.getInstance()?.getHttpServer();
-                if(httpServer) {
+                if (httpServer) {
                     const message = await httpServer.errorMessageComposer(requestData, apiException);
                     await dispatch_onServerError.dispatchModuleAsync([
                         severity,
@@ -296,7 +297,17 @@ export abstract class ServerApi<Binder extends ApiTypeBinder<string, R, B, P>, R
         }
     };
 
-    protected abstract process(request: ExpressRequest, response: ApiResponse, queryParams: P, body: B): Promise<R>;
+    private async applyMiddlewares(req: ExpressRequest, requestData: HttpRequestData, response: ApiResponse): Promise<ObjectTS> {
+        if (!this.middlewares)
+            return {};
+
+        const contextList = await Promise.all(this.middlewares.map(async m => m(req, requestData, response)));
+
+        return contextList.reduce((acc: ObjectTS, c) => merge(acc, c || {}), {})
+    }
+
+    protected abstract process(request: ExpressRequest, response: ApiResponse, queryParams: P, body: B, context: ObjectTS): Promise<R>;
+
 }
 
 export abstract class ServerApi_Get<Binder extends ApiWithQuery<U, R, P>, U extends string = DeriveUrlType<Binder>, R = DeriveResponseType<Binder>, P extends QueryParams | {} = DeriveQueryType<Binder>>
@@ -325,9 +336,9 @@ export class ServerApi_Proxy<Binder extends ApiTypeBinder<string, R, B, P>, R = 
         this.setMiddlewares(RemoteProxy.Middleware);
     }
 
-    protected async process(request: ExpressRequest, response: ApiResponse, queryParams: DeriveQueryType<Binder>, body: DeriveBodyType<Binder>): Promise<DeriveResponseType<Binder>> {
+    protected async process(request: ExpressRequest, response: ApiResponse, queryParams: DeriveQueryType<Binder>, body: DeriveBodyType<Binder>, context: ObjectTS): Promise<DeriveResponseType<Binder>> {
         // @ts-ignore
-        return this.api.process(request, response, queryParams, body);
+        return this.api.process(request, response, queryParams, body, context);
     }
 }
 

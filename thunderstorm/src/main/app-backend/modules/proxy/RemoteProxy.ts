@@ -18,103 +18,103 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-import {
-	ImplementationMissingException,
-	Module,
-	ObjectTS
-} from "@intuitionrobotics/ts-common";
+import {ImplementationMissingException, Module, ObjectTS} from "@intuitionrobotics/ts-common";
 
-import {
-	HeaderKey,
-	ServerApi_Middleware
-} from "../server/HttpServer";
+import {HeaderKey, ServerApi_Middleware} from "../server/HttpServer";
 import {ApiException} from "../../exceptions";
 import {HttpRequestData} from "../server/server-api";
-import {
-	ExpressRequest,
-	QueryRequestInfo
-} from "../../utils/types";
+import {ExpressRequest, QueryRequestInfo} from "../../utils/types";
 
 type ProxyConfig = {
-	extras?: ObjectTS
-	urls: string[],
-	secret: string
+    extras?: ObjectTS
+    urls: string[],
+    secret: string
 };
 export type RemoteProxyConfig = {
-	remotes: {
-		[proxyId: string]: ProxyConfig
-	}
-	secretHeaderName?: string
-	proxyHeaderName?: string
+    remotes: {
+        [proxyId: string]: ProxyConfig
+    }
+    secretHeaderName?: string
+    proxyHeaderName?: string
 }
 
 export class RemoteProxy_Class<Config extends RemoteProxyConfig>
-	extends Module<Config>
-	implements QueryRequestInfo {
+    extends Module<Config>
+    implements QueryRequestInfo {
 
-	async __queryRequestInfo(request: ExpressRequest): Promise<{ key: string; data: any; }> {
-		let data: string | undefined;
-		try {
-			data = this.proxyHeader.get(request);
-		} catch (e) {
-		}
-		return {
-			key: this.getName(),
-			data
-		};
-	}
+    async __queryRequestInfo(request: ExpressRequest): Promise<{ key: string; data: any; }> {
+        let data: string | undefined;
+        try {
+            data = this.getProxyHeader(request);
+        } catch (e) {
+        }
+        return {
+            key: this.getName(),
+            data
+        };
+    }
 
-	readonly Middleware: ServerApi_Middleware = async (request: ExpressRequest) => {
-		RemoteProxy.assertSecret(request);
-	};
-	private secretHeader!: HeaderKey;
-	private proxyHeader!: HeaderKey;
+    getProxyHeader(request: ExpressRequest) {
+        return this.proxyHeader.get(request);
+    }
 
-	protected init(): void {
-		if (!this.config)
-			throw new ImplementationMissingException("MUST specify config for this module!!");
+    private getSecretHeader(request: ExpressRequest) {
+        return this.secretHeader.get(request);
+    }
 
-		if (!this.config.secretHeaderName)
-			this.config.secretHeaderName = 'x-secret';
+    readonly Middleware: ServerApi_Middleware = async (request: ExpressRequest) => {
+        const extras = RemoteProxy.assertSecret(request);
+        return {extras, proxyId: this.getProxyHeader(request)}
+    };
 
-		if (!this.config.proxyHeaderName)
-			this.config.proxyHeaderName = 'x-proxy';
+    private secretHeader!: HeaderKey;
+    private proxyHeader!: HeaderKey;
 
-		this.secretHeader = new HeaderKey(this.config.secretHeaderName);
-		this.proxyHeader = new HeaderKey(this.config.proxyHeaderName);
-	}
+    protected init(): void {
+        if (!this.config)
+            throw new ImplementationMissingException("MUST specify config for this module!!");
 
-	assertSecret(request: ExpressRequest) {
-		if (!this.secretHeader || !this.proxyHeader)
-			throw new ImplementationMissingException("MUST add RemoteProxy to your module list!!!");
+        if (!this.config.secretHeaderName)
+            this.config.secretHeaderName = 'x-secret';
 
-		const secret = this.secretHeader.get(request);
-		const proxyId = this.proxyHeader.get(request);
+        if (!this.config.proxyHeaderName)
+            this.config.proxyHeaderName = 'x-proxy';
 
-		const expectedSecret = this.config.remotes[proxyId];
+        this.secretHeader = new HeaderKey(this.config.secretHeaderName);
+        this.proxyHeader = new HeaderKey(this.config.proxyHeaderName);
+    }
 
-		if (!proxyId)
-			throw new ApiException(403, `Missing proxy declaration in config for ${proxyId} !!`);
+    assertSecret(request: ExpressRequest) {
+        if (!this.secretHeader || !this.proxyHeader)
+            throw new ImplementationMissingException("MUST add RemoteProxy to your module list!!!");
 
-		if (!secret)
-			throw new ApiException(403, `Missing secret !!`);
+        const secret = this.getSecretHeader(request);
+        const proxyId = this.getProxyHeader(request);
 
-		if (!expectedSecret)
-			throw new ApiException(403, `ProxyId '${proxyId}' is not registered for remote access !!`);
+        const expectedSecret = this.config.remotes[proxyId];
 
-		if (expectedSecret.secret !== secret)
-			throw new ApiException(403, `Secret does not match for proxyId: ${proxyId}`);
+        if (!proxyId)
+            throw new ApiException(403, `Missing proxy declaration in config for ${proxyId} !!`);
 
-		const requestUrl = request.path;
-		if (!expectedSecret.urls || !expectedSecret.urls.includes(requestUrl))
-			throw new ApiException(403, `Requested url '${requestUrl}' is not allowed from proxyId: ${proxyId}`);
+        if (!secret)
+            throw new ApiException(403, `Missing secret !!`);
 
-		return expectedSecret.extras;
-	}
+        if (!expectedSecret)
+            throw new ApiException(403, `ProxyId '${proxyId}' is not registered for remote access !!`);
 
-	async processApi(request: ExpressRequest, requestData: HttpRequestData) {
-		return this.assertSecret(request);
-	}
+        if (expectedSecret.secret !== secret)
+            throw new ApiException(403, `Secret does not match for proxyId: ${proxyId}`);
+
+        const requestUrl = request.path;
+        if (!expectedSecret.urls || !expectedSecret.urls.includes(requestUrl))
+            throw new ApiException(403, `Requested url '${requestUrl}' is not allowed from proxyId: ${proxyId}`);
+
+        return expectedSecret.extras;
+    }
+
+    async processApi(request: ExpressRequest, requestData: HttpRequestData) {
+        return this.assertSecret(request);
+    }
 }
 
 export const RemoteProxy = new RemoteProxy_Class();

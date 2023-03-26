@@ -25,7 +25,7 @@
 
 import * as compression from 'compression';
 import * as fs from "fs";
-import {addAllItemToArray, addItemToArray, LogLevel, Module} from "@intuitionrobotics/ts-common";
+import {addAllItemToArray, addItemToArray, LogLevel, Module, ObjectTS} from "@intuitionrobotics/ts-common";
 import {ApiResponse, HttpRequestData, ServerApi} from "./server-api";
 import {ApiException} from "../../exceptions";
 import * as express from "express";
@@ -70,7 +70,7 @@ type ConfigType = {
 
 export type HttpErrorHandler = (requestData: HttpRequestData, error: ApiException) => Promise<string>;
 
-export type ServerApi_Middleware = (request: ExpressRequest, data: HttpRequestData, response: ApiResponse) => Promise<void>
+export type ServerApi_Middleware = (request: ExpressRequest, data: HttpRequestData, response: ApiResponse) => Promise<ObjectTS | void>
 type HttpRoute = {
     methods: string[]
     path: string
