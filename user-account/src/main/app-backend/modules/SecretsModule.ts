@@ -151,7 +151,7 @@ export class SecretsModule_Class
         const secret = this.getAuthSecret(kid)
         return new JWTBuilder(algorithm)
             // This is a default that can be overwritten by the claims
-            .setExpiration(currentTimeMillies() + Day)
+            .setExpiration(Math.floor((currentTimeMillies() + Day) / 1000))
             .addClaims(payload)
             .setIssuer(this.getIss())
             .setKeyID(secret.kid)
