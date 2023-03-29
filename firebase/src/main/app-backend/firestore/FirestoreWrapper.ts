@@ -21,46 +21,39 @@ import {FirestoreType, FirestoreType_Collection,} from "./types";
 import {FilterKeys} from "../../shared/types";
 import {FirebaseSession} from "../auth/firebase-session";
 import {FirebaseBaseWrapper} from "../auth/FirebaseBaseWrapper";
-import {DB_Object} from "@intuitionrobotics/ts-common";
 import {getFirestore} from "firebase-admin/firestore";
 
 export class FirestoreWrapper
-	extends FirebaseBaseWrapper {
+    extends FirebaseBaseWrapper {
 
-	readonly firestore: FirestoreType;
-	private readonly collections: { [collectionName: string]: FirestoreCollection<any> } = {};
+    readonly firestore: FirestoreType;
+    private readonly collections: { [collectionName: string]: FirestoreCollection<any> } = {};
 
-	constructor(firebaseSession: FirebaseSession<any, any>) {
-		super(firebaseSession);
-		this.firestore = getFirestore(firebaseSession.app)
-	}
+    constructor(firebaseSession: FirebaseSession<any, any>) {
+        super(firebaseSession);
+        this.firestore = getFirestore(firebaseSession.app)
+    }
 
-	public getCollection<Type extends object>(name: string, externalFilterKeys?: FilterKeys<Type>): FirestoreCollection<Type> {
-		const collection = this.collections[name];
-		if (collection)
-			return collection;
+    public getCollection<Type extends object>(name: string, externalFilterKeys?: FilterKeys<Type>): FirestoreCollection<Type> {
+        const collection = this.collections[name];
+        if (collection)
+            return collection;
 
-		return this.collections[name] = new FirestoreCollection<Type>(name, this, externalFilterKeys);
-	}
+        return this.collections[name] = new FirestoreCollection<Type>(name, this, externalFilterKeys);
+    }
 
-	public listen<Type extends DB_Object>(collection: FirestoreCollection<Type>, doc: string) {
-		collection.wrapper.firestore.doc(`${collection.name}/${doc}`).onSnapshot(_snapshot => {
-			console.log('recieved snapshot!')
-		})
-	}
+    getSdkInstance() {
+        return this.firestore;
+    }
 
-	getSdkInstance(){
-		return this.firestore;
-	}
+    public async deleteCollection(name: string) {
+        return this.getCollection(name).deleteAll();
+    }
 
-	public async deleteCollection(name: string) {
-		return this.getCollection(name).deleteAll();
-	}
+    public async listCollections(): Promise<FirestoreType_Collection[]> {
+        if (!this.firestore.listCollections)
+            return [];
 
-	public async listCollections(): Promise<FirestoreType_Collection[]> {
-		if (!this.firestore.listCollections)
-			return [];
-
-		return this.firestore.listCollections();
-	}
+        return this.firestore.listCollections();
+    }
 }
