@@ -139,23 +139,30 @@ const createFormData = (filename: string, buffer: Buffer) => ({file: {value: buf
 
 export class JiraModule_Class
 	extends Module<Config> {
-	private headersJson!: StringMap;
-	private headersForm!: StringMap;
 	private projects!: JiraProject[];
 	private versions: { [projectId: string]: JiraVersion[] } = {};
-	private restUrl!: string;
 
 	protected init(): void {
-		if (!this.config.baseUrl)
-			throw new ImplementationMissingException("Missing Jira baseUrl for JiraModule, please add the key baseUrl to the config");
+	}
 
-		this.restUrl = this.config.baseUrl + '/rest/api/3';
-		console.log(this.restUrl);
+	private getHeadersJson() {
 		if (!this.config.auth || !this.config.auth.apiKey || !this.config.auth.email)
 			throw new ImplementationMissingException('Missing auth config variables for JiraModule');
 
-		this.headersJson = this.buildHeaders(this.config.auth, true);
-		this.headersForm = this.buildHeaders(this.config.auth, false);
+		return this.buildHeaders(this.config.auth, true);
+	}
+	private getHeadersForm() {
+		if (!this.config.auth || !this.config.auth.apiKey || !this.config.auth.email)
+			throw new ImplementationMissingException('Missing auth config variables for JiraModule');
+
+		return this.buildHeaders(this.config.auth, false);
+	}
+
+	private getRestUrl() {
+		if (!this.config.baseUrl)
+			throw new ImplementationMissingException("Missing Jira baseUrl for JiraModule, please add the key baseUrl to the config");
+
+		return this.config.baseUrl + '/rest/api/3';
 	}
 
 	private buildHeaders = ({apiKey, email}: JiraAuth, check: boolean) => {
@@ -263,8 +270,8 @@ export class JiraModule_Class
 
 	private executeFormRequest = async (url: string, buffer: Buffer) => {
 		const request: AxiosRequestConfig = {
-			headers: this.headersForm,
-			url: `${this.restUrl}${url}`,
+			headers: this.getHeadersForm(),
+			url: `${this.getRestUrl()}${url}`,
 			data: createFormData('logs.zip', buffer),
 			method: HttpMethod.POST
 		};
@@ -273,8 +280,8 @@ export class JiraModule_Class
 
 	private async executePostRequest<Res, Req>(url: string, body: Req, label?: string[]) {
 		const request: AxiosRequestConfig = {
-			headers: this.headersJson,
-			url: `${this.restUrl}${url}`,
+			headers: this.getHeadersJson(),
+			url: `${this.getRestUrl()}${url}`,
 			data: body,
 			method: HttpMethod.POST,
 			responseType: 'json'
@@ -284,8 +291,8 @@ export class JiraModule_Class
 
 	private async executePutRequest<T>(url: string, body: T) {
 		const request: AxiosRequestConfig = {
-			headers: this.headersJson,
-			url: `${this.restUrl}${url}`,
+			headers: this.getHeadersJson(),
+			url: `${this.getRestUrl()}${url}`,
 			data: body,
 			method: HttpMethod.PUT,
 			responseType: 'json'
@@ -303,8 +310,8 @@ export class JiraModule_Class
 			urlParams = `?${params.join("&")}`;
 
 		const request: AxiosRequestConfig = {
-			headers: this.headersJson,
-			url: `${this.restUrl}${url}${urlParams}`,
+			headers: this.getHeadersJson(),
+			url: `${this.getRestUrl()}${url}${urlParams}`,
 			method: HttpMethod.GET,
 			responseType: "json"
 		};
