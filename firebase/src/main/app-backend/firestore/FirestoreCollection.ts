@@ -110,15 +110,15 @@ export class FirestoreCollection<Type extends object> {
         return this.runInTransaction((transaction) => transaction.deleteItem(this, instance))
     }
 
-    deleteUnique<Type extends object>(id: string): Promise<WriteResult>
+    deleteUnique(id: string): Promise<WriteResult>
     /** @deprecated */
-    deleteUnique<Type extends object>(ourQuery: FirestoreQuery<Type>): Promise<Type | undefined>
+    deleteUnique(ourQuery: FirestoreQuery<Type>): Promise<Type | undefined>
 
     async deleteUnique(param: any) {
         if (typeof param === 'string')
             return this.collection.doc(param).delete();
 
-        return this.runInTransaction(async (transaction) => transaction.deleteUnique(this, param))
+        return this.runInTransaction<Type | undefined>(async (transaction) => transaction.deleteUnique(this, param as FirestoreQuery<Type>))
     }
 
     async delete(query: FirestoreQuery<Type>): Promise<Type[]> {
@@ -156,9 +156,9 @@ export class FirestoreCollection<Type extends object> {
     }
 
 
-    set<Type extends object>(instance: Type, id: string): Promise<WriteResult>
-    set<Type extends object>(instance: Partial<Type>, id: string, options: SetOptions): Promise<WriteResult>
-    async set<Type extends object>(instance: any, id: string, options?: any) {
+    set(instance: Type, id: string): Promise<WriteResult>
+    set(instance: Partial<Type>, id: string, options: SetOptions): Promise<WriteResult>
+    async set(instance: any, id: string, options?: any) {
         return this.collection.doc(id).set(instance, options);
     }
 
