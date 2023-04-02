@@ -32,17 +32,18 @@ import {
 	ImplementationMissingException
 } from "@intuitionrobotics/ts-common";
 import * as admin from "firebase-admin";
-import {CollectionReference} from "firebase-admin/firestore";
+import {CollectionReference, Query} from "firebase-admin/firestore";
 
 export class FirestoreInterface {
 
-	static buildQuery<Type extends object>(myQuery: CollectionReference<Type>, query?: FirestoreQuery<Type>): admin.firestore.Query {
+	static buildQuery<Type extends object>(collection: CollectionReference<Type>, query?: FirestoreQuery<Type>): admin.firestore.Query {
+		let myQuery: Query = collection;
 		if (query && query.select)
-			myQuery.select(...query.select as string[]);
+			myQuery = myQuery.select(...query.select as string[]);
 
 		if (query && query.where) {
 			const whereClause = query.where;
-			Object.keys(whereClause).reduce((_query: FirestoreType_Query, _whereField) => {
+			myQuery = Object.keys(whereClause).reduce((_query: FirestoreType_Query, _whereField) => {
 				const whereField = _whereField;
 				const whereValue: any = whereClause[whereField as keyof Type];
 				if (whereValue === undefined || whereValue === null)
@@ -86,12 +87,12 @@ export class FirestoreInterface {
 		}
 
 		if (query && query.orderBy)
-			query.orderBy.reduce((_query: FirestoreType_Query, field) => {
+			myQuery = query.orderBy.reduce((_query: FirestoreType_Query, field) => {
 				return _query.orderBy ? _query.orderBy(field.key as string, field.order) : _query;
 			}, myQuery);
 
 		if (query && query.limit)
-			myQuery.limit(query.limit);
+			myQuery = myQuery.limit(query.limit);
 
 		return myQuery;
 	}
