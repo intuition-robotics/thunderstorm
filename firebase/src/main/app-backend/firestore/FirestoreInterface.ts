@@ -31,13 +31,12 @@ import {
 	BadImplementationException,
 	ImplementationMissingException
 } from "@intuitionrobotics/ts-common";
-import * as admin from "firebase-admin";
 import {CollectionReference, Query} from "firebase-admin/firestore";
 
 export class FirestoreInterface {
 
-	static buildQuery<Type extends object>(collection: CollectionReference<Type>, query?: FirestoreQuery<Type>): admin.firestore.Query {
-		let myQuery: Query = collection;
+	static buildQuery<Type extends object>(collection: CollectionReference<Type>, query?: FirestoreQuery<Type>): Query<Type> {
+		let myQuery: Query<any> = collection;
 		if (query && query.select)
 			myQuery = myQuery.select(...query.select as string[]);
 
@@ -94,7 +93,7 @@ export class FirestoreInterface {
 		if (query && query.limit)
 			myQuery = myQuery.limit(query.limit);
 
-		return myQuery;
+		return myQuery as Query<Type>
 	}
 
 	private static isQueryObject(whereValue: any) {

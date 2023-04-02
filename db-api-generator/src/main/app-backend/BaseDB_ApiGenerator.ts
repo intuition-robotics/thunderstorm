@@ -329,10 +329,10 @@ export abstract class BaseDB_ApiGenerator<DBType extends DB_Object, ConfigType e
 	// 	return (await this.createImpl_Read(transaction, instance, request))()
 	// };
 
-	async createImpl_Read(transaction: FirestoreTransaction, instance: DBType, request?: ExpressRequest): Promise<() => Promise<DBType>> {
+	async createImpl_Read(transaction: FirestoreTransaction, instance: DBType, request?: ExpressRequest): Promise<() => DBType> {
 		await this.validateImpl(instance);
 		await this.assertUniqueness(transaction, instance, request);
-		return async () => transaction.insert(this.collection, instance);
+		return  () => transaction.insert(this.collection, instance);
 	};
 
 	/**
@@ -356,7 +356,7 @@ export abstract class BaseDB_ApiGenerator<DBType extends DB_Object, ConfigType e
 		return this.collection.runInTransaction(processor);
 	}
 
-	async upsert_Read(instance: UType, transaction: FirestoreTransaction, request?: ExpressRequest): Promise<() => Promise<DBType>> {
+	async upsert_Read(instance: UType, transaction: FirestoreTransaction, request?: ExpressRequest): Promise<() => DBType> {
 		if (instance._id === undefined)
 			return this.createImpl_Read(transaction, {...instance, _id: generateHex(idLength)} as unknown as DBType, request);
 
@@ -398,7 +398,7 @@ export abstract class BaseDB_ApiGenerator<DBType extends DB_Object, ConfigType e
 
 		const processor = async (_transaction: FirestoreTransaction) => {
 			const writes = await Promise.all(await this.upsertAllImpl_Read(instances, _transaction, request));
-			return Promise.all(writes.map(write => write()));
+			return writes.map(write => write());
 		};
 
 		if (transaction)
@@ -408,8 +408,8 @@ export abstract class BaseDB_ApiGenerator<DBType extends DB_Object, ConfigType e
 	}
 
 
-	protected async upsertAllImpl_Read(instances: UType[], transaction: FirestoreTransaction, request?: ExpressRequest): Promise<(() => Promise<DBType>)[]> {
-		const actions = [] as Promise<() => Promise<DBType>>[];
+	protected async upsertAllImpl_Read(instances: UType[], transaction: FirestoreTransaction, request?: ExpressRequest): Promise<(() => DBType)[]> {
+		const actions = [] as Promise<() => DBType>[];
 
 		instances.reduce((carry, instance: UType) => {
 			addItemToArray(carry, this.upsert_Read(instance, transaction, request));
@@ -433,7 +433,7 @@ export abstract class BaseDB_ApiGenerator<DBType extends DB_Object, ConfigType e
 		return (await this.upsertImpl_Read(transaction, dbInstance, request))();
 	};
 
-	protected async upsertImpl_Read(transaction: FirestoreTransaction, dbInstance: DBType, request?: ExpressRequest): Promise<() => Promise<DBType>> {
+	protected async upsertImpl_Read(transaction: FirestoreTransaction, dbInstance: DBType, request?: ExpressRequest): Promise<() => DBType> {
 		await this.validateImpl(dbInstance);
 		await this.assertUniqueness(transaction, dbInstance, request);
 		return transaction.upsert_Read(this.collection, dbInstance);
@@ -500,7 +500,7 @@ export abstract class BaseDB_ApiGenerator<DBType extends DB_Object, ConfigType e
 	 * @returns
 	 * A promise of the document that was deleted.
 	 */
-	private async deleteImpl_Read(transaction: FirestoreTransaction, ourQuery: { where: Clause_Where<DBType> }, request?: ExpressRequest): Promise<() => Promise<DBType>> {
+	private async deleteImpl_Read(transaction: FirestoreTransaction, ourQuery: { where: Clause_Where<DBType> }, request?: ExpressRequest): Promise<() => DBType> {
 		const write = await transaction.deleteUnique_Read(this.collection, ourQuery);
 		if (!write)
 			throw new ThisShouldNotHappenException(`I just checked that I had an instance for query: ${__stringify(ourQuery)}`);

@@ -154,7 +154,7 @@ export class LevelDB_Class
 		}
 	}
 
-	protected async upsertImpl_Read(transaction: FirestoreTransaction, dbInstance: DB_PermissionAccessLevel, request: ExpressRequest): Promise<() => Promise<DB_PermissionAccessLevel>> {
+	protected async upsertImpl_Read(transaction: FirestoreTransaction, dbInstance: DB_PermissionAccessLevel, request: ExpressRequest): Promise<() => DB_PermissionAccessLevel> {
 		const existDbLevel = await transaction.queryUnique(this.collection, {where: {_id: dbInstance._id}});
 		const groups = await GroupPermissionsDB.query({where: {accessLevelIds: {$ac: dbInstance._id}}});
 		const returnWrite = await super.upsertImpl_Read(transaction, dbInstance, request);
@@ -182,7 +182,7 @@ export class LevelDB_Class
 			await Promise.all(asyncs);
 
 			// --- writes part
-			await upsertGroups();
+			upsertGroups();
 		}
 
 		return returnWrite;

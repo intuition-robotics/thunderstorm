@@ -113,7 +113,6 @@ export class FirestoreCollection<Type extends object> {
     deleteUnique(id: string): Promise<WriteResult>
     /** @deprecated */
     deleteUnique(ourQuery: FirestoreQuery<Type>): Promise<Type | undefined>
-
     async deleteUnique(param: any) {
         if (typeof param === 'string')
             return this.collection.doc(param).delete();
