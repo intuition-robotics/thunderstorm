@@ -195,7 +195,8 @@ export abstract class BaseUploaderModule_Class<HttpModule extends BaseHttpModule
 			.httpModule
 			.createRequest(HttpMethod.PUT, RequestKey_UploadFile)
 			.setUrl(response.secureUrl)
-			.setHeader('Content-Type', response.tempDoc.mimeType)
+			// Don't change this because it replaces the default headers which we dont need
+			.setDefaultHeaders({'Content-Type': response.tempDoc.mimeType})
 			.setTimeout(20 * Minute)
 			.setBody(fileInfo.file)
 			.setOnProgressListener((ev: TS_Progress) => {
