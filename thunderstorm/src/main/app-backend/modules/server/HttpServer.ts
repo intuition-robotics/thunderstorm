@@ -193,10 +193,11 @@ export class HttpServer_Class
         console.time('Resolving Apis')
 
         const baseUrl = this.getBaseUrl();
-        // Load from folder structure
-        routeResolver.resolveApi(urlPrefix, this.express, baseUrl);
         // Load from those passed by init
-        routeResolver.routeApis(apis, urlPrefix, baseUrl)
+        routeResolver.routeApis(apis, urlPrefix, baseUrl, this.express)
+
+        // Load from folder structure recursively
+        routeResolver.resolveApi(urlPrefix, baseUrl, this.express);
 
         const resolveRoutes = (stack: any[]): any[] => {
             return stack.map((layer: any) => {
@@ -225,7 +226,6 @@ export class HttpServer_Class
 }
 
 export class RouteResolver {
-    private express!: express.Express;
     readonly require: NodeRequire;
     readonly rootDir: string;
     readonly apiFolder: string;
@@ -242,15 +242,14 @@ export class RouteResolver {
         return this;
     }
 
-    public resolveApi(urlPrefix: string, _exp: express.Express, baseUrl: string) {
-        this.express = _exp;
-        this.resolveApiImpl(urlPrefix, this.rootDir + "/" + this.apiFolder, baseUrl)
+    public resolveApi(urlPrefix: string, baseUrl: string, _exp: Express) {
+        this.resolveApiImpl(urlPrefix, this.rootDir + "/" + this.apiFolder, baseUrl, _exp)
     }
 
-    private resolveApiImpl(urlPrefix: string, workingDir: string, baseUrl: string) {
+    private resolveApiImpl(urlPrefix: string, workingDir: string, baseUrl: string, _exp: Express) {
         fs.readdirSync(workingDir).forEach((file: string) => {
             if (fs.statSync(`${workingDir}/${file}`).isDirectory()) {
-                this.resolveApiImpl(`${urlPrefix}/${file}`, `${workingDir}/${file}`, baseUrl);
+                this.resolveApiImpl(`${urlPrefix}/${file}`, `${workingDir}/${file}`, baseUrl, _exp);
                 return;
             }
 
@@ -273,7 +272,7 @@ export class RouteResolver {
                     throw e;
                 }
 
-                routeResolver.resolveApi(urlPrefix, this.express, baseUrl);
+                routeResolver.resolveApi(urlPrefix, baseUrl, _exp);
                 return;
             }
 
@@ -288,14 +287,14 @@ export class RouteResolver {
             if (!Array.isArray(content))
                 content = [content];
 
-            this.routeApis(content, urlPrefix, baseUrl)
+            this.routeApis(content, urlPrefix, baseUrl, _exp)
         });
     }
 
-    public routeApis(apis: ServerApi<any>[], urlPrefix: string, baseUrl: string) {
+    public routeApis(apis: ServerApi<any>[], urlPrefix: string, baseUrl: string,_exp: Express) {
         apis.forEach(api => {
             api.addMiddlewares(...this.middlewares);
-            api.route(this.express, urlPrefix, baseUrl);
+            api.route(_exp, urlPrefix, baseUrl);
         });
     }
 }

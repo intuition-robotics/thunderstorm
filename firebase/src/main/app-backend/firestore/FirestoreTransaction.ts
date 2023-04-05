@@ -18,7 +18,7 @@
 
 import * as admin from "firebase-admin";
 import {firestore} from "firebase-admin";
-import {FirestoreType_DocumentSnapshot} from "./types";
+import {FirestoreType_QueryDocumentSnapshot} from "./types";
 import {FirestoreCollection,} from "./FirestoreCollection";
 import {BadImplementationException, merge, Subset} from "@intuitionrobotics/ts-common";
 import {FirestoreQuery} from "../../shared/types";
@@ -33,19 +33,19 @@ export class FirestoreTransaction {
         this.transaction = transaction;
     }
 
-    private async _query<Type extends object>(collection: FirestoreCollection<Type>, ourQuery: FirestoreQuery<Type>): Promise<FirestoreType_DocumentSnapshot<Type>[]> {
+    private async _query<Type extends object>(collection: FirestoreCollection<Type>, ourQuery: FirestoreQuery<Type>): Promise<FirestoreType_QueryDocumentSnapshot<Type>[]> {
         const query: Query<Type> = FirestoreInterface.buildQuery(collection.collection, ourQuery);
         return (await this.transaction.get(query)).docs;
     }
 
-    private async _queryUnique<Type extends object>(collection: FirestoreCollection<Type>, ourQuery: FirestoreQuery<Type>): Promise<FirestoreType_DocumentSnapshot<Type> | undefined> {
-        const results: FirestoreType_DocumentSnapshot<Type>[] = await this._query(collection, ourQuery);
+    private async _queryUnique<Type extends object>(collection: FirestoreCollection<Type>, ourQuery: FirestoreQuery<Type>): Promise<FirestoreType_QueryDocumentSnapshot<Type> | undefined> {
+        const results: FirestoreType_QueryDocumentSnapshot<Type>[] = await this._query(collection, ourQuery);
         return FirestoreInterface.assertUniqueDocument(results, ourQuery, collection.name);
     }
 
-    private async _queryItem<Type extends object>(collection: FirestoreCollection<Type>, instance: Subset<Type>): Promise<FirestoreType_DocumentSnapshot | undefined> {
+    private async _queryItem<Type extends object>(collection: FirestoreCollection<Type>, instance: Subset<Type>): Promise<FirestoreType_QueryDocumentSnapshot | undefined> {
         const ourQuery = FirestoreInterface.buildUniqueQuery(collection, instance);
-        const results: FirestoreType_DocumentSnapshot[] = await this._query(collection, ourQuery);
+        const results: FirestoreType_QueryDocumentSnapshot[] = await this._query(collection, ourQuery);
         return FirestoreInterface.assertUniqueDocument(results, ourQuery, collection.name);
     }
 

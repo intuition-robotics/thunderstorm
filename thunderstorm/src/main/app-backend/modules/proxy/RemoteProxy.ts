@@ -63,7 +63,7 @@ export class RemoteProxy_Class<Config extends RemoteProxyConfig>
     }
 
     readonly Middleware: ServerApi_Middleware = async (request: ExpressRequest) => {
-        const extras = RemoteProxy.assertSecret(request);
+        const extras = this.assertSecret(request);
         return {extras, proxyId: this.getProxyHeader(request)}
     };
 

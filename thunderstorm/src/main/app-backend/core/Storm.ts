@@ -34,12 +34,13 @@ export class Storm
     private initialPath!: string;
     private functions: any[] = [];
     private apis: ServerApi<any>[] = [];
-    private express?: Express;
+    private readonly express: Express;
     private readonly httpServer: HttpServer_Class;
 
-    constructor() {
+    constructor(_express?: Express) {
         super();
-        this.httpServer = new HttpServer_Class(this.express || express());
+        this.express = _express || express();
+        this.httpServer = new HttpServer_Class(this.express);
         this.addModules(this.httpServer, FirebaseModule);
     }
 
@@ -63,10 +64,6 @@ export class Storm
 
         this.httpServer.printRoutes(process.env.GCLOUD_PROJECT ? this.initialPath : "");
         return this;
-    }
-
-    setMainExpressApp(_express: Express){
-        this.express = _express;
     }
 
     registerApis(...apis: ServerApi<any>[]) {

@@ -17,7 +17,12 @@
  */
 
 import {BadImplementationException, batchAction, generateHex, Subset} from "@intuitionrobotics/ts-common";
-import {FirestoreType_Collection, FirestoreType_DocumentSnapshot, FirestoreType_QuerySnapshot} from "./types";
+import {
+    FirestoreType_Collection,
+    FirestoreType_DocumentSnapshot,
+    FirestoreType_QueryDocumentSnapshot,
+    FirestoreType_QuerySnapshot
+} from "./types";
 import {Clause_Select, Clause_Where, FilterKeys, FirestoreQuery} from "../../shared/types";
 import {FirestoreWrapper} from "./FirestoreWrapper";
 import {FirestoreInterface} from "./FirestoreInterface";
@@ -57,9 +62,13 @@ export class FirestoreCollection<Type extends object> {
         };
     }
 
-    private async _query(ourQuery?: FirestoreQuery<Type>): Promise<FirestoreType_DocumentSnapshot[]> {
+    private async _query(ourQuery?: FirestoreQuery<Type>): Promise<FirestoreType_QueryDocumentSnapshot[]> {
         const myQuery = FirestoreInterface.buildQuery(this.collection, ourQuery);
         return (await myQuery.get()).docs;
+    }
+
+    async getDoc(id: string): Promise<FirestoreType_DocumentSnapshot<Type>> {
+        return this.collection.doc(id).get();
     }
 
     async get(ourQuery?: FirestoreQuery<Type>): Promise<FirestoreType_QuerySnapshot<Type>> {
@@ -67,8 +76,8 @@ export class FirestoreCollection<Type extends object> {
         return myQuery.get() as Promise<FirestoreType_QuerySnapshot<Type>>;
     }
 
-    private async _queryUnique(ourQuery: FirestoreQuery<Type>): Promise<FirestoreType_DocumentSnapshot | undefined> {
-        const results: FirestoreType_DocumentSnapshot[] = await this._query(ourQuery);
+    private async _queryUnique(ourQuery: FirestoreQuery<Type>): Promise<FirestoreType_QueryDocumentSnapshot | undefined> {
+        const results: FirestoreType_QueryDocumentSnapshot[] = await this._query(ourQuery);
         return FirestoreInterface.assertUniqueDocument(results, ourQuery, this.name);
     }
 
@@ -125,7 +134,7 @@ export class FirestoreCollection<Type extends object> {
         return this.deleteBatch(docRefs);
     }
 
-    private async deleteBatch(docRefs: FirestoreType_DocumentSnapshot[]): Promise<Type[]> {
+    private async deleteBatch(docRefs: FirestoreType_QueryDocumentSnapshot[]): Promise<Type[]> {
         await batchAction(docRefs, 500, async (elements) => {
             const batch = this.collection.firestore.batch();
             elements.forEach(doc => batch.delete(doc.ref));

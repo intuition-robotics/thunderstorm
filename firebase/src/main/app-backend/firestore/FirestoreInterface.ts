@@ -21,7 +21,7 @@ import {
 	FirestoreQuery
 } from "../..";
 import {
-	FirestoreType_DocumentSnapshot,
+	FirestoreType_QueryDocumentSnapshot,
 	FirestoreType_Query
 } from "./types";
 import {FirestoreCollection} from "./FirestoreCollection";
@@ -110,7 +110,7 @@ export class FirestoreInterface {
 			whereValue["$eq"]);
 	}
 
-	static assertUniqueDocument(results: FirestoreType_DocumentSnapshot[], query: FirestoreQuery<any>, collectionName: string): (FirestoreType_DocumentSnapshot | undefined) {
+	static assertUniqueDocument(results: FirestoreType_QueryDocumentSnapshot[], query: FirestoreQuery<any>, collectionName: string): (FirestoreType_QueryDocumentSnapshot | undefined) {
 		if (results.length > 1)
 			throw new BadImplementationException(`too many results for query: ${__stringify(query)} in collection: ${collectionName}`);
 
