@@ -62,6 +62,7 @@ export type FileInfo = {
 	name: string
 	request?: BaseHttpRequest<any>
 	file?: any
+	fileName?: string
 	tempDoc?: DB_Temp_File
 };
 
@@ -133,6 +134,7 @@ export abstract class BaseUploaderModule_Class<HttpModule extends BaseHttpModule
 
 			this.files[fileInfo.feId] = {
 				file: fileData.file,
+				fileName: fileData.file.name,
 				status: FileStatus.ObtainingUrl,
 				name: fileData.name
 			};
