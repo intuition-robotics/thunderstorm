@@ -1,33 +1,18 @@
-/*
- * Firebase is a simpler Typescript wrapper to all of firebase services.
- *
- * Copyright (C) 2020 Intuition Robotics
- *
- * Licensed under the Apache License, Version 2.0 (the "License");
- * you may not use this file except in compliance with the License.
- * You may obtain a copy of the License at
- *
- *     http://www.apache.org/licenses/LICENSE-2.0
- *
- * Unless required by applicable law or agreed to in writing, software
- * distributed under the License is distributed on an "AS IS" BASIS,
- * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
- * See the License for the specific language governing permissions and
- * limitations under the License.
- */
-
-import {FirestoreCollection,} from "./FirestoreCollection";
+import {FirestoreCollection} from "./FirestoreCollection";
 import {FirestoreType, FirestoreType_Collection,} from "./types";
 import {FilterKeys} from "../../shared/types";
 import {FirebaseSession} from "../auth/firebase-session";
 import {FirebaseBaseWrapper} from "../auth/FirebaseBaseWrapper";
-import {getFirestore} from "firebase-admin/firestore";
+import {CollectionReference, getFirestore} from "firebase-admin/firestore";
+import {enchanceCollection, FirestoreV2Collection} from "./FirestoreV2Collection";
+
 
 export class FirestoreWrapper
     extends FirebaseBaseWrapper {
 
     readonly firestore: FirestoreType;
     private readonly collections: { [collectionName: string]: FirestoreCollection<any> } = {};
+    private readonly collectionsV2: { [collectionName: string]: FirestoreV2Collection<any> } = {};
 
     constructor(firebaseSession: FirebaseSession<any, any>) {
         super(firebaseSession);
@@ -40,6 +25,15 @@ export class FirestoreWrapper
             return collection;
 
         return this.collections[name] = new FirestoreCollection<Type>(name, this, externalFilterKeys);
+    }
+
+    public getCollectionV2<Type extends object>(name: string): FirestoreV2Collection<Type> {
+        const collection = this.collectionsV2[name];
+        if (collection)
+            return collection;
+
+        const enchanceCollection1 = enchanceCollection(this.firestore.collection(name) as CollectionReference<Type>) as FirestoreV2Collection<any>;
+        return this.collectionsV2[name] = enchanceCollection1;
     }
 
     getSdkInstance() {
