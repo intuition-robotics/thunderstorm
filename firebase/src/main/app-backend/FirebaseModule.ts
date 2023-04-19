@@ -120,7 +120,7 @@ export class FirebaseModule_Class
 
         this.logInfo(`Creating Firebase session for project id: ${projectId}`);
         let config = this.getProjectAuth(projectId) as JWTInput | string | undefined;
-        if (!config && this.localProjectId && this.localProjectId !== _projectId)
+        if (!config && _projectId && this.localProjectId && this.localProjectId !== _projectId)
             throw new BadImplementationException(`Config for key ${_projectId} is not defined`);
 
         if (typeof config === "string")
