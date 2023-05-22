@@ -33,14 +33,15 @@
     "@intuitionrobotics/thunderstorm": "~0.0.1",
     "@intuitionrobotics/firebase": "~0.0.1",
     "@intuitionrobotics/db-api-generator": "~0.0.1",
-    "@intuitionrobotics/push-pub-sub": "~0.0.1"
+    "@intuitionrobotics/push-pub-sub": "~0.0.1",
+    "firebase-admin": "^11.0.0",
+    "firebase-functions": "^3.22.0"
   },
   "devDependencies": {
     "@intuitionrobotics/testelot": "~0.0.1",
     "@types/express": "^4.17.2",
     "@types/node": "^16.0.0",
     "express": "^4.17.1",
-    "firebase-functions": "^3.22.0",
     "fs": "0.0.1-security",
     "typescript": "~4.1.0"
   }
