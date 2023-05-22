@@ -51,7 +51,7 @@
     "firebase-functions": "^3.22.0",
     "fs": "0.0.1-security",
     "module-alias": "^2.2.0",
-    "moment": "^2.24.0",
+    "moment": "^2.29.4",
     "use-strict": "^1.0.1"
   },
   "devDependencies": {
