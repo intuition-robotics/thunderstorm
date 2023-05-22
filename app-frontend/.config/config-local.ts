@@ -19,7 +19,7 @@
 
 export const config = {
 	XhrHttpModule: {
-		origin: "https://us-central1-local-ts-testing-alan.cloudfunctions.net/api",
+		origin: "http://127.0.0.1:5002/ir-thunderstorm-dev/us-central1/api",
 		timeout: 30000,
 		compress: false
 	},
@@ -36,7 +36,8 @@ export const config = {
 		},
 	},
 	PushPubSubModule: {
-		publicKeyBase64: 'BMDTPilO0jte6ADpa0VNzY300AXBZNXClyOUHD9ZfJNByuTtQ6c1rDTSIfLnX8SNgsgaL8skhqaAeiDaYNZeOpg'
+		publicKeyBase64: 'BMDTPilO0jte6ADpa0VNzY300AXBZNXClyOUHD9ZfJNByuTtQ6c1rDTSIfLnX8SNgsgaL8skhqaAeiDaYNZeOpg',
+		registerOnInit: false
 	},
 	ForceUpgrade: {
 		assertVersionUrl: "/v1/version/assert"

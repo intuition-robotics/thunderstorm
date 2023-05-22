@@ -146,7 +146,7 @@ module.exports = (env, argv) => {
 					test: /\.s?[c|a]ss$/,
 					use: [
 						'style-loader',
-						MiniCssExtractPlugin.loader,
+						{loader: MiniCssExtractPlugin.loader, options: { esModule: false}},
 						// Translates CSS into CommonJS
 						"css-loader",
 						// Compiles Sass to CSS

@@ -26,16 +26,13 @@
     "@intuitionrobotics/firebase": "~0.0.1",
     "@intuitionrobotics/thunderstorm": "~0.0.1",
     "@intuitionrobotics/ts-common": "~0.0.1",
-    "moment": "^2.24.0"
+    "use-strict": "^1.0.1"
   },
   "devDependencies": {
     "@intuitionrobotics/testelot": "~0.0.1",
     "@types/node": "^16.0.0",
-    "firebase": "^9.9.1",
-    "firebase-admin": "^11.0.0",
     "ts-node": "^8.6.2",
     "tslint": "^5.16.0",
-    "typescript": "~4.1.0",
-    "use-strict": "^1.0.1"
+    "typescript": "~4.1.0"
   }
 }

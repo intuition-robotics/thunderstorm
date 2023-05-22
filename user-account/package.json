@@ -30,28 +30,22 @@
     "build": "tsc"
   },
   "dependencies": {
-    "@intuitionrobotics/ts-common": "~0.0.1",
-    "@types/jws": "^3.2.4",
-    "@types/saml2-js": "^3.0.0",
-    "jws": "^4.0.0",
-    "moment": "^2.24.0",
-    "saml2-js": "^3.0.1",
-    "xmlbuilder": "^15.1.1"
-  },
-  "devDependencies": {
     "@intuitionrobotics/db-api-generator": "~0.0.1",
     "@intuitionrobotics/firebase": "~0.0.1",
-    "@intuitionrobotics/storm": "~0.0.1",
-    "@intuitionrobotics/testelot": "~0.0.1",
     "@intuitionrobotics/thunderstorm": "~0.0.1",
+    "@intuitionrobotics/ts-common": "~0.0.1",
+    "jws": "^4.0.0",
+    "moment": "^2.24.0",
+    "saml2-js": "^4.0.0"
+  },
+  "devDependencies": {
+    "@intuitionrobotics/testelot": "~0.0.1",
     "@types/express": "^4.16.1",
-    "@types/history": "^4.7.2",
     "@types/node": "^16.0.0",
     "@types/react": "^16.8.7",
+    "@types/jws": "^3.2.4",
+    "@types/saml2-js": "^3.0.0",
     "express": "^4.16.4",
-    "firebase": "^9.9.1",
-    "firebase-admin": "^11.0.0",
-    "firebase-functions": "^3.22.0",
     "react": "^16.0.0",
     "ts-node": "^8.6.2",
     "tslint": "^5.16.0",

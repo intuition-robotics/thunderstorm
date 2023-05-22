@@ -15,8 +15,16 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-import {Change, CloudFunction, EventContext, HttpsFunction, RuntimeOptions} from "firebase-functions";
-import {DataSnapshot} from "firebase-functions/lib/providers/database";
+import * as functions from "firebase-functions";
+import {
+    Change,
+    CloudFunction,
+    database,
+    EventContext,
+    firestore,
+    HttpsFunction,
+    RuntimeOptions
+} from "firebase-functions";
 
 import * as express from "express";
 import {Request, Response} from "express";
@@ -30,12 +38,11 @@ import {
     ServerErrorSeverity,
     StringMap
 } from "@intuitionrobotics/ts-common";
-import {ObjectMetadata} from "firebase-functions/lib/providers/storage";
-import {Message} from "firebase-functions/lib/providers/pubsub";
-import {firestore} from "firebase-admin";
+import DataSnapshot = database.DataSnapshot;
 import DocumentSnapshot = firestore.DocumentSnapshot;
+import {ObjectMetadata} from "firebase-functions/lib/v1/providers/storage";
+import {Message} from "firebase-functions/lib/v1/providers/pubsub";
 
-const functions = require("firebase-functions");
 
 export interface FirebaseFunctionInterface {
     getFunction(): HttpsFunction;
@@ -143,7 +150,7 @@ export abstract class FirestoreFunctionModule<DataType extends object, Config ex
     extends FirebaseFunction<Config> {
 
     private readonly collectionName: string;
-    private function!: CloudFunction<Change<DataSnapshot>>;
+    private function!: CloudFunction<Change<DocumentSnapshot>>;
 
     protected constructor(collectionName: string, name?: string, tag?: string) {
         super(tag);
@@ -158,9 +165,9 @@ export abstract class FirestoreFunctionModule<DataType extends object, Config ex
             return this.function;
 
         return this.function = functions.runWith(this.config?.runTimeOptions || {}).firestore.document(`${this.collectionName}/{docId}`).onWrite(
-            (change: Change<DocumentSnapshot<DataType>>, context: EventContext) => {
-                const before: DataType | undefined = change.before && change.before.data();
-                const after: DataType | undefined = change.after && change.after.data();
+            (change: Change<DocumentSnapshot>, context: EventContext) => {
+                const before = change.before && change.before.data() as DataType | undefined;
+                const after = change.after && change.after.data() as DataType | undefined;
                 const params = deepClone(context.params);
 
                 return this.processChanges(params, before, after);
@@ -266,7 +273,7 @@ export type TopicMessage = { data: string, attributes: StringMap };
 export abstract class Firebase_PubSubFunction<T, Config = any>
     extends FirebaseFunction<Config> {
 
-    private function!: CloudFunction<ObjectMetadata>;
+    private function!: CloudFunction<Message>;
     private readonly topic: string;
 
     protected constructor(topic: string, tag?: string) {

@@ -30,12 +30,21 @@ import {
 } from "@intuitionrobotics/ts-common";
 import {FirebaseSession_Admin} from "./auth/FirebaseSession_Admin";
 // import {FirebaseSession_UserPassword} from "./auth/FirebaseSession_UserPassword";
-import {JWTInput} from "google-auth-library";
 import {readFileSync} from "fs";
 import {Firebase_UserCredential} from "./auth/firebase-session";
 import {FirestoreCollection} from "./firestore/FirestoreCollection";
 import {FirebaseProjectCollections} from "../shared/types";
-
+export type JWTInput = {
+    type?: string;
+    client_email?: string;
+    private_key?: string;
+    private_key_id?: string;
+    project_id?: string;
+    client_id?: string;
+    client_secret?: string;
+    refresh_token?: string;
+    quota_project_id?: string;
+}
 type ConfigType = {
     [s: string]: string | JWTInput | Firebase_UserCredential;
 };
