@@ -25,7 +25,7 @@ export type FirestoreV2Collection<Type extends object> = CollectionReference<Typ
     buildQuery: (query?: FirestoreQuery<Type>) => Query<Type>;
 };
 
-export const enchanceCollection = <Type extends object>(collection: CollectionReference<Type>): FirestoreV2Collection<Type> => {
+export const enhanceCollection = <Type extends object>(collection: CollectionReference<Type>): FirestoreV2Collection<Type> => {
     const collectionRef = collection as FirestoreV2Collection<Type>;
     collectionRef.buildQuery = (ourQuery?: FirestoreQuery<Type>): Query<Type> => {
         return FirestoreInterface.buildQuery(collection, ourQuery);

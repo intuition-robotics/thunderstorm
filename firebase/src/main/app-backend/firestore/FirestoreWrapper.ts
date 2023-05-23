@@ -4,7 +4,7 @@ import {FilterKeys} from "../../shared/types";
 import {FirebaseSession} from "../auth/firebase-session";
 import {FirebaseBaseWrapper} from "../auth/FirebaseBaseWrapper";
 import {CollectionReference, getFirestore} from "firebase-admin/firestore";
-import {enchanceCollection, FirestoreV2Collection} from "./FirestoreV2Collection";
+import {enhanceCollection, FirestoreV2Collection} from "./FirestoreV2Collection";
 
 
 export class FirestoreWrapper
@@ -32,7 +32,7 @@ export class FirestoreWrapper
         if (collection)
             return collection;
 
-        const enchanceCollection1 = enchanceCollection(this.firestore.collection(name) as CollectionReference<Type>) as FirestoreV2Collection<any>;
+        const enchanceCollection1 = enhanceCollection(this.firestore.collection(name) as CollectionReference<Type>) as FirestoreV2Collection<any>;
         return this.collectionsV2[name] = enchanceCollection1;
     }
 
