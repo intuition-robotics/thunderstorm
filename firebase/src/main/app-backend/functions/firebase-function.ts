@@ -111,7 +111,7 @@ export abstract class Firebase_HttpsFunction<Config = any>
 }
 
 //TODO: I would like to add a type for the params..
-export abstract class FirebaseFunctionModule<DataType = any, Config = any>
+export abstract class FirebaseFunctionModule<DataType = any, Config extends RuntimeOptsConfigs = any>
     extends FirebaseFunction<Config> {
 
     private readonly listeningPath: string;
@@ -129,7 +129,7 @@ export abstract class FirebaseFunctionModule<DataType = any, Config = any>
         if (this.function)
             return this.function;
 
-        return this.function = functions.database.ref(this.listeningPath).onWrite(
+        return this.function = functions.runWith(this.config?.runtimeOpts || {}).database.ref(this.listeningPath).onWrite(
             (change: Change<DataSnapshot>, context: EventContext) => {
                 const before: DataType = change.before && change.before.val();
                 const after: DataType = change.after && change.after.val();
@@ -175,7 +175,7 @@ export abstract class FirestoreFunctionModule<DataType extends object, Config ex
     };
 }
 
-export abstract class FirebaseScheduledFunction<Config extends any = any>
+export abstract class FirebaseScheduledFunction<Config extends RuntimeOptsConfigs = any>
     extends FirebaseFunction<Config> {
 
     private function!: CloudFunction<Change<DataSnapshot>>;
@@ -206,7 +206,7 @@ export abstract class FirebaseScheduledFunction<Config extends any = any>
         if (this.function)
             return this.function;
 
-        return this.function = functions.pubsub.schedule(this.schedule).onRun(async () => {
+        return this.function = functions.runWith(this.config?.runtimeOpts || {}).pubsub.schedule(this.schedule).onRun(async () => {
             const results: boolean[] = await Promise.all(this.runningCondition.map(condition => condition()));
 
             if (results.includes(false)) {
@@ -219,8 +219,11 @@ export abstract class FirebaseScheduledFunction<Config extends any = any>
     };
 }
 
-export type BucketConfigs = {
+export type RuntimeOptsConfigs = {
     runtimeOpts?: RuntimeOptions
+}
+
+export type BucketConfigs = RuntimeOptsConfigs & {
     bucketName?: string
 }
 
@@ -270,7 +273,7 @@ export type FirebaseEventContext = EventContext;
 
 export type TopicMessage = { data: string, attributes: StringMap };
 
-export abstract class Firebase_PubSubFunction<T, Config = any>
+export abstract class Firebase_PubSubFunction<T, Config extends RuntimeOptsConfigs = any>
     extends FirebaseFunction<Config> {
 
     private function!: CloudFunction<Message>;
@@ -302,7 +305,7 @@ export abstract class Firebase_PubSubFunction<T, Config = any>
         if (this.function)
             return this.function;
 
-        return this.function = functions.pubsub.topic(this.topic).onPublish(async (message: Message, context: FirebaseEventContext) => {
+        return this.function = functions.runWith(this.config?.runtimeOpts || {}).pubsub.topic(this.topic).onPublish(async (message: Message, context: FirebaseEventContext) => {
             // need to validate etc...
             const originalMessage: TopicMessage = message.toJSON();
 
