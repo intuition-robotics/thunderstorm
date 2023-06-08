@@ -83,7 +83,11 @@ export class SecretsModule_Class
     // Specify a kid to force the usage of it
     validateRequest(request: ExpressRequest) {
         const authToken = this.extractAuthToken(request);
+
         const token = this.decodeJwt(authToken);
+        if (!token)
+            throw new BadImplementationException("Could not decode token");
+
         const kid = token.header.kid || this.config.validateKeyId;
         if (!kid)
             throw new BadImplementationException("Could not deduce which key to use in order to verify the token, please specify a key ID");
