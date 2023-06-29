@@ -39,7 +39,6 @@ export function DefaultApiErrorMessageComposer(headersToAttach: string[] = [], p
 		const {headers, query, url, body} = requestData;
 
 		const props = await propsResolver(requestData);
-		console.log("props: ", props);
 		let slackMessage = "";
 		slackMessage += `${error ? error.responseCode : "000"} - ${url}   \n\n`;
 
