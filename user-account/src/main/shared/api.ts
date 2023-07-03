@@ -41,6 +41,7 @@ export type DB_Session = {
 	sessionId: string
 	timestamp: number
 	frontType?: FrontType
+	version?: string
 }
 
 export type Response_Auth = UI_Account & {
