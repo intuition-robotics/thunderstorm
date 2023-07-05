@@ -17,10 +17,7 @@
  * limitations under the License.
  */
 
-import {
-	ApiWithBody,
-	ApiWithQuery
-} from "@intuitionrobotics/thunderstorm";
+import {ApiWithBody, ApiWithQuery} from "@intuitionrobotics/thunderstorm";
 
 export const HeaderKey_SessionId = "x-session-id";
 export const HeaderKey_Email = "x-email";
@@ -32,79 +29,79 @@ export const QueryParam_RedirectUrl = "redirectUrl";
 export const HeaderKey_CurrentPage = "current-page";
 
 export enum FrontType {
-	Web = "web",
-	App = "app"
+    Web = "web",
+    App = "app"
 }
 
-export type DB_Session = {
-	userId: string
-	sessionId: string
-	timestamp: number
-	frontType?: FrontType
-	version?: string
+export type BaseSession = {
+    userId: string
+    timestamp: number
+    frontType?: FrontType
+    version?: string
+}
+
+export type DB_Session = BaseSession & {
+    sessionId: string
+}
+
+export type UI_Session = BaseSession & {
+    isExpired: boolean
 }
 
 export type Response_Auth = UI_Account & {
-	jwt: string
-	sessionId: string
+    jwt: string
+    sessionId: string
 }
 
 export type Request_UpsertAccount = {
-	email: string
-	password: string
-	password_check: string
-	frontType?: FrontType
+    email: string
+    password: string
+    password_check: string
+    frontType?: FrontType
 }
 
 export type Request_CreateAccount = {
-	email: string
-	password: string
-	password_check: string
-	// customProps?: StringMap
+    email: string
+    password: string
+    password_check: string
+    // customProps?: StringMap
 }
 
 export type Request_AddNewAccount = {
-	email: string
-	password?: string
-	password_check?: string
+    email: string
+    password?: string
+    password_check?: string
 }
 
 export type Request_LoginAccount = {
-	email: string
-	password: string
-	frontType?: FrontType
+    email: string
+    password: string
+    frontType?: FrontType
 }
 
 export type Request_ValidateSession = {
-	sessionId: string
+    sessionId: string
 }
 
 export type Response_LoginSAML = {
-	loginUrl: string
+    loginUrl: string
 };
 
 export type Response_Validation = UI_Account
 
 export type UI_Account = { email: string; _id: string }
 
-export type UI_Session = {
-	userId: string
-	timestamp: number
-	isExpired: boolean
-	frontType?: FrontType
-}
-
 export type Response_ListAccounts = {
-	accounts: UI_Account[]
+    accounts: UI_Account[]
 };
 
 export type RequestParams_LoginSAML = {
-	[QueryParam_RedirectUrl]: string
+    [QueryParam_RedirectUrl]: string
 };
 
 export type PostAssertBody = {
-	SAMLResponse: string
-	RelayState: string
+    SAMLResponse: string
+    RelayState: string
 };
 
 export type AccountApi_AddNewAccount = ApiWithBody<'/v1/account/add-new-account', Request_AddNewAccount, UI_Account>
