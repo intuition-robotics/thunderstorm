@@ -95,7 +95,7 @@ export class SecretsModule_Class
         const secret = this.getAuthSecret(kid);
         const verified = jws.verify(authToken, token.header.alg, secret.value);
         let cause = `The JWT passed is not valid, check. With payload: ${__stringify(token.payload)}.`;
-        if (!verified || !token)
+        if (!verified)
             throw new BadImplementationException(cause)
 
         if (!token.payload?.[EXPIRES_AT]) {
