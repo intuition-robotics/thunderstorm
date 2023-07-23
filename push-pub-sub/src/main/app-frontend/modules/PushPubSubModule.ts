@@ -93,7 +93,7 @@ export class PushPubSubModule_Class
 	protected timeout: number = 800;
 
 	constructor() {
-		super();
+		super("PushPubSubModule");
 		window.name = window.name || generateHex(32);
 		this.pushSessionId = pushSessionId.set(window.name);
 	}

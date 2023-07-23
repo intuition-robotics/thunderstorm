@@ -35,7 +35,7 @@ export class PermissionsProjectModule_Class
 
 
 	constructor() {
-		super({key: "project", relativeUrl: "/v1/permissions/manage/project"});
+		super({key: "project", relativeUrl: "/v1/permissions/manage/project"}, "PermissionsProjectModule");
 	}
 
 	protected init(): void {

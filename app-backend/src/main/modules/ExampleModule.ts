@@ -36,6 +36,10 @@ class ExampleModule_Class
 	implements QueryRequestInfo {
 	dispatcher = new Dispatcher<TestDispatch, 'testDispatch'>('testDispatch');
 
+	constructor() {
+		super("ExampleModule");
+	}
+
 	async __queryRequestInfo(): Promise<{ key: string; data: any }> {
 		return {
 			key: 'AccountsModule', data: {_id: '9226fa2e4c128b84fd46526ca6ee926c'}
@@ -57,6 +61,9 @@ class DispatchModule_Class
 	implements TestDispatch {
 	private numbers!: FirestoreCollection<{ n: number }>;
 
+	constructor() {
+		super("DispatchModule");
+	}
 
 	protected init(): void {
 		const firestore = FirebaseModule.createAdminSession().getFirestore();

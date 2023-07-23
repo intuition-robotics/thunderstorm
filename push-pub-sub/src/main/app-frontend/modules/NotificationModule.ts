@@ -21,6 +21,10 @@ export const dispatch_NotificationsUpdated = new ThunderDispatcher<OnNotificatio
 export class NotificationsModule_Class
 	extends Module {
 
+	constructor() {
+		super("NotificationsModule");
+	}
+
 	private notifications: DB_Notifications[] = [];
 
 	getNotifications() {

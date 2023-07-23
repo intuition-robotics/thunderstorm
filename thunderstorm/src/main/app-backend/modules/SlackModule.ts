@@ -1,8 +1,10 @@
 /*
- * Storm contains a list of utility functions.. this project
- * might be broken down into more smaller projects in the future.
+ * Thunderstorm is a full web app framework!
  *
- * Copyright (C) 2020 Intuition Robotics
+ * Typescript & Express backend infrastructure that natively runs on firebase function
+ * Typescript & React frontend infrastructure
+ *
+ * Copyright (C) 2020 Adam van der Kruk aka TacB0sS
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -21,24 +23,6 @@
  * Created by AlanBen on 29/08/2019.
  */
 
-/*
- * Storm contains a list of utility functions.. this project
- * might be broken down into more smaller projects in the future.
- *
- * Copyright (C) 2020 Intuition Robotics
- *
- * Licensed under the Apache License, Version 2.0 (the "License");
- * you may not use this file except in compliance with the License.
- * You may obtain a copy of the License at
- *
- *     http://www.apache.org/licenses/LICENSE-2.0
- *
- * Unless required by applicable law or agreed to in writing, software
- * distributed under the License is distributed on an "AS IS" BASIS,
- * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
- * See the License for the specific language governing permissions and
- * limitations under the License.
- */
 import {
     currentTimeMillies,
     Minute,
@@ -82,7 +66,7 @@ export class SlackModule_Class
     private messageMap: MessageMap = {};
 
     constructor() {
-        super("slack");
+        super("SlackModule");
     }
 
     protected init(): void {
@@ -136,7 +120,7 @@ export class Slack_ServerApiError_Class
     extends Module<ApiErrorConfig>
     implements OnApplicationError {
     constructor() {
-        super();
+        super("Slack_ServerApiError");
         this.setDefaultConfig({exclude: [], minLevel: ServerErrorSeverity.Info})
     }
 

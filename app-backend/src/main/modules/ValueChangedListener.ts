@@ -22,7 +22,7 @@ export class ValueChangedListener_Class
 	extends FirebaseFunctionModule {
 
 	constructor() {
-		super(`test/{param}/changes/value`);
+		super(`test/{param}/changes/value`, "ValueChangedListener");
 		this.getFunction = this.getFunction.bind(this);
 	}
 

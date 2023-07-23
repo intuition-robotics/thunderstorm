@@ -51,10 +51,6 @@ export abstract class FirebaseFunction<Config = any>
     extends Module<Config>
     implements FirebaseFunctionInterface {
 
-    protected constructor(tag?: string, name?: string) {
-        super(tag, name);
-    }
-
     abstract getFunction(): HttpsFunction
 }
 
@@ -91,10 +87,6 @@ export abstract class Firebase_HttpsFunction<Config = any>
     extends FirebaseFunction<Config> {
     private function!: HttpsFunction;
 
-    protected constructor(name: string) {
-        super(name, name.toLowerCase());
-    }
-
     abstract process(req: Request, res: Response): Promise<any>;
 
     getFunction = () => {
@@ -116,9 +108,8 @@ export abstract class FirebaseFunctionModule<DataType = any, Config extends Runt
     private readonly listeningPath: string;
     private function!: CloudFunction<Change<DataSnapshot>>;
 
-    protected constructor(listeningPath: string, name?: string) {
-        super();
-        name && this.setName(name);
+    protected constructor(listeningPath: string, name: string) {
+        super(name);
         this.listeningPath = listeningPath;
     }
 
@@ -151,9 +142,8 @@ export abstract class FirestoreFunctionModule<DataType extends object, Config ex
     private readonly collectionName: string;
     private function!: CloudFunction<Change<DocumentSnapshot>>;
 
-    protected constructor(collectionName: string, name?: string, tag?: string) {
-        super(tag);
-        name && this.setName(name);
+    protected constructor(collectionName: string, name: string) {
+        super(name);
         this.collectionName = collectionName;
     }
 
@@ -180,11 +170,6 @@ export abstract class FirebaseScheduledFunction<Config extends RuntimeOptsConfig
     private function!: CloudFunction<Change<DataSnapshot>>;
     private schedule?: string;
     private runningCondition: (() => Promise<boolean>)[] = [];
-
-    protected constructor(name?: string, tag?: string) {
-        super(tag);
-        name && this.setName(name);
-    }
 
     addRunningCondition(runningCondition: () => Promise<boolean>) {
         addItemToArray(this.runningCondition, runningCondition);
@@ -232,11 +217,6 @@ export abstract class Firebase_StorageFunction<Config extends BucketConfigs = Bu
     private function!: CloudFunction<ObjectMetadata>;
     private runtimeOpts: RuntimeOptions = {};
 
-    protected constructor(name?: string) {
-        super();
-        name && this.setName(name);
-    }
-
     abstract onFinalize(object: ObjectMetadata, context: EventContext): Promise<any>;
 
     getFunction = () => {
@@ -278,8 +258,8 @@ export abstract class Firebase_PubSubFunction<T, Config extends RuntimeOptsConfi
     private function!: CloudFunction<Message>;
     private readonly topic: string;
 
-    protected constructor(topic: string, tag?: string) {
-        super(tag);
+    protected constructor(topic: string, name: string) {
+        super(name);
         this.topic = topic;
     }
 

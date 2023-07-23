@@ -33,6 +33,10 @@ const testCollection = 'test-unique-type';
 export class TestModule_Class
 	extends Module<Config> {
 
+	constructor() {
+		super("TestModule");
+	}
+
 	protected init(): void {
 		this.startTest();
 	}

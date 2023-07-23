@@ -33,7 +33,7 @@ export class PermissionsApiModule_Class
 	private apis: TypedMap<DB_PermissionApi[]> = {};
 
 	constructor() {
-		super({key: "level", relativeUrl: "/v1/permissions/manage/api"});
+		super({key: "level", relativeUrl: "/v1/permissions/manage/api"}, "PermissionsApiModule");
 	}
 
 	protected init(): void {

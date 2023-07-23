@@ -16,42 +16,43 @@
  * limitations under the License.
  */
 
-import {
-	ImplementationMissingException,
-	Module
-} from "@intuitionrobotics/ts-common";
+import {ImplementationMissingException, Module} from "@intuitionrobotics/ts-common";
 import {FirebaseModule} from "../FirebaseModule";
 import {AnalyticsWrapper} from "./AnalyticsWrapper";
 
 class FirebaseAnalyticsModule_Class
-	extends Module {
+    extends Module {
 
-	private analytics?: AnalyticsWrapper;
+    constructor() {
+        super("FirebaseAnalyticsModule");
+    }
 
-	protected init(): void {
-		this.runAsync('Init Analytics', this._init);
-	}
+    private analytics?: AnalyticsWrapper;
 
-	private _init = async () => {
-		const session = await FirebaseModule.createSession();
+    protected init(): void {
+        this.runAsync('Init Analytics', this._init);
+    }
 
-		this.analytics = session.getAnalytics();
-		this.analytics.setAnalyticsCollectionEnabled(true);
-	};
+    private _init = async () => {
+        const session = await FirebaseModule.createSession();
 
-	logEvent(eventName: string, eventParams?: { [key: string]: any }) {
-		if (!this.analytics)
-			throw new ImplementationMissingException('Missing analytics wrapper');
+        this.analytics = session.getAnalytics();
+        this.analytics.setAnalyticsCollectionEnabled(true);
+    };
 
-		return this.analytics.logEvent(eventName, eventParams);
-	}
+    logEvent(eventName: string, eventParams?: { [key: string]: any }) {
+        if (!this.analytics)
+            throw new ImplementationMissingException('Missing analytics wrapper');
 
-	setCurrentScreen(screenName: string) {
-		if (!this.analytics)
-			throw new ImplementationMissingException('Missing analytics wrapper');
+        return this.analytics.logEvent(eventName, eventParams);
+    }
 
-		return this.analytics.setCurrentScreen(screenName);
-	}
+    setCurrentScreen(screenName: string) {
+        if (!this.analytics)
+            throw new ImplementationMissingException('Missing analytics wrapper');
+
+        return this.analytics.setCurrentScreen(screenName);
+    }
 }
 
 export const FirebaseAnalyticsModule = new FirebaseAnalyticsModule_Class();

@@ -9,7 +9,7 @@ class ThunderstormModule_Class
 	extends Module<Config> {
 
 	constructor() {
-		super();
+		super("ThunderstormModule");
 		this.setDefaultConfig({appName: "Thunderstorm-WebApp"});
 	}
 

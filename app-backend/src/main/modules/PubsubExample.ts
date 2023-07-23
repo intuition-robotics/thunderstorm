@@ -28,7 +28,7 @@ export class PubsubExample_Class
 	extends Firebase_PubSubFunction<MyType> {
 
 	constructor() {
-		super("example-topic");
+		super("example-topic", "PubsubExample");
 	}
 
 	onPublish = async (object: MyType | undefined, originalMessage: TopicMessage, context: FirebaseEventContext): Promise<any> => {

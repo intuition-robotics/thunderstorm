@@ -37,6 +37,10 @@ type Config = {
 export class AdminBRModule_Class
 	extends Module<Config> {
 
+	constructor() {
+		super("AdminBRModule");
+	}
+
 	private bugReport!: FirestoreCollection<DB_BugReport>;
 	private storage!: StorageWrapper;
 

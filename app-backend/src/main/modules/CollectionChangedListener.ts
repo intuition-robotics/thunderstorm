@@ -22,7 +22,7 @@ export class CollectionChangedListener_Class
 	extends FirestoreFunctionModule<object>{
 
 	constructor() {
-		super(`test`);
+		super(`test`, "CollectionChangedListener");
 		this.getFunction = this.getFunction.bind(this);
 	}
 

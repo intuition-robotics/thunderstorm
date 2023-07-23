@@ -41,8 +41,13 @@ export type RemoteServerConfig = {
     url: string
 }
 
-export class RemoteProxyCaller<Config extends RemoteServerConfig>
+export abstract class RemoteProxyCaller<Config extends RemoteServerConfig>
     extends Module<Config> {
+
+    // noinspection TypeScriptAbstractClassConstructorCanBeMadeProtected
+    constructor(name: string) {
+        super(name);
+    }
 
     protected init(): void {
         if (!this.config)
