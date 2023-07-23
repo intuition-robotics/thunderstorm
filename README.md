@@ -20,10 +20,8 @@ This boilerplate is a unification of both frontend and backend in one repo..
   * **bug-report** - A bug report infra that you can attach to your web app
   * **db-api-generator** - A generic db to api middleware
   * **firebase** - A full blown api to most of Firebase tools
-  * **live-docs** - A neat tool to manage application tooltips
   * **permissions** - A permissions management system for restricting users
-  * **push-pub-sub** - A generic push pub sub for your web app
-  * **storm** - A bunch of tools.. 
+  * **push-pub-sub** - A generic push pub sub for your web app 
   * **user-account** - A user password or SAML auth infra
   
  **NOTE:** These should always be aligned and compiling together with this repo!!

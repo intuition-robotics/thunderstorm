@@ -21,8 +21,8 @@ class PubSubModule_Class
             topic: (topicName: string, options?: PublishOptions) => {
                 const topic = pubSub.topic(topicName, options);
                 return {
-                    publishJson: async (json: object) => topic.publishJSON(json),
-                    publish: async (buffer: Buffer) => topic.publish(buffer)
+                    publishJson: async (json: object) => topic.publishMessage(json),
+                    publish: async (buffer: Buffer) => topic.publishMessage({data: buffer})
                 };
             }
         };

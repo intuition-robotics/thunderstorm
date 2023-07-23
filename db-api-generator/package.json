@@ -6,7 +6,6 @@
     "IR",
     "express",
     "infra",
-    "live-docs",
     "nu-art",
     "thunderstorm",
     "typescript"
@@ -29,14 +28,11 @@
   "dependencies": {
     "@intuitionrobotics/ts-common": "~0.0.1",
     "@intuitionrobotics/firebase": "~0.0.1",
-    "@intuitionrobotics/thunderstorm": "~0.0.1",
-    "use-strict": "^1.0.1"
+    "@intuitionrobotics/thunderstorm": "~0.0.1"
   },
   "devDependencies": {
     "@intuitionrobotics/testelot": "~0.0.1",
-    "@types/express": "^4.16.1",
     "@types/node": "^16.0.0",
-    "express": "^4.16.4",
     "module-alias": "^2.2.0",
     "ts-node": "^8.10.2",
     "tslint": "^5.16.0",

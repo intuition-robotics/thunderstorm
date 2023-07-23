@@ -25,7 +25,7 @@ import {DispatchModule, ExampleModule} from "@modules/ExampleModule";
 import {__stringify, _setTimeout, currentTimeMillies, merge, Minute, Module} from "@intuitionrobotics/ts-common";
 import {PushPubSubModule} from '@intuitionrobotics/push-pub-sub/backend';
 import {ValueChangedListener} from "@modules/ValueChangedListener";
-import {Slack_ServerApiError, SlackModule} from "@intuitionrobotics/storm/slack";
+import {SlackModule, Slack_ServerApiError} from "@intuitionrobotics/thunderstorm/app-backend/modules/SlackModule";
 import {PostProcessor, ServerUploaderModule, UploaderModule} from "@intuitionrobotics/file-upload/backend";
 import {FileWrapper, FirebaseModule} from '@intuitionrobotics/firebase/backend';
 import {DB_Temp_File} from '@intuitionrobotics/file-upload/shared/types';

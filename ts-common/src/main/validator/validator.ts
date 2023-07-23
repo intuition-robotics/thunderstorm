@@ -231,3 +231,6 @@ export const timestampValidator = (range?: RangeTimestamp) => (_path: string, ti
 	if (!timestamp || !isTimestampValid(timestamp, range))
 		throw new ValidationException('Time is not proper', _path, timestamp);
 }
+
+export const validateEmail = validateRegexp(
+	/[a-z0-9!#$%&'*+/=?^_`{|}~-]+(?:\.[a-z0-9!#$%&'*+/=?^_`{|}~-]+)*@(?:[a-z0-9](?:[a-z0-9-]*[a-z0-9])?\.)+[a-z0-9](?:[a-z0-9-]*[a-z0-9])?/);

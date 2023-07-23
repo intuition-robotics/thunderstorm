@@ -26,7 +26,6 @@ import {
 	BaseComponent,
 	ForceUpgrade
 } from "@intuitionrobotics/thunderstorm/frontend";
-import {LiveDoc} from "@intuitionrobotics/live-docs/frontend";
 import {AdminBR} from "@intuitionrobotics/bug-report/frontend";
 import {OnRequestListener} from "@intuitionrobotics/thunderstorm";
 
@@ -43,11 +42,10 @@ export class Hello
 
 	render() {
 		return <>
-			<div className="ll_h_c"><h1 onClick={ExampleModule.getMessageFromServer1}>{this.state.label}</h1><LiveDoc docKey="one-mouse-click"/></div>
-			<div className="ll_h_c"><h1 onClick={() => console.log("onclick")} onDoubleClick={ExampleModule.getMessageFromServer2}>Double click me</h1><LiveDoc
-				docKey="double-mouse-click"/></div>
+			<div className="ll_h_c"><h1 onClick={ExampleModule.getMessageFromServer1}>{this.state.label}</h1></div>
+			<div className="ll_h_c"><h1 onClick={() => console.log("onclick")} onDoubleClick={ExampleModule.getMessageFromServer2}>Double click me</h1></div>
 			<div className="ll_h_c"><h1 onClick={() => console.log("onClick")} onDoubleClick={() => console.log("onDoubleClick")}>Click OR Double Click</h1></div>
-			<div className="ll_h_c"><h1 onClick={ForceUpgrade.compareVersion}>Assert version</h1><LiveDoc docKey="assert-version"/></div>
+			<div className="ll_h_c"><h1 onClick={ForceUpgrade.compareVersion}>Assert version</h1></div>
 			<div>
 				<AdminBR/>
 			</div>

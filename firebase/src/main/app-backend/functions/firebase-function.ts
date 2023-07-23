@@ -26,8 +26,7 @@ import {
     RuntimeOptions
 } from "firebase-functions";
 
-import * as express from "express";
-import {Request, Response} from "express";
+import {Request, Response, Express} from "express";
 import {
     __stringify,
     addItemToArray,
@@ -61,12 +60,12 @@ export abstract class FirebaseFunction<Config = any>
 
 export class Firebase_ExpressFunction
     implements FirebaseFunctionInterface {
-    private readonly express: express.Express;
+    private readonly express: Express;
     private function!: HttpsFunction;
     private readonly name: string;
     static config: RuntimeOptions = {};
 
-    constructor(_express: express.Express, name = "api") {
+    constructor(_express: Express, name = "api") {
         this.express = _express;
         this.name = name;
     }

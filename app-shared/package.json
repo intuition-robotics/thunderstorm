@@ -19,9 +19,11 @@
   "scripts": {
     "build": "tsc"
   },
-  "devDependencies": {
+  "dependencies": {
     "@intuitionrobotics/thunderstorm": "~0.0.1",
-    "@intuitionrobotics/ts-common": "~0.0.1",
+    "@intuitionrobotics/ts-common": "~0.0.1"
+  },
+  "devDependencies": {
     "typescript": "~4.1.0",
     "@types/node": "^16.0.0"
   }

@@ -25,8 +25,7 @@
   "dependencies": {
     "@intuitionrobotics/firebase": "~0.0.1",
     "@intuitionrobotics/thunderstorm": "~0.0.1",
-    "@intuitionrobotics/ts-common": "~0.0.1",
-    "use-strict": "^1.0.1"
+    "@intuitionrobotics/ts-common": "~0.0.1"
   },
   "devDependencies": {
     "@intuitionrobotics/testelot": "~0.0.1",

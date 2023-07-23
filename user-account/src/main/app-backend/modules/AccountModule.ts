@@ -27,7 +27,8 @@ import {
     hashPasswordWithSalt,
     Minute,
     Module,
-    validate
+    validate,
+    validateEmail
 } from "@intuitionrobotics/ts-common";
 
 
@@ -58,10 +59,9 @@ import {
     HeaderKey,
     QueryRequestInfo
 } from "@intuitionrobotics/thunderstorm/backend";
-import {validateEmail} from "@intuitionrobotics/db-api-generator/backend";
 import {SecretsModule} from "./SecretsModule";
 import {SamlModule} from "./SamlModule";
-import { HeaderKey_JWT } from "@intuitionrobotics/thunderstorm";
+import {HeaderKey_JWT} from "@intuitionrobotics/thunderstorm";
 
 export const Header_SessionId = new HeaderKey(HeaderKey_SessionId, 404);
 

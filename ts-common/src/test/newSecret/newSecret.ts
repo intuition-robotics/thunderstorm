@@ -32,4 +32,4 @@ export const testSuit_newSecret = {
 	}
 };
 
-// testSuit_newSecret.processor('').catch()
+testSuit_newSecret.processor('').catch()
