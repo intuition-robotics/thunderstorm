@@ -31,7 +31,7 @@ export class PermissionsUserModule_Class
 	private users: DB_PermissionsUser[] = [];
 
 	constructor() {
-		super({key: "user", relativeUrl: "/v1/permissions/assign/user"}, "PermissionsUserModule");
+		super({key: "user", relativeUrl: "/v1/permissions/assign/user"});
 	}
 
 	protected init(): void {

@@ -42,10 +42,6 @@ export class RemoteProxy_Class<Config extends RemoteProxyConfig>
     extends Module<Config>
     implements QueryRequestInfo {
 
-    constructor() {
-        super("RemoteProxy");
-    }
-
     async __queryRequestInfo(request: ExpressRequest): Promise<{ key: string; data: any; }> {
         let data: string | undefined;
         try {

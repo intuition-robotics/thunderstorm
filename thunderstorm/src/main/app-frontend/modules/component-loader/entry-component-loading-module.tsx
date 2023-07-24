@@ -34,10 +34,6 @@ type ScriptLoaderBinder = ApiWithQuery<string, string>
 export class PageLoadingModule_Class
 	extends Module<{}> {
 
-	constructor() {
-		super("PageLoadingModule");
-	}
-
 	private readonly injected: { [src: string]: HTMLScriptElement } = {};
 
 	loadScript(src: string, progressListener: (progress: number) => void) {

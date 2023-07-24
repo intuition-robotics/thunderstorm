@@ -25,10 +25,6 @@ export class Test_Class
 	extends Module<{}>
 	implements TestDispatch {
 
-	constructor() {
-		super("Test");
-	}
-
 	testDispatch = () => {
 	};
 

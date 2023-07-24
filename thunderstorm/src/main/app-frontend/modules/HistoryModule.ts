@@ -38,7 +38,7 @@ export class BrowserHistoryModule_Class
 	private readonly history: History<any>;
 
 	constructor() {
-		super("BrowserHistoryModule");
+		super();
 		this.history = createBrowserHistory();
 	}
 

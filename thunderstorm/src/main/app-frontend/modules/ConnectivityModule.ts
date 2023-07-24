@@ -12,7 +12,7 @@ class ConnectivityModule_Class
 	private dispatch_onConnectivityChange = new ThunderDispatcher<OnConnectivityChange, '__onConnectivityChange'>('__onConnectivityChange');
 
 	constructor() {
-		super("ConnectivityModule");
+		super();
 		this.connected = this.getConnectivityStatus();
 	}
 

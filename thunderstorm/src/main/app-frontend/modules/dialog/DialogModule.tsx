@@ -50,7 +50,7 @@ export class DialogModule_Class
 	extends Module<{}> {
 
 	constructor() {
-		super("DialogModule");
+		super();
 	}
 
 	protected init(): void {

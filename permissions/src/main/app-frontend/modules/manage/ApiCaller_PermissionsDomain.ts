@@ -33,7 +33,7 @@ export class PermissionsDomainModule_Class
 	private domains: { [k: string]: DB_PermissionDomain[] } = {};
 
 	constructor() {
-		super({key: "domain", relativeUrl: "/v1/permissions/manage/domain"}, "PermissionsDomainModule");
+		super({key: "domain", relativeUrl: "/v1/permissions/manage/domain"});
 	}
 
 	protected init(): void {

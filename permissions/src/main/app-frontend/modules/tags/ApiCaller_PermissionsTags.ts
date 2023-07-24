@@ -14,7 +14,7 @@ export class PermissionsTagsModule_Class
 	private tags: DB_GroupTags[] = [];
 
 	constructor() {
-		super({key: "tags", relativeUrl: "/v1/permissions/tags/permissionsTags"}, "PermissionsTagsModule");
+		super({key: "tags", relativeUrl: "/v1/permissions/tags/permissionsTags"});
 	}
 
 	protected init(): void {

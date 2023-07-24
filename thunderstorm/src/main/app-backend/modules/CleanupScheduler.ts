@@ -26,7 +26,7 @@ export class CleanupScheduler_Class
 	extends FirebaseScheduledFunction {
 
 	constructor() {
-		super("CleanupScheduler");
+		super();
 		this.setSchedule('every 1 hours');
 	}
 

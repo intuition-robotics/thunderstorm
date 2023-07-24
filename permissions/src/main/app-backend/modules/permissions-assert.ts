@@ -56,10 +56,6 @@ type Config = {
 export class PermissionsAssert_Class
 	extends Module<Config> {
 
-	constructor() {
-		super("PermissionsAssert");
-	}
-
 	readonly Middleware = (keys: string[]): ServerApi_Middleware => async (req: ExpressRequest, data: HttpRequestData, response: ApiResponse) => {
 		let account;
 		await this.CustomMiddleware(keys, async (projectId: string, customFields: StringMap) => {

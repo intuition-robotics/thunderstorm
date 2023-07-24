@@ -38,8 +38,8 @@ export abstract class Module<Config = any>
     protected timeoutMap: { [k: string]: number } = {};
 
 	// noinspection TypeScriptAbstractClassConstructorCanBeMadeProtected
-    constructor(name: string) {
-		super(name);
+	constructor(tag?: string, name?: string) {
+		super(tag);
 		this.name = this.deduceName(name).replace("_Class", "");
 	}
 

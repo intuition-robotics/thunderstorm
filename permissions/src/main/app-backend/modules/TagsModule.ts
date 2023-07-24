@@ -35,7 +35,7 @@ export class TagsDB_Class
 	};
 
 	constructor() {
-		super(CollectionNameTags, TagsDB_Class._validator, "permissionsTags", "TagsDB");
+		super(CollectionNameTags, TagsDB_Class._validator, "permissionsTags");
 	}
 
 

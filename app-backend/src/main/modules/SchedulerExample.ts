@@ -22,7 +22,7 @@ export class SchedulerExample_Class
 	extends FirebaseScheduledFunction {
 
 	constructor() {
-		super("SchedulerExample");
+		super("schedulerExample");
 		this.setSchedule('every 2 minutes');
 	}
 

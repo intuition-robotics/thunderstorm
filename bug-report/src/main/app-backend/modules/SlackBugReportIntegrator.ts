@@ -37,10 +37,6 @@ type Config = {
 export class SlackBugReportIntegrator_Class
 	extends Module<Config> {
 
-	constructor() {
-		super("SlackBugReportIntegrator");
-	}
-
 	openTicket = async (bugReport: Request_BugReport, logs: ReportLogFile[], reporter?: string): Promise<TicketDetails | undefined> => {
 		if(bugReport.platforms && !bugReport.platforms.includes(Platform_Slack))
 			return;

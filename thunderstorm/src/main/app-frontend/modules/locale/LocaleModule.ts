@@ -49,10 +49,6 @@ const dispatch_onLanguageChanged = new ThunderDispatcher<LanguageChangeListener,
 export class LocaleModule_Class
 	extends Module<Config> {
 
-	constructor() {
-		super("LocaleModule");
-	}
-
 	private activeLocale!: LocaleDef;
 	private defaultLocale!: LocaleDef;
 	private selectedLanguage: StorageKey<string> = new StorageKey<string>("locale--selected-language");

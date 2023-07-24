@@ -94,7 +94,7 @@ export class AccountsModule_Class
     extends Module<Config>
     implements QueryRequestInfo {
     constructor() {
-        super("AccountsModule");
+        super();
         this.setDefaultConfig({sessionTTLms: {web: Day, app: Day, jwt: 30 * Minute}, jwtSecretKey: "TS_AUTH_SECRET"});
     }
 

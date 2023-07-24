@@ -73,7 +73,7 @@ export class ProjectDB_Class
 	};
 
 	constructor() {
-		super(CollectionName_Projects, ProjectDB_Class._validator, "project", "ProjectDB");
+		super(CollectionName_Projects, ProjectDB_Class._validator, "project");
 	}
 
 	protected async preUpsertProcessing(transaction: FirestoreTransaction, dbInstance: DB_PermissionProject, request?: ExpressRequest): Promise<void> {
@@ -103,7 +103,7 @@ export class DomainDB_Class
 	};
 
 	constructor() {
-		super(CollectionName_Domain, DomainDB_Class._validator, "domain", "DomainDB");
+		super(CollectionName_Domain, DomainDB_Class._validator, "domain");
 		this.setLockKeys(['projectId']);
 	}
 
@@ -136,7 +136,7 @@ export class LevelDB_Class
 	};
 
 	constructor() {
-		super(CollectionName_Level, LevelDB_Class._validator, "level", "LevelDB");
+		super(CollectionName_Level, LevelDB_Class._validator, "level");
 		this.setLockKeys(['domainId']);
 	}
 
@@ -230,7 +230,7 @@ export class ApiDB_Class
 	};
 
 	constructor() {
-		super(CollectionName_Api, ApiDB_Class._validator, "api", "ApiDB");
+		super(CollectionName_Api, ApiDB_Class._validator, "api");
 		this.setLockKeys(['projectId', "path"]);
 	}
 

@@ -7,10 +7,6 @@ import {GoogleAuth} from "google-auth-library";
 class PubSubModule_Class
     extends Module {
 
-    constructor() {
-        super("PubSubModule");
-    }
-
     project(projectId: string, authKey = projectId) {
         const authObject = AuthModule.getAuth(authKey, []);
         const auth: GoogleAuth = authObject.auth;

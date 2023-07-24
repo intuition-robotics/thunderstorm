@@ -41,7 +41,7 @@ export class PermissionsModule_Class
     extends Module<Config> {
 
     constructor() {
-        super("PermissionsModule");
+        super();
     }
 
     protected init(): void {

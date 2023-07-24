@@ -36,10 +36,6 @@ export class PermissionsModuleFE_Class
 	private debounceTime = 100;
 	private retryCounter = 0;
 
-	constructor() {
-		super("PermissionsModuleFE");
-	}
-
 	setDebounceTime(time: number) {
 		this.debounceTime = time;
 	}

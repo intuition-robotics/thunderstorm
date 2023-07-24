@@ -49,7 +49,7 @@ export class UploaderTempFileModule_Class
 	};
 
 	constructor() {
-		super(TEMP_COLLECTION, UploaderTempFileModule_Class._validator, "temp-files", "UploaderTempFileModule");
+		super(TEMP_COLLECTION, UploaderTempFileModule_Class._validator, "temp-files");
 	}
 
 	apis(pathPart?: string): ServerApi<any>[] {

@@ -45,8 +45,8 @@ export abstract class BaseHttpModule_Class<Config extends HttpConfig = HttpConfi
     private readonly defaultResponseHandler: ResponseHandler[] = [];
     protected readonly defaultHeaders: { [s: string]: (() => string | string[]) | string | string[] } = {};
 
-    constructor(name: string) {
-        super(name);
+    constructor() {
+        super();
         this.setDefaultConfig({compress: true} as Partial<Config>);
     }
 

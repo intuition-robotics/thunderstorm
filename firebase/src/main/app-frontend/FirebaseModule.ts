@@ -43,7 +43,7 @@ export class FirebaseModule_Class
 	private swSession?: SwFirebaseSession;
 
 	constructor() {
-		super("FirebaseModule");
+		super("firebase fe");
 	}
 
 

@@ -35,7 +35,7 @@ export class AdminBRModule_Class
 	extends Module {
 
 	constructor() {
-		super("AdminBRModule");
+		super();
 	}
 
 	private logs: DB_BugReport[] = [];

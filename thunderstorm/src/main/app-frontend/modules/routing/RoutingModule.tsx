@@ -49,7 +49,7 @@ class RoutingModule_Class
 	private readonly createLinkNode: (route: RoutePath, node?: React.ReactNode) => React.ReactElement;
 
 	constructor() {
-		super("RoutingModule");
+		super();
 		this.createNavLinkNode = defaultNavLinkNode;
 		this.createLinkNode = defaultLinkNode;
 		this.createRouteNode = defaultRouteNode;

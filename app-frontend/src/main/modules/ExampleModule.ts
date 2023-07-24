@@ -86,10 +86,6 @@ export class ExampleModule_Class
 
 	private message!: string;
 
-	constructor() {
-		super("ExampleModule");
-	}
-
 	data: string[] = [];
 	api_data: string = 'hi my name is';
 	private max: number = 0;

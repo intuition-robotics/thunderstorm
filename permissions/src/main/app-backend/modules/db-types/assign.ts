@@ -86,7 +86,7 @@ export class GroupsDB_Class
 	};
 
 	constructor() {
-		super(CollectionName_Groups, GroupsDB_Class._validator, "group", "GroupsDB");
+		super(CollectionName_Groups, GroupsDB_Class._validator, "group");
 		this.setLockKeys(['__accessLevels']);
 	}
 
@@ -192,7 +192,7 @@ export class UsersDB_Class
 	};
 
 	constructor() {
-		super(CollectionName_Users, UsersDB_Class._validator, "user", "UsersDB");
+		super(CollectionName_Users, UsersDB_Class._validator, "user");
 		this.setLockKeys(["accountId"]);
 	}
 

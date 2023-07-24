@@ -86,8 +86,8 @@ export abstract class BaseUploaderModule_Class<HttpModule extends BaseHttpModule
 	protected readonly dispatch_fileStatusChange = new Dispatcher<OnFileStatusChanged, '__onFileStatusChanged'>('__onFileStatusChanged');
 	private httpModule: HttpModule;
 
-	protected constructor(httpModule: HttpModule, moduleName: string) {
-		super(moduleName);
+	protected constructor(httpModule: HttpModule) {
+		super();
 		this.httpModule = httpModule;
 	}
 

@@ -26,10 +26,6 @@ type Version = 'v1' | 'v2'
 export class AuthModule_Class
 	extends Module<AuthModuleConfig> {
 
-	constructor() {
-		super("AuthModule");
-	}
-
 	getAuth<T extends Version = "v2">(authKey: string, scopes: string[], version: T = 'v2' as T, clientOptions?: JWTOptions | OAuth2ClientOptions | UserRefreshClientOptions): {version: string, auth: GoogleAuth} {
 		const authConfig = this.getAuthConfig(authKey)
 

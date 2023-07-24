@@ -31,7 +31,7 @@ const dispatcher_onFileUploaded = new Dispatcher<OnFileUploaded, "__onFileUpload
 export class BucketListener_Class
 	extends Firebase_StorageFunction {
 	constructor() {
-		super("BucketListener");
+		super();
 	}
 
 

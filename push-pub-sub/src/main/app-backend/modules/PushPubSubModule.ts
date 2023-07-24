@@ -68,10 +68,6 @@ type TempMessages = {
 export class PushPubSubModule_Class
 	extends Module<Config> {
 
-	constructor() {
-		super("PushPubSubModule");
-	}
-
 	private pushSessions!: FirestoreCollection<DB_PushSession>;
 	private pushKeys!: FirestoreCollection<DB_PushKeys>;
 	private notifications!: FirestoreCollection<DB_Notifications>;

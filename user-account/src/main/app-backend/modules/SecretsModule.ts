@@ -40,7 +40,7 @@ export class SecretsModule_Class
     public AUTHENTICATION_KEY = AUTHENTICATION_KEY;
 
     constructor() {
-        super("SecretsModule");
+        super("SecretsModule", "SecretsModule_Class");
         this.setDefaultConfig({validateKeyId: "AUTH_SECRET"})
     }
 

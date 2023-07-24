@@ -49,9 +49,6 @@ const Interval_DefaultTooltip = 6 * Second;
 export class TooltipModule_Class
 	extends Module<{}> {
 
-	constructor() {
-		super("TooltipModule");
-	}
 
 	show = (tooltip: Tooltip_Model, e?: MouseEvent) => {
 		if (!tooltip.location && e)

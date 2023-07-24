@@ -50,7 +50,7 @@ export class UploaderModule_Class
 	protected readonly dispatch_fileStatusChange = new ThunderDispatcher<OnFileStatusChanged, "__onFileStatusChanged">("__onFileStatusChanged");
 
 	constructor() {
-		super(XhrHttpModule, 'UploaderModule');
+		super(XhrHttpModule);
 	}
 
 	protected dispatchFileStatusChange(id?: string) {

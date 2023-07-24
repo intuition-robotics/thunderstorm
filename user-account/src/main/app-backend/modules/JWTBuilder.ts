@@ -3,13 +3,13 @@ import {
 	currentTimeMillies,
 	ObjectTS
 } from "@intuitionrobotics/ts-common";
+import * as jws from "jws";
 import {
-	sign,
 	Algorithm,
 	ALGORITHMS,
     Header
 } from "jws";
-import {SecretsModule} from "./SecretsModule";
+import {SecretsModule} from "../../app-backend/modules/SecretsModule";
 
 //Header
 export const ALGORITHM = "alg";
@@ -148,6 +148,6 @@ export class JWTBuilder {
 		if (!this.getAlgorithm())
 			throw new BadImplementationException("Missing algorithm, cannot build a valid JWT without this value")
 
-		return sign({secret, payload: this.payload, header: this.header});
+		return jws.sign({secret, payload: this.payload, header: this.header});
 	}
 }

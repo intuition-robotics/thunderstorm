@@ -44,10 +44,6 @@ type Config = {
 export class JiraBugReportIntegrator_Class
 	extends Module<Config> {
 
-	constructor() {
-		super("JiraBugReportIntegrator");
-	}
-
 	setIssueTitleProcessor(parser: (name: string) => string) {
 		this.parser = parser;
 	}

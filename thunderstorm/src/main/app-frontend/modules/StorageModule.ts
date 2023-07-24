@@ -36,10 +36,6 @@ export class StorageModule_Class
 	extends Module {
 	private cache: { [s: string]: string | number | object } = {};
 
-	constructor() {
-		super("StorageModule");
-	}
-
 	protected init(): void {
 		window.addEventListener('storage', this.handleStorageEvent);
 	}

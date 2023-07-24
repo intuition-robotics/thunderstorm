@@ -35,7 +35,7 @@ export class PermissionsGroupModule_Class
 	private groups: DB_PermissionsGroup[] = [];
 
 	constructor() {
-		super({key: "group", relativeUrl: "/v1/permissions/assign/group"}, "PermissionsGroupModule");
+		super({key: "group", relativeUrl: "/v1/permissions/assign/group"});
 	}
 
 	protected init(): void {

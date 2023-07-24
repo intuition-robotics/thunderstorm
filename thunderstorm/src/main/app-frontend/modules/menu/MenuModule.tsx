@@ -38,10 +38,6 @@ export interface MenuListener {
 export class MenuModule_Class
 	extends Module<{}> {
 
-	constructor() {
-		super("MenuModule");
-	}
-
 	private showMenu = new ThunderDispatcher<MenuListener, "__onMenuDisplay">("__onMenuDisplay");
 	private hideMenu = new ThunderDispatcher<MenuListener, "__onMenuHide">("__onMenuHide");
 

@@ -33,7 +33,7 @@ export class Tester
 	private reporter = new Reporter();
 
 	constructor() {
-		super("Tester");
+		super();
 	}
 
 	setScenario(scenario: Scenario) {

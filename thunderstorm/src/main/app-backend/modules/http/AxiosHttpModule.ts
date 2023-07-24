@@ -31,10 +31,6 @@ export class AxiosHttpModule_Class
     extends BaseHttpModule_Class {
     private requestOption: Axios_RequestConfig = {};
 
-    constructor(name?: string) {
-        super( name || "AxiosHttpModule");
-    }
-
     init() {
         super.init()
         const origin = this.config.origin;

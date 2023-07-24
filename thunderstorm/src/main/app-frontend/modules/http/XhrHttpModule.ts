@@ -40,10 +40,6 @@ import {
 export class XhrHttpModule_Class
 	extends BaseHttpModule_Class {
 
-	constructor(name?: string) {
-		super( name || "XhrHttpModule");
-	}
-
 	init() {
 		super.init();
 		const origin = this.config.origin;

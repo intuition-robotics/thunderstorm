@@ -63,7 +63,7 @@ export class GoogleCloudManager_Class
 	private cloudResourcesManagerAPIv1!: cloudresourcemanager_v1.Cloudresourcemanager;
 
 	constructor() {
-		super("GoogleCloudManager");
+		super();
 		this.setDefaultConfig({scopes: [GCPScope.CloudPlatform]} as GoogleCloudManagerConfig)
 	}
 
