@@ -152,6 +152,7 @@ export class AccountsModule_Class
         const sessions = await this.sessions.query({
             select: ["userId",
                 "timestamp",
+                "version",
                 "frontType"], where: {userId: account._id}
         });
         return sessions.map((session: DB_Session) => {
