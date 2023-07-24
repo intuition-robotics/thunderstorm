@@ -32,6 +32,7 @@
   "dependencies": {
     "@google-cloud/pubsub": "^3.6.0",
     "@intuitionrobotics/ts-common": "~0.0.1",
+    "rimraf": "^5.0.1",
     "google-auth-library": "^7.12.0",
     "googleapis": "^95.0.0"
   },
