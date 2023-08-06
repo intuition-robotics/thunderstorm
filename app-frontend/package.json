@@ -48,7 +48,7 @@
     "firebase": "^9.22.0",
     "emotion": "^9.2.12",
     "mic-recorder-to-mp3": "^2.2.2",
-    "moment": "2.24.0",
+    "moment": "^2.0.0",
     "react": "^16.8.1",
     "react-color": "^2.14.1",
     "react-dom": "^16.8.1",
@@ -94,7 +94,7 @@
     "html-beautify-webpack-plugin": "^1.0.5",
     "html-loader": "^3.0.1",
     "html-webpack-plugin": "^5.5.0",
-    "imagemin": "^6.1.0",
+    "imagemin": "^7.0.1",
     "img-loader": "^3.0.0"
   }
 }
