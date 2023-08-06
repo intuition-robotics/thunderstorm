@@ -32,7 +32,7 @@ export class PermissionsAccessLevelModule_Class
 	private levels: { [k: string]: DB_PermissionAccessLevel[] } = {};
 
 	constructor() {
-		super({key: "level", relativeUrl: "/v1/permissions/manage/level"});
+		super({key: "level", relativeUrl: "/v1/permissions/manage/level"}, "PermissionsAccessLevelModule");
 	}
 
 	protected init(): void {

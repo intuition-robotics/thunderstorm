@@ -54,6 +54,10 @@ export class UploaderModule_Class
 	extends Module<Config>
 	implements OnFileUploaded {
 
+	constructor() {
+		super("UploaderModule");
+	}
+
 	private storage!: StorageWrapper;
 
 	private postProcessor!: { [k: string]: PostProcessor };

@@ -130,6 +130,11 @@ const dispatch_showToast = new ThunderDispatcher<ToastListener, "__showToast">("
 export class ToastModule_Class
 	extends Module<{}> {
 	private DefaultBuilder: ToastBuilder = new ToastBuilder();
+
+	constructor() {
+		super("ToastModule");
+	}
+
 	public setDefaultBuilder(DefaultBuilder: ToastBuilder){
 		this.DefaultBuilder = DefaultBuilder;
 	}

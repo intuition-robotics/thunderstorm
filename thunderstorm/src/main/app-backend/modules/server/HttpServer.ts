@@ -85,7 +85,7 @@ export class HttpServer_Class
     private routes!: HttpRoute[];
 
     constructor(_express: Express) {
-        super("http-server");
+        super("HttpServer");
         this.express = _express;
     }
 

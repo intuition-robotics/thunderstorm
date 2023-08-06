@@ -55,6 +55,10 @@ const Header_PlatformName = new HeaderKey(HeaderKey_PlatformName);
 class ForceUpgrade_Class
 	extends Module<VersionConfig> {
 
+	constructor() {
+		super("ForceUpgrade");
+	}
+
 	static readonly Middleware: ServerApi_Middleware = async (request: ExpressRequest) => ForceUpgrade.assertVersion(request);
 
 	compareVersion(request: ExpressRequest): UpgradeRequired {

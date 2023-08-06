@@ -57,7 +57,7 @@ export class FirebaseModule_Class
     private localProjectId!: string;
 
     constructor() {
-        super("firebase");
+        super("FirebaseModule");
     }
 
     protected init(): void {

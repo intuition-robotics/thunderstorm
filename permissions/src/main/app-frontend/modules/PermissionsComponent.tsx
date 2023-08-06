@@ -20,8 +20,7 @@ export class PermissionsComponent
 	}
 
 	render() {
-		const {url} = this.props;
-		const permitted = PermissionsFE.doesUserHavePermissions(url);
+		const permitted = PermissionsFE.doesUserHavePermissions(this.props.url);
 		if (permitted === undefined)
 			return this.props.loadingComponent ? <this.props.loadingComponent/> : null;
 

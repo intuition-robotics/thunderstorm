@@ -42,7 +42,7 @@ export class BugReportModule_Class
 	private readonly reports: LogClient_MemBuffer[] = [];
 
 	constructor() {
-		super();
+		super("BugReportModule");
 		addItemToArray(this.reports, new LogClient_MemBuffer("default"));
 		addItemToArray(this.reports, new LogClient_MemBuffer("info")
 			.setFilter(level => LogLevelOrdinal.indexOf(level) >= LogLevelOrdinal.indexOf(LogLevel.Info)));

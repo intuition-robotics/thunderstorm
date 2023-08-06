@@ -10,6 +10,10 @@ import {
 export class PermissionsShare_Class
 	extends Module {
 
+	constructor() {
+		super("PermissionsShare");
+	}
+
 	async verifyPermissionGrantingAllowed(granterUserId: string, shareGroup: User_Group) {
 		await PermissionsAssert.assertUserSharingGroup(granterUserId, shareGroup);
 	}

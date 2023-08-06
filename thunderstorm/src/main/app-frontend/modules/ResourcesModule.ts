@@ -33,7 +33,7 @@ export class ResourcesModule_Class
 	private readonly relativePathImages: string;
 
 	constructor() {
-		super();
+		super("ResourcesModule");
 		this.relativePath = "../../res/";
 		this.relativePathImages = `${this.relativePath}images/`;
 	}

@@ -54,6 +54,10 @@ type TicketCreatorApi = (bugReport: Request_BugReport, logs: ReportLogFile[], em
 export class BugReportModule_Class
 	extends Module<Config> {
 
+	constructor() {
+		super("BugReportModule");
+	}
+
 	private bugReport!: FirestoreCollection<DB_BugReport>;
 	private storage!: StorageWrapper;
 	private ticketCreatorApis: TicketCreatorApi[] = [];

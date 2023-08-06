@@ -85,7 +85,7 @@ export class AccountModule_Class
     private accounts: UI_Account[] = [];
 
     constructor() {
-        super();
+        super("AccountModule");
         XhrHttpModule.addDefaultResponseHandler((request: BaseHttpRequest<any>) => {
             const status = request.getStatus();
             if (status < 200 || status >= 300)

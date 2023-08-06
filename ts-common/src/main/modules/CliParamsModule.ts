@@ -35,7 +35,7 @@ class CliParamsModule_Class
 	private paramsValue: TypedMap<string | string[] | undefined> = {};
 
 	constructor() {
-		super("CliParamsModule", "CliParamsModule_Class");
+		super("CliParamsModule");
 	}
 
 	init() {

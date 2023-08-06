@@ -47,6 +47,10 @@ type Config = {
 export class GithubModule_Class
 	extends Module<Config> {
 
+	constructor() {
+		super("GithubModule");
+	}
+
 	private createClient(token: string, prefix?: string) {
 		const auth = `${prefix || "token"} ${token}`;
 		const client: Octokit = new Octokit(

@@ -43,6 +43,10 @@ class TestModuleThatUsesCollection_Class
 	extends Module {
 	private collection!: FirestoreCollection<any>;
 
+	constructor() {
+		super("TestModuleThatUsesCollection");
+	}
+
 	protected init(): void {
 		this.collection = FirebaseModule.createAdminSession().getFirestore().getCollection("test-collection1");
 	}

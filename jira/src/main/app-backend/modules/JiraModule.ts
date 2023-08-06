@@ -142,9 +142,9 @@ export class JiraModule_Class
 	private projects!: JiraProject[];
 	private versions: { [projectId: string]: JiraVersion[] } = {};
 
-	protected init(): void {
+	constructor() {
+		super("JiraModule");
 	}
-
 	private getHeadersJson() {
 		if (!this.config.auth || !this.config.auth.apiKey || !this.config.auth.email)
 			throw new ImplementationMissingException('Missing auth config variables for JiraModule');

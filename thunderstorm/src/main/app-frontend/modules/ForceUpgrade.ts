@@ -47,6 +47,10 @@ const dispatch_onUpgradeRequired = new Dispatcher<OnUpgradeRequired, "__onUpgrad
 class ForceUpgrade_Class
 	extends Module<Config> {
 
+	constructor() {
+		super("ForceUpgrade");
+	}
+
 	protected init(): void {
 		XhrHttpModule.addDefaultHeader(HeaderKey_PlatformVersion, `${process.env.appVersion}`);
 		XhrHttpModule.addDefaultHeader(HeaderKey_PlatformName, `${browserType()}`);

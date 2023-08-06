@@ -39,7 +39,7 @@ export class ServerUploaderModule_Class
 	extends BaseUploaderModule_Class<AxiosHttpModule_Class, { requestConfig: Axios_RequestConfig }> {
 
 	constructor() {
-		super(AxiosHttpModule);
+		super(AxiosHttpModule, "ServerUploaderModule");
 	}
 
 	init() {

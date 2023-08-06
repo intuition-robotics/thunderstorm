@@ -36,7 +36,7 @@ export class FirestoreBackupScheduler_Class
 	extends FirebaseScheduledFunction {
 
 	constructor() {
-		super();
+		super("FirestoreBackupScheduler");
 		this.setSchedule('every 24 hours');
 	}
 
