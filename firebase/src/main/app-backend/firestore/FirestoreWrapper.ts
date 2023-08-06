@@ -1,66 +1,53 @@
-/*
- * Firebase is a simpler Typescript wrapper to all of firebase services.
- *
- * Copyright (C) 2020 Intuition Robotics
- *
- * Licensed under the Apache License, Version 2.0 (the "License");
- * you may not use this file except in compliance with the License.
- * You may obtain a copy of the License at
- *
- *     http://www.apache.org/licenses/LICENSE-2.0
- *
- * Unless required by applicable law or agreed to in writing, software
- * distributed under the License is distributed on an "AS IS" BASIS,
- * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
- * See the License for the specific language governing permissions and
- * limitations under the License.
- */
-
-import {FirestoreCollection,} from "./FirestoreCollection";
+import {FirestoreCollection} from "./FirestoreCollection";
 import {FirestoreType, FirestoreType_Collection,} from "./types";
 import {FilterKeys} from "../../shared/types";
 import {FirebaseSession} from "../auth/firebase-session";
 import {FirebaseBaseWrapper} from "../auth/FirebaseBaseWrapper";
-import {DB_Object} from "@intuitionrobotics/ts-common";
-import {getFirestore} from "firebase-admin/firestore";
+import {CollectionReference, getFirestore} from "firebase-admin/firestore";
+import {enhanceCollection, FirestoreV2Collection} from "./FirestoreV2Collection";
+
 
 export class FirestoreWrapper
-	extends FirebaseBaseWrapper {
+    extends FirebaseBaseWrapper {
 
-	readonly firestore: FirestoreType;
-	private readonly collections: { [collectionName: string]: FirestoreCollection<any> } = {};
+    readonly firestore: FirestoreType;
+    private readonly collections: { [collectionName: string]: FirestoreCollection<any> } = {};
+    private readonly collectionsV2: { [collectionName: string]: FirestoreV2Collection<any> } = {};
 
-	constructor(firebaseSession: FirebaseSession<any, any>) {
-		super(firebaseSession);
-		this.firestore = getFirestore(firebaseSession.app)
-	}
+    constructor(firebaseSession: FirebaseSession<any, any>) {
+        super(firebaseSession);
+        this.firestore = getFirestore(firebaseSession.app)
+    }
 
-	public getCollection<Type extends object>(name: string, externalFilterKeys?: FilterKeys<Type>): FirestoreCollection<Type> {
-		const collection = this.collections[name];
-		if (collection)
-			return collection;
+    public getCollection<Type extends object>(name: string, externalFilterKeys?: FilterKeys<Type>): FirestoreCollection<Type> {
+        const collection = this.collections[name];
+        if (collection)
+            return collection;
 
-		return this.collections[name] = new FirestoreCollection<Type>(name, this, externalFilterKeys);
-	}
+        return this.collections[name] = new FirestoreCollection<Type>(name, this, externalFilterKeys);
+    }
 
-	public listen<Type extends DB_Object>(collection: FirestoreCollection<Type>, doc: string) {
-		collection.wrapper.firestore.doc(`${collection.name}/${doc}`).onSnapshot(_snapshot => {
-			console.log('recieved snapshot!')
-		})
-	}
+    public getCollectionV2<Type extends object>(name: string): FirestoreV2Collection<Type> {
+        const collection = this.collectionsV2[name];
+        if (collection)
+            return collection;
 
-	getSdkInstance(){
-		return this.firestore;
-	}
+        const enchanceCollection1 = enhanceCollection(this.firestore.collection(name) as CollectionReference<Type>) as FirestoreV2Collection<any>;
+        return this.collectionsV2[name] = enchanceCollection1;
+    }
 
-	public async deleteCollection(name: string) {
-		return this.getCollection(name).deleteAll();
-	}
+    getSdkInstance() {
+        return this.firestore;
+    }
 
-	public async listCollections(): Promise<FirestoreType_Collection[]> {
-		if (!this.firestore.listCollections)
-			return [];
+    public async deleteCollection(name: string) {
+        return this.getCollection(name).deleteAll();
+    }
 
-		return this.firestore.listCollections();
-	}
+    public async listCollections(): Promise<FirestoreType_Collection[]> {
+        if (!this.firestore.listCollections)
+            return [];
+
+        return this.firestore.listCollections();
+    }
 }

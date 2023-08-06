@@ -25,22 +25,17 @@ import {ModuleManager} from "./module-manager";
 import {BadImplementationException} from "./exceptions";
 import {merge} from "../utils/merge-tools";
 import {Logger} from "./logger/Logger";
-import {ValidatorTypeResolver} from "../validator/validator";
-import {
-	_clearTimeout,
-	_setTimeout,
-	TimerHandler
-} from "../utils/date-time-tools";
+import {validate, ValidatorTypeResolver} from "../validator/validator";
+import {_clearTimeout, _setTimeout, currentTimeMillies, TimerHandler} from "../utils/date-time-tools";
 
 export abstract class Module<Config = any>
-	extends Logger {
-
-	private name: string;
-	protected readonly manager!: ModuleManager;
-	protected readonly initiated = false;
-	protected readonly config: Config = {} as Config;
-	protected readonly configValidator?: ValidatorTypeResolver<Config>;
-	protected timeoutMap: { [k: string]: number } = {};
+    extends Logger {
+    private name: string;
+    protected manager?: ModuleManager;
+    public readonly initiated = false;
+    protected config: Config = {} as Config;
+    protected configValidator?: ValidatorTypeResolver<Config>;
+    protected timeoutMap: { [k: string]: number } = {};
 
 	// noinspection TypeScriptAbstractClassConstructorCanBeMadeProtected
 	constructor(tag?: string, name?: string) {
@@ -58,80 +53,89 @@ export abstract class Module<Config = any>
 		return tempName
 	}
 
-	public debounce(handler: TimerHandler, key: string, ms = 0) {
-		_clearTimeout(this.timeoutMap[key]);
-		this.timeoutMap[key] = _setTimeout(handler, ms);
-	}
+    // // possibly to add
+    // public async debounceSync(handler: TimerHandler, key: string, ms = 0) {
+    // 	_clearTimeout(this.timeoutMap[key]);
+    //
+    // 	await new Promise((resolve, reject) => {
+    // 		this.timeoutMap[key] = setTimeout(async (..._args) => {
+    // 			try {
+    // 				await handler(..._args);
+    // 				resolve();
+    // 			} catch (e) {
+    // 				reject(e);
+    // 			}
+    // 		}, ms) as unknown as number;
+    // 	});
+    // }
+    debounce(handler: TimerHandler, key: string, ms = 0) {
+        const k = "debounce" + key;
+        _clearTimeout(this.timeoutMap[k]);
+        this.timeoutMap[k] = _setTimeout(handler, ms);
+    }
 
-	// // possibly to add
-	// public async debounceSync(handler: TimerHandler, key: string, ms = 0) {
-	// 	_clearTimeout(this.timeoutMap[key]);
-	//
-	// 	await new Promise((resolve, reject) => {
-	// 		this.timeoutMap[key] = setTimeout(async (..._args) => {
-	// 			try {
-	// 				await handler(..._args);
-	// 				resolve();
-	// 			} catch (e) {
-	// 				reject(e);
-	// 			}
-	// 		}, ms) as unknown as number;
-	// 	});
-	// }
+    throttle(handler: TimerHandler, key: string, ms = 0) {
+        const k = "throttle" + key;
+        if (this.timeoutMap[k])
+            return;
+        this.timeoutMap[k] = _setTimeout(() => {
+            handler();
+            delete this.timeoutMap[k];
+        }, ms);
+    }
 
-	public throttle(handler: TimerHandler, key: string, ms = 0) {
-		if (this.timeoutMap[key])
-			return;
-		this.timeoutMap[key] = _setTimeout(() => {
-			handler();
-			delete this.timeoutMap[key];
-		}, ms);
-	}
+    throttleV2(handler: TimerHandler, key: string, ms: number, force = false) {
+        const k = "throttle_v2" + key;
+        const now = currentTimeMillies();
+        const timeoutMapElement = this.timeoutMap[k];
+        if (timeoutMapElement && now - timeoutMapElement <= ms && !force)
+            return;
 
-	public setConfigValidator(validator: ValidatorTypeResolver<Config>) {
-		// @ts-ignore
-		this.configValidator = validator;
-	}
+        handler();
+        this.timeoutMap[k] = currentTimeMillies();
+    }
 
-	public setDefaultConfig(config: Partial<Config>) {
-		// @ts-ignore
-		this.config = config;
-	}
+    public setConfigValidator(validator: ValidatorTypeResolver<Config>) {
+        this.configValidator = validator;
+    }
 
-	public getName(): string {
-		return this.name;
-	}
+    public setDefaultConfig(config: Partial<Config>) {
+        this.config = config as Config;
+    }
 
-	public setName(name: string): void {
-		this.name = name;
-	}
+    public getName(): string {
+        return this.name;
+    }
 
-	private setConfig(config: Config): void {
-		// @ts-ignore
-		this.config = this.config ? merge(this.config, config || {}) : config;
-	}
+    public setName(name: string): void {
+        this.name = name;
+    }
 
-	private setManager(manager: ModuleManager): void {
-		// @ts-ignore
-		this.manager = manager;
-	}
+    public setConfig(config: Config): void {
+        this.config = this.config ? merge(this.config, config || {}) : config;
+    }
 
-	protected runAsync = (label: string, toCall: () => Promise<any>) => {
-		setTimeout(() => {
-			this.logDebug(`Running async: ${label}`);
-			new Promise(toCall)
-				.then(() => {
-					this.logDebug(`Async call completed: ${label}`);
-				})
-				.catch(reason => this.logError(`Async call error: ${label}`, reason));
-		}, 0);
-	};
+    public setManager(manager: ModuleManager): void {
+        this.manager = manager;
+    }
 
-	protected init(): void {
-		// ignorance is bliss
-	}
+    protected runAsync = (label: string, toCall: () => Promise<any>) => {
+        setTimeout(() => {
+            this.logDebug(`Running async: ${label}`);
+            new Promise(toCall)
+                .then(() => {
+                    this.logDebug(`Async call completed: ${label}`);
+                })
+                .catch(reason => this.logError(`Async call error: ${label}`, reason));
+        }, 0);
+    };
 
-	protected validate(): void {
-		// ignorance is bliss
-	}
+    protected init(): void {
+        // ignorance is bliss
+    }
+
+    public validate(): void {
+        if(this.configValidator)
+            validate(this.config, this.configValidator)
+    }
 }

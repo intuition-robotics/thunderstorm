@@ -28,7 +28,6 @@ import {
 	CustomParams,
 	logEvent,
 	setAnalyticsCollectionEnabled,
-	setCurrentScreen,
 	setUserId,
 	setUserProperties
 } from "firebase/analytics";
@@ -48,7 +47,7 @@ export class AnalyticsWrapper
 	}
 
 	setCurrentScreen(screenName: string, options?: FirebaseType_CallOptions) {
-		setCurrentScreen(this.analytics, screenName, options);
+		this.logEvent("screen_view",{screenName}, options)
 	}
 
 	setAnalyticsCollectionEnabled(enabled: boolean) {

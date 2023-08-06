@@ -19,12 +19,10 @@
 const path = require('path');
 const HtmlWebPackPlugin = require("html-webpack-plugin");
 const MiniCssExtractPlugin = require("mini-css-extract-plugin");
-const {CleanWebpackPlugin} = require('clean-webpack-plugin');
 const {WebpackManifestPlugin} = require("webpack-manifest-plugin");
 const packageJson = require('./package.json');
 const webpack = require("webpack");
 const sourcePath = path.join(__dirname, './src');
-const swFolder = path.join(__dirname, './src/sw/');
 const mainFolder = path.join(__dirname, './src/main/');
 const mainConfig = path.join(__dirname, './src/main/tsconfig.json');
 
@@ -36,14 +34,12 @@ module.exports = (env, argv) => {
 	console.log("argv: " + JSON.stringify(argv));
 	console.log("argv.mode: " + argv.mode);
 	const outputFolder = path.resolve(__dirname, `dist/${envConfig.outputFolder()}`);
-	const swChunkName = 'sw';
 
 	return {
 		context: sourcePath,
 		target: ["web", "es2017"],
 		entry: {
-			main: './main/index.tsx',
-			[swChunkName]: './sw/index.js',
+			main: './main/index.tsx'
 		},
 		output: {
 			path: outputFolder,
@@ -146,7 +142,7 @@ module.exports = (env, argv) => {
 					test: /\.s?[c|a]ss$/,
 					use: [
 						'style-loader',
-						MiniCssExtractPlugin.loader,
+						{loader: MiniCssExtractPlugin.loader, options: { esModule: false}},
 						// Translates CSS into CommonJS
 						"css-loader",
 						// Compiles Sass to CSS
@@ -162,7 +158,6 @@ module.exports = (env, argv) => {
 					'appVersion': `"${packageJson.version}"`
 				}
 			}),
-			new CleanWebpackPlugin({cleanStaleWebpackAssets: false}),
 			new MiniCssExtractPlugin({
 				filename: 'main/res/styles.[contenthash].css',
 			}),
@@ -171,8 +166,7 @@ module.exports = (env, argv) => {
 				favicon: './main/res/favicon.ico',
 				template: "./main/index.ejs",
 				filename: "./index.html",
-				minify: envConfig.htmlMinificationOptions(),
-				excludeChunks: [swChunkName]
+				minify: envConfig.htmlMinificationOptions()
 			}),
 			new WebpackManifestPlugin()
 		].filter(plugin => plugin),

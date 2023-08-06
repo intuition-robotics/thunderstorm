@@ -54,6 +54,8 @@ import {
 	validateArray,
 	validateObjectValues,
 	validateRegexp,
+    merge,
+    validate,
 } from "@intuitionrobotics/ts-common";
 import {AccessLevelPermissionsDB} from "./managment";
 import {FirestoreTransaction} from "@intuitionrobotics/firebase/backend";
@@ -309,6 +311,35 @@ export class UsersDB_Class
 			});
 
 			return this.upsertAll(updatedUsers, transaction, request);
+		});
+	}
+	async patch(instance: DB_PermissionsUser, propsToPatch?: (keyof DB_PermissionsUser)[], request?: ExpressRequest): Promise<DB_PermissionsUser> {
+		return this.collection.runInTransaction(async (transaction) => {
+			const dbInstance: DB_PermissionsUser = await this.assertExternalQueryUnique(instance, transaction);
+			// If the caller has specified props to be changed, make sure the don't conflict with the lockKeys.
+			const wrongKey = propsToPatch?.find(prop => this.config.lockKeys.includes(prop));
+			if (wrongKey)
+				throw new BadImplementationException(`Key ${wrongKey} is part of the 'lockKeys' and cannot be updated.`);
+
+			// If the caller has not specified props, we remove the keys from the caller's instance
+			// before merging with the original dbInstance.
+			_keys(instance).forEach(key => {
+				if (this.config.lockKeys.includes(key) || (propsToPatch && !propsToPatch.includes(key))) {
+					delete instance[key];
+				}
+			});
+
+			if(instance.groups && instance.groups.length < (dbInstance.groups?.length || 0)){
+				await AccountModule.logoutAccount(dbInstance.accountId)
+			}
+
+			const mergedObject = merge(dbInstance, instance);
+
+			await validate(mergedObject, this.validator);
+
+			await this.assertUniqueness(transaction, mergedObject, request);
+
+			return this.upsertImpl(transaction, mergedObject, request);
 		});
 	}
 }

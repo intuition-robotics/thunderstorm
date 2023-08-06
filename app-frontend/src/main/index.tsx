@@ -19,18 +19,12 @@
 // tslint:disable:no-import-side-effect
 import './res/styles/styles.scss';
 
-import * as React from 'react';
 import {App} from "./app/App";
 import {
 	ForceUpgrade,
-	Thunder,
-	ToastBuilder
+	Thunder
 } from "@intuitionrobotics/thunderstorm/frontend";
-import {
-	Frontend_ModulePack_LiveDocs,
-	LiveDocsModule,
-	showEditModalExample
-} from "@intuitionrobotics/live-docs/frontend";
+
 import {ExampleModule} from "@modules/ExampleModule";
 import {Frontend_ModulePack_PushPubSub} from "@intuitionrobotics/push-pub-sub/frontend";
 import {BugReportModule} from "@intuitionrobotics/bug-report/frontend";
@@ -48,15 +42,8 @@ PermissionsFE.setDefaultConfig({projectId: 'thunderstorm-staging'});
 new Thunder()
 	.setConfig(require("./config").config)
 	.addModules(...Frontend_ModulePack_PushPubSub)
-	.addModules(...Frontend_ModulePack_LiveDocs)
 	.addModules(...Frontend_ModulePack_Uploader)
 	.addModules(...modules)
 	.setMainApp(App)
 	.build();
 
-LiveDocsModule.setActionsResolver((docKey: string) => {
-	const doc = LiveDocsModule.get(docKey);
-
-	return new ToastBuilder().setContent(doc.document.length === 0 ? `No Content for document with key: ${docKey}` : doc.document).setActions(
-		[<button style={{marginRight: 8}} onClick={() => showEditModalExample(docKey)}>Edit for me</button>]);
-});

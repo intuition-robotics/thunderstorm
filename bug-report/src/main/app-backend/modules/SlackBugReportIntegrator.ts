@@ -28,7 +28,7 @@ import {
 	Request_BugReport
 } from "../..";
 import {TicketDetails} from "./BugReportModule";
-import {SlackModule} from "@intuitionrobotics/storm/slack";
+import {SlackModule} from "@intuitionrobotics/thunderstorm//app-backend/modules/SlackModule";
 
 type Config = {
 	channel: string

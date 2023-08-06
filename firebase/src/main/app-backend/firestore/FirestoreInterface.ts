@@ -21,7 +21,7 @@ import {
 	FirestoreQuery
 } from "../..";
 import {
-	FirestoreType_DocumentSnapshot,
+	FirestoreType_QueryDocumentSnapshot,
 	FirestoreType_Query
 } from "./types";
 import {FirestoreCollection} from "./FirestoreCollection";
@@ -31,14 +31,14 @@ import {
 	BadImplementationException,
 	ImplementationMissingException
 } from "@intuitionrobotics/ts-common";
-import * as admin from "firebase-admin";
+import {CollectionReference, Query} from "firebase-admin/firestore";
 
 export class FirestoreInterface {
 
-	static buildQuery<Type extends object>(collection: FirestoreCollection<Type>, query?: FirestoreQuery<Type>): admin.firestore.Query {
-		let myQuery: FirestoreType_Query = collection.collection;
+	static buildQuery<Type extends object>(collection: CollectionReference<Type>, query?: FirestoreQuery<Type>): Query<Type> {
+		let myQuery: Query<any> = collection;
 		if (query && query.select)
-			myQuery = myQuery.select ? myQuery.select(...query.select as string[]) : myQuery;
+			myQuery = myQuery.select(...query.select as string[]);
 
 		if (query && query.where) {
 			const whereClause = query.where;
@@ -93,7 +93,7 @@ export class FirestoreInterface {
 		if (query && query.limit)
 			myQuery = myQuery.limit(query.limit);
 
-		return myQuery as admin.firestore.Query;
+		return myQuery as Query<Type>
 	}
 
 	private static isQueryObject(whereValue: any) {
@@ -110,7 +110,7 @@ export class FirestoreInterface {
 			whereValue["$eq"]);
 	}
 
-	static assertUniqueDocument(results: FirestoreType_DocumentSnapshot[], query: FirestoreQuery<any>, collectionName: string): (FirestoreType_DocumentSnapshot | undefined) {
+	static assertUniqueDocument(results: FirestoreType_QueryDocumentSnapshot[], query: FirestoreQuery<any>, collectionName: string): (FirestoreType_QueryDocumentSnapshot | undefined) {
 		if (results.length > 1)
 			throw new BadImplementationException(`too many results for query: ${__stringify(query)} in collection: ${collectionName}`);
 

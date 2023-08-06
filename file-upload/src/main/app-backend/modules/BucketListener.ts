@@ -17,7 +17,7 @@
  */
 
 import {Firebase_StorageFunction} from "@intuitionrobotics/firebase/backend-functions";
-import {ObjectMetadata} from "firebase-functions/lib/providers/storage";
+import {ObjectMetadata} from "firebase-functions/lib/v1/providers/storage";
 import {EventContext} from "firebase-functions";
 import {Dispatcher} from "@intuitionrobotics/ts-common";
 
@@ -38,6 +38,7 @@ export class BucketListener_Class
 	init() {
 		super.init();
 		// @ts-ignore
+		this.logInfo("Bucket Listener config", this.config)
 		this.logInfo("bucketName", this.config.bucketName);
 	}
 

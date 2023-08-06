@@ -54,7 +54,7 @@ export class XhrHttpModule_Class
 			.setOrigin(this.origin)
 			.setMethod(method)
 			.setTimeout(this.timeout)
-			.addHeaders(this.getDefaultHeaders())
+			.setDefaultHeaders(this.defaultHeaders)
 			.setHandleRequestSuccess(this.handleRequestSuccess)
 			.setHandleRequestFailure(this.handleRequestFailure)
 			.setDefaultRequestHandler(this.processDefaultResponseHandlers);
@@ -205,7 +205,7 @@ class XhrHttpRequest<Binder extends ApiTypeBinder<any, any, any, any>>
 		return this.xhr?.getAllResponseHeaders();
 	}
 
-	getResponseHeader(headerKey: string): string | string[] | undefined {
+	getResponseHeader(headerKey: string): string | undefined {
 		if (!this.xhr)
 			throw new BadImplementationException("No xhr object!");
 

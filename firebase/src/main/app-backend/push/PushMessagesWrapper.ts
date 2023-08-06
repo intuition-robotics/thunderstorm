@@ -43,11 +43,11 @@ export class PushMessagesWrapper
 	}
 
 	async sendAll(messages: FirebaseType_Message[]): Promise<FirebaseType_BatchResponse> {
-		return this.messaging.sendAll(messages);
+		return this.messaging.sendEach(messages);
 	}
 
 	async sendMultiCast(tokens: string[], data: StringMap): Promise<FirebaseType_BatchResponse> {
-		return this.messaging.sendMulticast({data, tokens});
+		return this.messaging.sendEachForMulticast({data, tokens});
 	}
 
 	async sendToTopic(topic: string, data: StringMap, dryRun?: boolean): Promise<FirebaseType_TopicResponse> {

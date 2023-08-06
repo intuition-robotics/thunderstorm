@@ -16,6 +16,7 @@
  * limitations under the License.
  */
 import {
+	__stringify,
 	BadImplementationException,
 	Exception,
 	Module
@@ -26,10 +27,12 @@ import {
 	RestEndpointMethodTypes
 } from '@octokit/rest';
 import {
-	OctokitResponse, ReposGetContentResponseData
+	OctokitResponse,
+	ReposGetContentResponseData
 } from "@octokit/types"
 import * as path from "path";
 import {
+	ApiException,
 	ExpressRequest,
 	promisifyRequest
 } from "@intuitionrobotics/thunderstorm/backend";
@@ -269,13 +272,17 @@ export class GithubModule_Class
 	}
 
 	async downloadArchive(url: string, branch: string, request: ExpressRequest) {
-		const response = await promisifyRequest({uri: url, encoding: null});
-		if (!response || !response.body) {
+		const response = await promisifyRequest({url: url, responseType: 'arraybuffer'});
+		if (!response || !response.data)
 			throw new Exception(`Failed to download archive for branch ${branch} of product ${url}`)
-		}
+		const statusCode = response.status;
+		// TODO: need to handle 1XX and 3XX
+		if (statusCode < 200 || statusCode >= 300)
+			throw new ApiException(statusCode, `Failed to download archive for branch ${branch} of product ${url}. Error: ${__stringify(response.data)}`)
+
 		this.logDebug(`Got archive in zip format.`);
 		// Returns a buffer.
-		return response.body;
+		return response.data;
 	}
 
 	/**
@@ -285,7 +292,7 @@ export class GithubModule_Class
 	 *
 	 * This API has an upper limit of 1,000 files for a directory.
 	 */
-	async listDirectoryContents(repo: string, branch: string, _path: string): Promise<ReposGetContentResponseData| undefined> {
+	async listDirectoryContents(repo: string, branch: string, _path: string): Promise<ReposGetContentResponseData | undefined> {
 		const token = await this.getGithubInstallationToken();
 		const client: Octokit = this.createClient(token);
 
@@ -296,7 +303,7 @@ export class GithubModule_Class
 				owner: this.config.gitOwner,
 				repo,
 				path: _path,
-				ref: branch,
+				ref: branch
 			});
 
 		if (!response || !response.data)

@@ -42,7 +42,7 @@ class ServerApi_Account_Create
 	protected async process(request: ExpressRequest, response: ApiResponse, queryParams: {}, body: Request_CreateAccount) {
 		this.assertProperty(body, ["password", "email"]);
 
-		return AccountModule.create(body);
+		return AccountModule.create(body, response);
 	}
 }
 

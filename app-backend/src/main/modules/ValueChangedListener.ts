@@ -24,7 +24,6 @@ export class ValueChangedListener_Class
 	constructor() {
 		super(`test/{param}/changes/value`);
 		this.getFunction = this.getFunction.bind(this);
-		this.onFunctionReady = this.onFunctionReady.bind(this);
 	}
 
 	processChanges = async (previousValue: any, newValue: any, params: { [p: string]: any }): Promise<any> => {

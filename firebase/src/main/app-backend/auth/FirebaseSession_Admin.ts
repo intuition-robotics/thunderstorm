@@ -20,7 +20,6 @@ import {
 	credential,
 	ServiceAccount
 } from "firebase-admin";
-import {JWTInput} from "google-auth-library";
 import {FirebaseSession} from "./firebase-session";
 import {ThisShouldNotHappenException} from "@intuitionrobotics/ts-common";
 import {
@@ -31,6 +30,7 @@ import {
 	App,
 	initializeApp
 } from "firebase-admin/app";
+import {JWTInput} from "../FirebaseModule";
 
 export class FirebaseSession_Admin
 	extends FirebaseSession<JWTInput & { databaseURL?: string } | undefined, App> {

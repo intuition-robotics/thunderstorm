@@ -34,10 +34,10 @@ export type Props = {
 	startFromValue?: number,
 	endFrameValue?: number,
 	borderBoxValues?: string[],
-	renderBottomAxis?: (scale: ScaleLinear<number, number, any>, height: number) => JSX.Element,
-	renderLeftAxis?: (scale: ScaleLinear<number, number, any>, width: number) => JSX.Element,
-	renderPoints?: (dataPoint: Coordinates) => JSX.Element
-	renderLines?: (startPoint: Coordinates, endPoint: Coordinates) => JSX.Element
+	renderBottomAxis?: (scale: ScaleLinear<number, number, any>, height: number) => React.JSX.Element,
+	renderLeftAxis?: (scale: ScaleLinear<number, number, any>, width: number) => React.JSX.Element,
+	renderPoints?: (dataPoint: Coordinates) => React.JSX.Element
+	renderLines?: (startPoint: Coordinates, endPoint: Coordinates) => React.JSX.Element
 }
 
 export class Example_LineGraph

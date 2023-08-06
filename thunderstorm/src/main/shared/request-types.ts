@@ -24,8 +24,8 @@ import {BaseHttpRequest} from "./BaseHttpRequest";
 
 export class HttpException
 	extends Error {
-	constructor(responseCode: number, url: string) {
-		super(`${responseCode} - ${url}`);
+	constructor(responseCode: number, url: string, e?: Error) {
+		super(`${responseCode} - ${url}` + "\n" + e?.message + "\n" + e?.stack);
 	}
 }
 

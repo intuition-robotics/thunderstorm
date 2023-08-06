@@ -23,445 +23,461 @@
  * Created by tacb0ss on 11/07/2018.
  */
 import {
-	_keys,
-	BadImplementationException,
-	dispatch_onServerError,
-	isErrorOfType,
-	Logger,
-	LogLevel,
-	MUSTNeverHappenException,
-	ServerErrorSeverity,
-	validate,
-	ValidationException,
-	ValidatorTypeResolver
+    _keys,
+    BadImplementationException,
+    dispatch_onServerError,
+    isErrorOfType,
+    Logger,
+    LogLevel,
+    merge,
+    MUSTNeverHappenException,
+    ObjectTS,
+    ServerErrorSeverity,
+    validate,
+    ValidationException,
+    ValidatorTypeResolver
 } from "@intuitionrobotics/ts-common";
 
 import {Stream} from "stream";
 import {parse} from "url";
-import {
-	HttpServer,
-	ServerApi_Middleware
-} from "./HttpServer";
+import {ServerApi_Middleware} from "./HttpServer";
 import {IncomingHttpHeaders} from "http";
 // noinspection TypeScriptPreferShortImport
 import {
-	ApiTypeBinder,
-	ApiWithBody,
-	ApiWithQuery,
-	DeriveBodyType,
-	DeriveQueryType,
-	DeriveResponseType,
-	DeriveUrlType,
-	HttpMethod,
-	QueryParams
+    ApiTypeBinder,
+    ApiWithBody,
+    ApiWithQuery,
+    DeriveBodyType,
+    DeriveQueryType,
+    DeriveResponseType,
+    DeriveUrlType,
+    HttpMethod,
+    QueryParams
 } from "../../../shared/types";
 import {assertProperty} from "../../utils/to-be-removed";
 import {ApiException} from "../../exceptions";
-import {
-	ExpressRequest,
-	ExpressResponse,
-	ExpressRouter
-} from "../../utils/types";
+import {ExpressRequest, ExpressResponse, ExpressRouter} from "../../utils/types";
 import {RemoteProxy} from "../proxy/RemoteProxy";
+import {Storm} from "../../core/Storm";
 
 export type HttpRequestData = {
-	originalUrl: string
-	headers: IncomingHttpHeaders
-	url: string
-	query: any
-	body: any
-	method: HttpMethod
+    originalUrl: string
+    headers: IncomingHttpHeaders
+    url: string
+    query: any
+    body: any
+    method: HttpMethod
 }
 
 
 export abstract class ServerApi<Binder extends ApiTypeBinder<string, R, B, P>, R = DeriveResponseType<Binder>, B = DeriveBodyType<Binder>, P extends QueryParams | {} = DeriveQueryType<Binder>>
-	extends Logger {
-	public static isDebug: boolean;
+    extends Logger {
+    public static isDebug: boolean;
 
-	private printResponse: boolean = true;
-	readonly headersToLog: string[] = [];
+    private printResponse: boolean = true;
+    readonly headersToLog: string[] = [];
 
-	readonly method: HttpMethod;
-	private url!: string;
-	readonly relativePath: string;
-	private middlewares?: ServerApi_Middleware[];
-	private bodyValidator?: ValidatorTypeResolver<B>;
-	private queryValidator?: ValidatorTypeResolver<P>;
-	private sideEffects: (() => Promise<any>)[] = [];
+    readonly method: HttpMethod;
+    private url!: string;
+    readonly relativePath: string;
+    private middlewares?: ServerApi_Middleware[];
+    private bodyValidator?: ValidatorTypeResolver<B>;
+    private queryValidator?: ValidatorTypeResolver<P>;
+    private sideEffects: (() => Promise<any>)[] = [];
+    protected baseUrl?: string;
 
-	protected constructor(method: HttpMethod, relativePath: string, tag?: string) {
-		super(tag || relativePath);
-		this.setMinLevel(ServerApi.isDebug ? LogLevel.Verbose : LogLevel.Info);
+    protected constructor(method: HttpMethod, relativePath: string, tag?: string) {
+        super(tag || relativePath);
+        this.setMinLevel(ServerApi.isDebug ? LogLevel.Verbose : LogLevel.Info);
 
-		this.method = method;
-		this.relativePath = `${relativePath}`;
-	}
+        this.method = method;
+        this.relativePath = `${relativePath}`;
+    }
 
-	shouldPrintResponse() {
-		return this.printResponse;
-	};
+    shouldPrintResponse() {
+        return this.printResponse;
+    };
 
-	addSideEffect(sideEffect: () => Promise<any>) {
-		this.sideEffects.push(sideEffect);
-		return this;
-	}
+    addSideEffect(sideEffect: () => Promise<any>) {
+        this.sideEffects.push(sideEffect);
+        return this;
+    }
 
-	setMiddlewares(...middlewares: ServerApi_Middleware[]) {
-		this.middlewares = middlewares;
-		return this;
-	}
+    setMiddlewares(...middlewares: ServerApi_Middleware[]) {
+        this.middlewares = middlewares;
+        return this;
+    }
 
-	addMiddlewares(...middlewares: ServerApi_Middleware[]) {
-		this.middlewares = [...(this.middlewares || []), ...middlewares];
-		return this;
-	}
+    addMiddlewares(...middlewares: ServerApi_Middleware[]) {
+        this.middlewares = [...(this.middlewares || []), ...middlewares];
+        return this;
+    }
 
-	addHeaderToLog(...headersToLog: string[]) {
-		this.headersToLog.push(...headersToLog);
-	}
+    addHeaderToLog(...headersToLog: string[]) {
+        this.headersToLog.push(...headersToLog);
+    }
 
-	setBodyValidator(bodyValidator: ValidatorTypeResolver<B>) {
-		this.bodyValidator = bodyValidator;
-	}
+    setBodyValidator(bodyValidator: ValidatorTypeResolver<B>) {
+        this.bodyValidator = bodyValidator;
+    }
 
-	setQueryValidator(queryValidator: ValidatorTypeResolver<P>) {
-		this.queryValidator = queryValidator;
-	}
+    setQueryValidator(queryValidator: ValidatorTypeResolver<P>) {
+        this.queryValidator = queryValidator;
+    }
 
-	asProxy(): ServerApi<Binder> {
-		return new ServerApi_Proxy<Binder>(this);
-	}
+    asProxy(): ServerApi<Binder> {
+        return new ServerApi_Proxy<Binder>(this);
+    }
 
-	getUrl() {
-		return this.url;
-	}
+    getUrl() {
+        return this.url;
+    }
 
-	dontPrintResponse() {
-		this.printResponse = false;
-	}
+    dontPrintResponse() {
+        this.printResponse = false;
+    }
 
-	setMaxResponsePrintSize(printResponseMaxSizeBytes: number) {
-		this.printResponse = printResponseMaxSizeBytes > -1;
-	}
+    setMaxResponsePrintSize(printResponseMaxSizeBytes: number) {
+        this.printResponse = printResponseMaxSizeBytes > -1;
+    }
 
-	public route(router: ExpressRouter, prefixUrl: string) {
-		const fullPath = `${prefixUrl ? prefixUrl : ""}/${this.relativePath}`;
-		this.setTag(fullPath);
-		router[this.method](fullPath, this.callWrapper);
-		this.url = `${HttpServer.getBaseUrl()}${fullPath}`;
-	}
+    public route(router: ExpressRouter, prefixUrl: string, baseUrl: string) {
+        this.baseUrl = baseUrl;
+        const fullPath = `${prefixUrl ? prefixUrl : ""}/${this.relativePath}`;
+        this.setTag(fullPath);
+        router[this.method](fullPath, this.callWrapper);
+        this.url = `${baseUrl}${fullPath}`;
+    }
 
-	assertProperty = assertProperty;
+    assertProperty = assertProperty;
 
-	callWrapper = async (req: ExpressRequest, res: ExpressResponse) => {
-		await this.call(req, res)
-		await this.releaseSideEffects();
-	}
+    callWrapper = async (req: ExpressRequest, res: ExpressResponse) => {
+        await this.call(req, res)
+        await this.releaseSideEffects();
+    }
 
-	private releaseSideEffects = async () => {
-		try {
-			await Promise.all(this.sideEffects.map(sideEffect => sideEffect()))
-		} catch (e) {
-			this.logError("Something went wrong while performing the side effects", e);
-		} finally {
-			this.sideEffects = [];
-		}
-	};
+    private releaseSideEffects = async () => {
+        try {
+            await Promise.all(this.sideEffects.map(sideEffect => sideEffect()))
+        } catch (e) {
+            this.logError("Something went wrong while performing the side effects", e);
+        } finally {
+            this.sideEffects = [];
+        }
+    };
 
-	call = async (req: ExpressRequest, res: ExpressResponse) => {
-		const response: ApiResponse = new ApiResponse(this, res);
+    call = async (req: ExpressRequest, res: ExpressResponse) => {
+        const response: ApiResponse = new ApiResponse(this, res);
 
-		this.logInfo(`Intercepted Url: ${req.path}`);
+        this.logInfo(`Intercepted Url: ${req.path}`);
 
-		if (this.headersToLog.length > 0) {
-			const headers: { [s: string]: string | undefined } = {};
-			for (const headerName of this.headersToLog) {
-				headers[headerName] = req.header(headerName);
-			}
-			this.logDebug(`-- Headers: `, headers);
-		}
+        if (this.headersToLog.length > 0) {
+            const headers: { [s: string]: string | undefined } = {};
+            for (const headerName of this.headersToLog) {
+                headers[headerName] = req.header(headerName);
+            }
+            this.logDebug(`-- Headers: `, headers);
+        }
 
-		const reqQuery: P = parse(req.url, true).query as P;
-		if (reqQuery && typeof reqQuery === "object" && Object.keys(reqQuery as QueryParams).length)
-			this.logVerbose(`-- Url Params: `, reqQuery);
-		else
-			this.logVerbose(`-- No Params`);
+        const reqQuery: P = parse(req.url, true).query as P;
+        if (reqQuery && typeof reqQuery === "object" && Object.keys(reqQuery as QueryParams).length)
+            this.logVerbose(`-- Url Params: `, reqQuery);
+        else
+            this.logVerbose(`-- No Params`);
 
-		const body: B | string | undefined = req.body;
-		if (body && ((typeof body === "object")))
-			this.logVerbose(`-- Body (Object): `, body as unknown as object);
-		else if (body && (body as string).length)
-			this.logVerbose(`-- Body (String): `, body as unknown as string);
-		else
-			this.logVerbose(`-- No Body`);
+        const body: B | string | undefined = req.body;
+        if (body && ((typeof body === "object")))
+            this.logVerbose(`-- Body (Object): `, body as unknown as object);
+        else if (body && (body as string).length)
+            this.logVerbose(`-- Body (String): `, body as unknown as string);
+        else
+            this.logVerbose(`-- No Body`);
 
-		const requestData: HttpRequestData = {
-			method: this.method,
-			originalUrl: req.path,
-			headers: req.headers,
-			url: req.url,
-			query: reqQuery,
-			body: body as B
-		};
+        const requestData: HttpRequestData = {
+            method: this.method,
+            originalUrl: req.path,
+            headers: req.headers,
+            url: req.url,
+            query: reqQuery,
+            body: body as B
+        };
 
-		try {
-			this.bodyValidator && validate<B>(body as B, this.bodyValidator);
-			this.queryValidator && validate<P>(reqQuery, this.queryValidator);
+        try {
+            this.bodyValidator && validate<B>(body as B, this.bodyValidator);
+            this.queryValidator && validate<P>(reqQuery, this.queryValidator);
 
-			if (this.middlewares)
-				await Promise.all(this.middlewares.map(m => m(req, requestData, response)));
+            const context = await this.applyMiddlewares(req, requestData, response);
 
-			const toReturn: unknown = await this.process(req, response, reqQuery, body as B);
-			if (response.isConsumed())
-				return;
+            const toReturn: unknown = await this.process(req, response, reqQuery, body as B, context);
+            if (response.isConsumed())
+                return;
 
-			if (!toReturn)
-				return await response.end(200);
+            if (!toReturn)
+                return await response.end(200);
 
-			// TODO need to handle stream and buffers
-			// if (Buffer.isBuffer(toReturn))
-			// 	return response.stream(200, toReturn as Buffer);
+            // TODO need to handle stream and buffers
+            // if (Buffer.isBuffer(toReturn))
+            // 	return response.stream(200, toReturn as Buffer);
 
-			const responseType = typeof toReturn;
-			if (responseType === "object")
-				return await response.json(200, toReturn as object);
+            const responseType = typeof toReturn;
+            if (responseType === "object")
+                return await response.json(200, toReturn as object);
 
-			if (responseType === "string" && (toReturn as string).toLowerCase().startsWith("<html"))
-				return await response.html(200, toReturn as string);
+            if (responseType === "string" && (toReturn as string).toLowerCase().startsWith("<html"))
+                return await response.html(200, toReturn as string);
 
-			return await response.text(200, toReturn as string);
-		} catch (err) {
-			let e: any = err;
-			let severity: ServerErrorSeverity = ServerErrorSeverity.Warning;
-			if (typeof e === "string")
-				e = new BadImplementationException(`String was thrown: ${e}`);
+            return await response.text(200, toReturn as string);
+        } catch (err) {
+            let e: any = err;
+            let severity: ServerErrorSeverity = ServerErrorSeverity.Warning;
+            if (typeof e === "string")
+                e = new BadImplementationException(`String was thrown: ${e}`);
 
-			if (!(e instanceof Error) && typeof e === "object")
-				e = new BadImplementationException(`Object instance was thrown: ${JSON.stringify(e)}`);
+            if (!(e instanceof Error) && typeof e === "object")
+                e = new BadImplementationException(`Object instance was thrown: ${JSON.stringify(e)}`);
 
-			try {
-				this.logErrorBold(e);
-			} catch (e2) {
-				this.logErrorBold("Error while handling error on request...", e2);
-				this.logErrorBold(`Original error thrown: ${JSON.stringify(e)}`);
-				this.logErrorBold(`-- Someone was stupid... you MUST only throw an Error and not objects or strings!! --`);
-			}
+            try {
+                this.logErrorBold(e);
+            } catch (e2) {
+                this.logErrorBold("Error while handling error on request...", e2);
+                this.logErrorBold(`Original error thrown: ${JSON.stringify(e)}`);
+                this.logErrorBold(`-- Someone was stupid... you MUST only throw an Error and not objects or strings!! --`);
+            }
 
-			if (isErrorOfType(e, ValidationException))
-				e = new ApiException(400, "Validator exception", e);
+            if (isErrorOfType(e, ValidationException))
+                e = new ApiException(400, "Validator exception", e);
 
-			if (!isErrorOfType(e, ApiException))
-				e = new ApiException(500, "Unexpected server error", e);
+            if (!isErrorOfType(e, ApiException))
+                e = new ApiException(500, "Unexpected server error", e);
 
-			const apiException = isErrorOfType(e, ApiException);
-			if (!apiException)
-				throw new MUSTNeverHappenException("MUST NEVER REACH HERE!!!");
+            const apiException = isErrorOfType(e, ApiException);
+            if (!apiException)
+                throw new MUSTNeverHappenException("MUST NEVER REACH HERE!!!");
 
-			if (apiException.responseCode >= 500)
-				severity = ServerErrorSeverity.Error;
-			else if (apiException.responseCode >= 400)
-				severity = ServerErrorSeverity.Warning;
+            if (apiException.responseCode >= 500)
+                severity = ServerErrorSeverity.Error;
+            else if (apiException.responseCode >= 400)
+                severity = ServerErrorSeverity.Warning;
 
-			switch (apiException.responseCode) {
-				case 401:
-					severity = ServerErrorSeverity.Debug;
-					break;
+            switch (apiException.responseCode) {
+                case 401:
+                    severity = ServerErrorSeverity.Debug;
+                    break;
 
-				case 404:
-					severity = ServerErrorSeverity.Info;
-					break;
+                case 404:
+                    severity = ServerErrorSeverity.Info;
+                    break;
 
-				case 403:
-					severity = ServerErrorSeverity.Warning;
-					break;
+                case 403:
+                    severity = ServerErrorSeverity.Warning;
+                    break;
 
-				case 500:
-					severity = ServerErrorSeverity.Critical;
-					break;
-			}
+                case 500:
+                    severity = ServerErrorSeverity.Critical;
+                    break;
+            }
 
-			const message = await HttpServer.errorMessageComposer(requestData, apiException);
-			try {
-				await dispatch_onServerError.dispatchModuleAsync([severity,
-				                                                  HttpServer,
-				                                                  message]);
-			} catch (e) {
-				this.logError("Error while handing server error", e);
-			}
-			if (apiException.responseCode === 500)
-				return response.serverError(apiException);
+            try {
+                const httpServer = Storm.getInstance()?.getHttpServer();
+                if (httpServer) {
+                    const message = await httpServer.errorMessageComposer(requestData, apiException);
+                    await dispatch_onServerError.dispatchModuleAsync([
+                        severity,
+                        httpServer,
+                        message
+                    ]);
+                }
+            } catch (e) {
+                this.logError("Error while handing server error", e);
+            }
+            if (apiException.responseCode === 500)
+                return response.serverError(apiException);
 
-			return response.exception(apiException);
-		}
-	};
+            return response.exception(apiException);
+        }
+    };
 
-	protected abstract process(request: ExpressRequest, response: ApiResponse, queryParams: P, body: B): Promise<R>;
+    private async applyMiddlewares(req: ExpressRequest, requestData: HttpRequestData, response: ApiResponse): Promise<ObjectTS> {
+        if (!this.middlewares)
+            return {};
+
+        const contextList = await Promise.all(this.middlewares.map(async m => m(req, requestData, response)));
+
+        return contextList.reduce((acc: ObjectTS, c) => merge(acc, c || {}), {})
+    }
+
+    protected abstract process(request: ExpressRequest, response: ApiResponse, queryParams: P, body: B, context: ObjectTS): Promise<R>;
+
 }
 
 export abstract class ServerApi_Get<Binder extends ApiWithQuery<U, R, P>, U extends string = DeriveUrlType<Binder>, R = DeriveResponseType<Binder>, P extends QueryParams | {} = DeriveQueryType<Binder>>
-	extends ServerApi<Binder> {
+    extends ServerApi<Binder> {
 
-	protected constructor(apiName: string) {
-		super(HttpMethod.GET, apiName);
-	}
+    protected constructor(apiName: string) {
+        super(HttpMethod.GET, apiName);
+    }
 }
 
 export abstract class ServerApi_Post<Binder extends ApiWithBody<U, R, B>, U extends string = DeriveUrlType<Binder>, R = DeriveResponseType<Binder>, B = DeriveBodyType<Binder>>
-	extends ServerApi<Binder> {
+    extends ServerApi<Binder> {
 
-	protected constructor(apiName: string) {
-		super(HttpMethod.POST, apiName);
-	}
+    protected constructor(apiName: string) {
+        super(HttpMethod.POST, apiName);
+    }
 }
 
 export class ServerApi_Proxy<Binder extends ApiTypeBinder<string, R, B, P>, R = DeriveResponseType<Binder>, B = DeriveBodyType<Binder>, P extends QueryParams | {} = DeriveQueryType<Binder>>
-	extends ServerApi<Binder> {
-	private readonly api: ServerApi<Binder>;
+    extends ServerApi<Binder> {
+    private readonly api: ServerApi<Binder>;
 
-	public constructor(api: ServerApi<any>) {
-		super(api.method, `${api.relativePath}/proxy`);
-		this.api = api;
-		this.setMiddlewares(RemoteProxy.Middleware);
-	}
+    public constructor(api: ServerApi<any>) {
+        super(api.method, `${api.relativePath}/proxy`);
+        this.api = api;
+        this.setMiddlewares(RemoteProxy.Middleware);
+    }
 
-	protected async process(request: ExpressRequest, response: ApiResponse, queryParams: DeriveQueryType<Binder>, body: DeriveBodyType<Binder>): Promise<DeriveResponseType<Binder>> {
-		// @ts-ignore
-		return this.api.process(request, response, queryParams, body);
-	}
+    protected async process(request: ExpressRequest, response: ApiResponse, queryParams: DeriveQueryType<Binder>, body: DeriveBodyType<Binder>, context: ObjectTS): Promise<DeriveResponseType<Binder>> {
+        // @ts-ignore
+        return this.api.process(request, response, queryParams, body, context);
+    }
 }
 
 export class ServerApi_Redirect
-	extends ServerApi<any> {
-	private readonly responseCode: number;
-	private readonly redirectUrl: string;
+    extends ServerApi<any> {
+    private readonly responseCode: number;
+    private readonly redirectUrl: string;
 
-	public constructor(apiName: string, responseCode: number, redirectUrl: string) {
-		super(HttpMethod.ALL, apiName);
-		this.responseCode = responseCode;
-		this.redirectUrl = redirectUrl;
-	}
+    public constructor(apiName: string, responseCode: number, redirectUrl: string) {
+        super(HttpMethod.ALL, apiName);
+        this.responseCode = responseCode;
+        this.redirectUrl = redirectUrl;
+    }
 
-	protected async process(request: ExpressRequest, response: ApiResponse, queryParams: QueryParams, body: any): Promise<void> {
-		const query = queryParams ? _keys<QueryParams, string>(queryParams).reduce((c: string, k: string) => c + '&' + k + '=' + queryParams[k], '?') : '';
-		response.redirect(this.responseCode, `${HttpServer.getBaseUrl()}${this.redirectUrl}${query}`);
-	}
+    protected async process(request: ExpressRequest, response: ApiResponse, queryParams: QueryParams, body: any): Promise<void> {
+        const query = queryParams ? _keys<QueryParams, string>(queryParams).reduce((c: string, k: string) => c + '&' + k + '=' + queryParams[k], '?') : '';
+        response.redirect(this.responseCode, `${this.baseUrl}${this.redirectUrl}${query}`);
+    }
 }
 
 export class ApiResponse {
-	private api: ServerApi<any>;
-	private readonly res: ExpressResponse;
-	private consumed: boolean = false;
+    private api: ServerApi<any>;
+    private readonly res: ExpressResponse;
+    private consumed: boolean = false;
 
-	constructor(api: ServerApi<any>, res: ExpressResponse) {
-		this.api = api;
-		this.res = res;
-	}
+    constructor(api: ServerApi<any>, res: ExpressResponse) {
+        this.api = api;
+        this.res = res;
+    }
 
-	public isConsumed(): boolean {
-		return this.consumed;
-	}
+    public isConsumed(): boolean {
+        return this.consumed;
+    }
 
-	private consume() {
-		if (this.consumed) {
-			this.api.logError("This API was already satisfied!!", new Error());
-			return;
-		}
+    private consume() {
+        if (this.consumed) {
+            this.api.logError("This API was already satisfied!!", new Error());
+            return;
+        }
 
-		this.consumed = true;
-	}
+        this.consumed = true;
+    }
 
-	stream(responseCode: number, stream: Stream, headers?: any) {
-		this.consume();
+    stream(responseCode: number, stream: Stream, headers?: any) {
+        this.consume();
 
-		this.printHeaders(headers);
-		this.res.set(headers);
-		this.res.writeHead(responseCode);
-		stream.pipe(this.res, {end: false});
-		stream.on('end', () => {
-			this.res.end();
-		});
-	}
+        this.printHeaders(headers);
+        this.res.set(headers);
+        this.res.writeHead(responseCode);
+        stream.pipe(this.res, {end: false});
+        stream.on('end', () => {
+            this.res.end();
+        });
+    }
 
-	private printHeaders(headers?: any) {
-		if (!headers)
-			return this.api.logVerbose(` -- No response headers`);
+    private printHeaders(headers?: any) {
+        if (!headers)
+            return this.api.logVerbose(` -- No response headers`);
 
-		this.api.logVerbose(` -- Response with headers: `, headers);
-	}
+        this.api.logVerbose(` -- Response with headers: `, headers);
+    }
 
-	private printResponse(response?: string | object) {
-		if (!response)
-			return this.api.logVerbose(` -- No response body`);
+    private printResponse(response?: string | object) {
+        if (!response)
+            return this.api.logVerbose(` -- No response body`);
 
-		if (!this.api.shouldPrintResponse())
-			return this.api.logVerbose(` -- Response: -- Not Printing --`);
+        if (!this.api.shouldPrintResponse())
+            return this.api.logVerbose(` -- Response: -- Not Printing --`);
 
-		this.api.logVerbose(` -- Response:`, response);
-	}
+        this.api.logVerbose(` -- Response:`, response);
+    }
 
-	public code(responseCode: number, headers?: any) {
-		this.printHeaders(headers);
-		this.end(responseCode, "", headers);
-	}
+    public code(responseCode: number, headers?: any) {
+        this.printHeaders(headers);
+        this.end(responseCode, "", headers);
+    }
 
-	text(responseCode: number, response?: string, _headers?: any) {
-		const headers = (_headers || {});
-		headers["content-type"] = "text/plain";
+    text(responseCode: number, response?: string, _headers?: any) {
+        const headers = (_headers || {});
+        headers["content-type"] = "text/plain";
 
-		this.end(responseCode, response, headers);
-	}
+        this.end(responseCode, response, headers);
+    }
 
-	html(responseCode: number, response?: string, _headers?: any) {
-		const headers = (_headers || {});
-		headers["content-type"] = "text/html";
+    html(responseCode: number, response?: string, _headers?: any) {
+        const headers = (_headers || {});
+        headers["content-type"] = "text/html";
 
-		this.end(responseCode, response, headers);
-	}
+        this.end(responseCode, response, headers);
+    }
 
-	json(responseCode: number, response?: object | string, _headers?: any) {
-		this._json(responseCode, response, _headers);
-	}
+    json(responseCode: number, response?: object | string, _headers?: any) {
+        this._json(responseCode, response, _headers);
+    }
 
 
-	private _json(responseCode: number, response?: object | string, _headers?: any) {
-		const headers = (_headers || {});
-		headers["content-type"] = "application/json";
+    private _json(responseCode: number, response?: object | string, _headers?: any) {
+        const headers = (_headers || {});
+        headers["content-type"] = "application/json";
 
-		this.end(responseCode, response, headers);
-	}
+        this.end(responseCode, response, headers);
+    }
 
-	end(responseCode: number, response?: object | string, headers?: any) {
-		this.consume();
+    end(responseCode: number, response?: object | string, headers?: any) {
+        this.consume();
 
-		this.printHeaders(headers);
-		this.printResponse(response);
+        this.printHeaders(headers);
+        this.printResponse(response);
 
-		this.res.set(headers);
-		this.res.writeHead(responseCode);
-		this.res.end(typeof response !== "string" ? JSON.stringify(response, null, 2) : response);
-	}
+        this.res.set(headers);
+        this.res.writeHead(responseCode);
+        this.res.end(typeof response !== "string" ? JSON.stringify(response, null, 2) : response);
+    }
 
-	setHeaders(headers: any): void {
-		this.res.header(headers);
-	}
+    setHeaders(headers: any): void {
+        this.res.header(headers);
+    }
 
-	redirect(responseCode: number, url: string) {
-		this.consume();
+    setHeader(headerKey: string, value: string | string[]): void {
+        this.res.header(headerKey, value);
+    }
 
-		this.res.redirect(responseCode, url);
-	}
+    redirect(responseCode: number, url: string) {
+        this.consume();
 
-	exception(exception: ApiException, headers?: any) {
-		const responseBody = exception.responseBody;
-		if (!ServerApi.isDebug)
-			delete responseBody.debugMessage;
+        this.res.redirect(responseCode, url);
+    }
 
-		this._json(exception.responseCode, responseBody, headers);
-	}
+    exception(exception: ApiException, headers?: any) {
+        const responseBody = exception.responseBody;
+        if (!ServerApi.isDebug)
+            delete responseBody.debugMessage;
 
-	serverError(error: Error & { cause?: Error }, headers?: any) {
-		const stack = error.cause ? error.cause.stack : error.stack;
-		const message = (error.cause ? error.cause.message : error.message) || "";
-		this.text(500, ServerApi.isDebug && stack ? stack : message, headers);
-	}
+        this._json(exception.responseCode, responseBody, headers);
+    }
+
+    serverError(error: Error & { cause?: Error }, headers?: any) {
+        const stack = error.cause ? error.cause.stack : error.stack;
+        const message = (error.cause ? error.cause.message : error.message) || "";
+        this.text(500, ServerApi.isDebug && stack ? stack : message, headers);
+    }
 }

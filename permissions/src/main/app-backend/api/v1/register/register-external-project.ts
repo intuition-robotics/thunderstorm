@@ -16,24 +16,25 @@
  * limitations under the License.
  */
 
-import {ApiResponse, ExpressRequest, ServerApi, Storm} from "@intuitionrobotics/thunderstorm/backend";
+import {ApiResponse, ExpressRequest, RemoteProxy, ServerApi} from "@intuitionrobotics/thunderstorm/backend";
 
 // noinspection ES6PreferShortImport
-import {PermissionsApi_RegisterProject} from "../permissions/_imports";
+import {PermissionsApi_RegisterExternalProject, Request_RegisterProject} from "../permissions/_imports";
 import {HttpMethod} from "@intuitionrobotics/thunderstorm";
 import {PermissionsModule} from "../../../modules/PermissionsModule";
 
-export class ServerApi_RegisterProject
-    extends ServerApi<PermissionsApi_RegisterProject> {
+
+export class ServerApi_RegisterExternalProject
+    extends ServerApi<PermissionsApi_RegisterExternalProject> {
 
     constructor() {
-        super(HttpMethod.GET, "register-project");
+        super(HttpMethod.POST, "register-external-project");
     }
 
-    protected async process(request: ExpressRequest, response: ApiResponse, queryParams: {}, body: void): Promise<void> {
-        // RemoteProxy.assertSecret(request);
-        await PermissionsModule.registerProject(Storm.getInstance().getHttpServer());
+    protected async process(request: ExpressRequest, response: ApiResponse, queryParams: {}, body: Request_RegisterProject): Promise<void> {
+        RemoteProxy.assertSecret(request);
+        await PermissionsModule._registerProject(body);
     }
 }
 
-module.exports = new ServerApi_RegisterProject();
+module.exports = new ServerApi_RegisterExternalProject();

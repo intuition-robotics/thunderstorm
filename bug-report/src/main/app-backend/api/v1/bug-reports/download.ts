@@ -28,8 +28,6 @@ import {
 	Paths
 } from "./_imports";
 
-// import {AccountModule} from "@intuitionrobotics/user-account/backend";
-
 class ServerApi_DownloadLogs
 	extends ServerApi_Post<ApiPostPath> {
 
@@ -38,7 +36,6 @@ class ServerApi_DownloadLogs
 	}
 
 	protected async process(request: ExpressRequest, response: ApiResponse, queryParams: {}, body: Paths) {
-		// const email = await AccountModule.validateSession(request);
 		return AdminBRModule.downloadFiles(body);
 	}
 }

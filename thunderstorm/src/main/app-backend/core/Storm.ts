@@ -20,108 +20,84 @@
  */
 
 import {FirebaseModule} from "@intuitionrobotics/firebase/backend";
-import {
-	BeLogged,
-	LogClient_Function,
-	LogClient_Terminal,
-	Module
-} from "@intuitionrobotics/ts-common";
-import {
-	Firebase_ExpressFunction,
-	FirebaseFunction
-} from '@intuitionrobotics/firebase/backend-functions';
-import {BaseStorm} from "./BaseStorm";
-import {
-	HttpServer,
-	RouteResolver
-} from "../modules/server/HttpServer";
+import {BeLogged, LogClient_Function, LogClient_Terminal, Module} from "@intuitionrobotics/ts-common";
+import {Firebase_ExpressFunction, FirebaseFunction} from '@intuitionrobotics/firebase/backend-functions';
+import {HttpServer_Class, RouteResolver} from "../modules/server/HttpServer";
 import {ServerApi} from "../modules/server/server-api";
-
-
-const modules: Module[] = [
-	HttpServer,
-	FirebaseModule
-];
-
+import {BaseStorm} from "./BaseStorm";
+import {Express} from "express";
+import * as express from "express";
 
 export class Storm
-	extends BaseStorm {
-	private routeResolver!: RouteResolver;
-	private initialPath!: string;
-	private functions: any[] = [];
-	private apis: ServerApi<any>[] = [];
+    extends BaseStorm {
+    private routeResolver!: RouteResolver;
+    private initialPath!: string;
+    private functions: any[] = [];
+    private apis: ServerApi<any>[] = [];
+    private readonly express: Express;
+    private readonly httpServer: HttpServer_Class;
 
-	constructor() {
-		super();
-		this.addModules(...modules);
-	}
+    constructor(_express?: Express) {
+        super();
+        this.express = _express || express();
+        this.httpServer = new HttpServer_Class(this.express);
+        this.addModules(this.httpServer, FirebaseModule);
+    }
 
-	init() {
-		BeLogged.addClient(process.env.GCLOUD_PROJECT && process.env.FUNCTIONS_EMULATOR ? LogClient_Terminal : LogClient_Function);
-		ServerApi.isDebug = !!this.config?.isDebug;
+    static getInstance(): Storm {
+        return Storm.instance as Storm
+    }
 
-		super.init();
+    getHttpServer(){
+        return this.httpServer;
+    }
 
-		const urlPrefix = !process.env.GCLOUD_PROJECT ? this.initialPath : "";
-		// Load from folder structure
-		HttpServer.resolveApi(this.routeResolver, urlPrefix);
-		// Load from those passed by init
-		this.routeResolver.routeApis(this.apis, urlPrefix)
+    init() {
+        BeLogged.addClient(process.env.GCLOUD_PROJECT && process.env.FUNCTIONS_EMULATOR ? LogClient_Terminal : LogClient_Function);
+        ServerApi.isDebug = !!this.config?.isDebug;
 
-		HttpServer.printRoutes(process.env.GCLOUD_PROJECT ? this.initialPath : "");
-		return this;
-	}
+        super.init();
 
-	registerApis(...apis: ServerApi<any>[]) {
-		this.apis = apis;
-		return this;
-	}
+        const urlPrefix = !process.env.GCLOUD_PROJECT ? this.initialPath : "";
 
-	setInitialRouteResolver(routeResolver: RouteResolver) {
-		this.routeResolver = routeResolver;
-		return this;
-	}
+        this.httpServer.resolveApi(this.routeResolver, urlPrefix, this.apis);
 
-	setInitialRoutePath(initialPath: string) {
-		this.initialPath = initialPath;
-		return this;
-	}
+        this.httpServer.printRoutes(process.env.GCLOUD_PROJECT ? this.initialPath : "");
+        return this;
+    }
 
-	startServer(onStarted?: () => Promise<void>) {
-		const modulesAsFunction: FirebaseFunction[] = this.modules.filter((module: Module): module is FirebaseFunction => module instanceof FirebaseFunction);
+    registerApis(...apis: ServerApi<any>[]) {
+        this.apis = apis;
+        return this;
+    }
 
-		this.functions = [new Firebase_ExpressFunction(HttpServer.express),
-		                  ...modulesAsFunction];
+    setInitialRouteResolver(routeResolver: RouteResolver) {
+        this.routeResolver = routeResolver;
+        return this;
+    }
 
-		this.startServerImpl(onStarted)
-		    .then(() => console.log("Server Started!!"))
-		    .catch(reason => {
-			    this.logError("failed to launch server", reason);
-			    throw reason;
-		    });
+    setInitialRoutePath(initialPath: string) {
+        this.initialPath = initialPath;
+        return this;
+    }
 
-		return this.functions.reduce((toRet, _function) => {
-			toRet[_function.getName()] = _function.getFunction();
-			return toRet;
-		}, {});
-	}
+    startServer(onStarted?: () => Promise<void>) {
+        const modulesAsFunction: FirebaseFunction[] = this.modules.filter((module: Module): module is FirebaseFunction => module instanceof FirebaseFunction);
 
-	build(onStarted?: () => Promise<void>) {
-		return this.startServer(onStarted);
-	}
+        this.functions = [new Firebase_ExpressFunction(this.httpServer.express),
+            ...modulesAsFunction];
 
-	private async startServerImpl(onStarted?: () => Promise<void>) {
-		const label = 'Resolving Config';
-		console.time(label)
-		await this.resolveConfig();
-		console.timeEnd(label);
+        this.init();
+        onStarted && onStarted().catch(e => this.logError(e));
+        console.log("Server Started!!")
 
-		this.init();
+        return this.functions.reduce((toRet, _function) => {
+            toRet[_function.getName()] = _function.getFunction();
+            return toRet;
+        }, {});
+    }
 
-		await HttpServer.startServer();
-		const functions = await Promise.all(this.functions.map(moduleAsFunction => moduleAsFunction.onFunctionReady()));
-		onStarted && await onStarted();
-
-		return functions;
-	}
+    build(onStarted?: () => Promise<void>) {
+        return this.startServer(onStarted);
+    }
 }

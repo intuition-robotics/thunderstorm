@@ -39,14 +39,8 @@ import {
 	DB_PermissionsUser,
 	User_Group
 } from "../..";
-import {
-	AccessLevelPermissionsDB,
-	ApiPermissionsDB
-} from "./db-types/managment";
-import {
-	GroupPermissionsDB,
-	UserPermissionsDB
-} from "./db-types/assign";
+import {AccessLevelPermissionsDB, ApiPermissionsDB} from "./db-types/managment";
+import {GroupPermissionsDB, UserPermissionsDB} from "./db-types/assign";
 import {HttpMethod} from "@intuitionrobotics/thunderstorm";
 import {AccountModule} from "@intuitionrobotics/user-account/backend";
 import {PermissionsModule} from "./PermissionsModule";
@@ -63,11 +57,14 @@ export class PermissionsAssert_Class
 	extends Module<Config> {
 
 	readonly Middleware = (keys: string[]): ServerApi_Middleware => async (req: ExpressRequest, data: HttpRequestData, response: ApiResponse) => {
+		let account;
 		await this.CustomMiddleware(keys, async (projectId: string, customFields: StringMap) => {
 
-			const account = await AccountModule.validateSession(req);
-			return this.assertUserPermissions(projectId, data.url, account._id, customFields);
+			account = await AccountModule.validateSession(req, response);
+			await this.assertUserPermissions(projectId, data.url, account._id, customFields);
 		})(req, data, response);
+
+		return {account};
 	};
 
 	readonly CustomMiddleware = (keys: string[], action: (projectId: string, customFields: StringMap) => Promise<void>): ServerApi_Middleware => async (req: ExpressRequest, data: HttpRequestData, response: ApiResponse) => {
@@ -158,7 +155,7 @@ export class PermissionsAssert_Class
 
 	async getUserDetails(uuid: string): Promise<{ user: DB_PermissionsUser, userGroups: DB_PermissionsGroup[] }> {
 		const user = await UserPermissionsDB.queryUnique({accountId: uuid});
-		const userGroups = user.groups || [];
+		const userGroups = filterDuplicates(user.groups || []);
 		const groups: DB_PermissionsGroup[] = await batchActionParallel(userGroups.map(userGroup => userGroup.groupId), 10, subGroupIds => GroupPermissionsDB.query({where: {_id: {$in: subGroupIds}}}));
 
 		return {

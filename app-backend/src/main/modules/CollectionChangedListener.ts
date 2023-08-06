@@ -24,7 +24,6 @@ export class CollectionChangedListener_Class
 	constructor() {
 		super(`test`);
 		this.getFunction = this.getFunction.bind(this);
-		this.onFunctionReady = this.onFunctionReady.bind(this);
 	}
 
 	async processChanges(params: { [p: string]: any }, previousValue?: object, newValue?: object): Promise<any> {

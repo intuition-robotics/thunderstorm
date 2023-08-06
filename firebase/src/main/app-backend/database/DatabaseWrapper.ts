@@ -114,9 +114,9 @@ export class DatabaseWrapper
 			throw new BadImplementationException(`path: '${path}'  does not match assertion: '${assertionRegexp}'`);
 
 		try {
-			return new Promise<T>(async (resolve, reject) => {
+			return new Promise<T>( (resolve, reject) => {
 				let val: T;
-				await this.database.ref(path).transaction(
+				this.database.ref(path).transaction(
 					(a: any) => {
 						val = a;
 						return null;
@@ -131,8 +131,7 @@ export class DatabaseWrapper
 
 						resolve(val)
 					}
-				)
-				reject()
+				).catch(reject)
 			})
 		} catch (e) {
 			throw new BadImplementationException(`Error while removing path: ${path}`, e);

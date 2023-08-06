@@ -58,11 +58,6 @@ export function toggleElementInArray<T>(array: T[], item: T) {
 	return array;
 }
 
-export async function filterAsync<T>(arr: T[], filter: (parameter: T) => Promise<boolean>): Promise<T[]> {
-	const boolArray = await arr.map(item => filter(item));
-	return arr.filter((item, index) => boolArray[index]);
-}
-
 export function filterDuplicates<T>(array: T[]): T[] {
 	return Array.from(new Set(array));
 }
