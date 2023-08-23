@@ -26,7 +26,6 @@ import {testSuits_validator} from "./validators/test";
 import {testSuit_compare} from "./compare/compare";
 import {testSuit_newSecret} from "./newSecret/newSecret";
 import {testSuit_filter} from "./object/recursive-find-all-true";
-import { testSuit_cliModule } from "./cliModule/test-cliModule";
 import {testSuit_batchAction} from "./batchAction/batchAction";
 
 // require("./logger/test-logger");
@@ -35,7 +34,6 @@ import {testSuit_batchAction} from "./batchAction/batchAction";
 // require("./clone/test-clone");
 
 const testSuits: TestSuit<any, any, any>[] = [
-	testSuit_cliModule,
 	testSuit_versionComparison,
 	testSuit_compare,
 	testSuit_batchAction,

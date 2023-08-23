@@ -18,8 +18,6 @@
 
 import {
 	batchAction,
-	batchActionParallel,
-	compare,
 	TestModel,
 	TestSuit
 } from "../_main";

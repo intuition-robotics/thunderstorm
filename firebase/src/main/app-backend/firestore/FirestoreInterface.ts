@@ -22,7 +22,7 @@ import {
 } from "./types";
 import {FirestoreCollection} from "./FirestoreCollection";
 import {CollectionReference, Query} from "firebase-admin/firestore";
-import { FirestoreQuery } from "../../shared/types";
+import {ComparatorMap, FirestoreQuery } from "../../shared/types";
 import { BadImplementationException, ImplementationMissingException } from "@intuitionrobotics/ts-common/core/exceptions";
 import { __stringify } from "@intuitionrobotics/ts-common/utils/tools";
 import { _keys } from "@intuitionrobotics/ts-common/utils/object-tools";
