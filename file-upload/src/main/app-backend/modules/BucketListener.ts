@@ -1,7 +1,7 @@
 import {Firebase_StorageFunction} from "@intuitionrobotics/firebase/app-backend/functions/firebase-function";
 import {ObjectMetadata} from "firebase-functions/lib/v1/providers/storage";
 import {EventContext} from "firebase-functions";
-import {Dispatcher} from "@intuitionrobotics/ts-common/core/Dispatcher";
+import {Dispatcher} from "@intuitionrobotics/ts-common/core/dispatcher";
 
 export interface OnFileUploaded {
     __onFileUploaded(filePath?: string): void;
