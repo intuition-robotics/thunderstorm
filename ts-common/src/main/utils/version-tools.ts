@@ -17,7 +17,7 @@
  */
 
 
-import {BadImplementationException} from "../index";
+import {BadImplementationException} from "../core/exceptions";
 
 /**
  *

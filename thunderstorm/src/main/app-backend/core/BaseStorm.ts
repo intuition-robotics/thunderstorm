@@ -19,7 +19,7 @@
  * limitations under the License.
  */
 
-import {ModuleManager} from "@intuitionrobotics/ts-common";
+import {ModuleManager} from "@intuitionrobotics/ts-common/core/module-manager";
 
 export abstract class BaseStorm
     extends ModuleManager {

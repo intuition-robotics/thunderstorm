@@ -1,14 +1,7 @@
-import {
-	BadImplementationException,
-	currentTimeMillies,
-	ObjectTS
-} from "@intuitionrobotics/ts-common";
-import {
-	sign,
-	Algorithm,
-	ALGORITHMS,
-    Header
-} from "jws";
+import {BadImplementationException} from "@intuitionrobotics/ts-common/core/exceptions";
+import {currentTimeMillies} from "@intuitionrobotics/ts-common/utils/date-time-tools";
+import {ObjectTS} from "@intuitionrobotics/ts-common/utils/types";
+import {Algorithm, ALGORITHMS, Header, sign} from "jws";
 import {SecretsModule} from "./SecretsModule";
 
 //Header
@@ -29,125 +22,125 @@ export const AUDIENCE = "aud";
 export const TYP_DEFAULT: string = "JWT";
 
 export class JWTBuilder {
-	private payload: ObjectTS = {};
-	private readonly header: Header;
+    private payload: ObjectTS = {};
+    private readonly header: Header;
 
-	constructor(alg: Algorithm) {
-		this.assertAlg(alg);
-		this.header = {
-			[ALGORITHM]: alg
-		}
-	}
+    constructor(alg: Algorithm) {
+        this.assertAlg(alg);
+        this.header = {
+            [ALGORITHM]: alg
+        }
+    }
 
-	// Generic
+    // Generic
 
-	addClaims(claims: ObjectTS) {
-		Object.keys(claims).forEach(k => this.addClaim(k, claims[k]))
-		return this;
-	}
+    addClaims(claims: ObjectTS) {
+        Object.keys(claims).forEach(k => this.addClaim(k, claims[k]))
+        return this;
+    }
 
-	addClaim(key: string, value: any) {
-		this.payload[key] = value;
-		return this;
-	}
+    addClaim(key: string, value: any) {
+        this.payload[key] = value;
+        return this;
+    }
 
-	addHeader(key: string, value: any) {
-		this.header[key] = value;
-		return this;
-	}
+    addHeader(key: string, value: any) {
+        this.header[key] = value;
+        return this;
+    }
 
-	// End Generic
+    // End Generic
 
-	setContentType = (cty: string) => {
-		this.header[CONTENT_TYPE] = cty;
-		return this;
-	};
+    setContentType = (cty: string) => {
+        this.header[CONTENT_TYPE] = cty;
+        return this;
+    };
 
-	setType = (typ: string) => {
-		this.header[TYPE] = typ;
-		return this;
-	};
+    setType = (typ: string) => {
+        this.header[TYPE] = typ;
+        return this;
+    };
 
-	setKeyID = (kid: string) => {
-		this.header[KEY_ID] = kid;
-		return this;
-	};
+    setKeyID = (kid: string) => {
+        this.header[KEY_ID] = kid;
+        return this;
+    };
 
-	// Payload
+    // Payload
 
-	setIssuer(iss: string) {
-		this.payload[ISSUER] = iss;
-		return this;
-	}
+    setIssuer(iss: string) {
+        this.payload[ISSUER] = iss;
+        return this;
+    }
 
-	setSub(iss: string) {
-		this.payload[SUBJECT] = iss;
-		return this;
-	}
+    setSub(iss: string) {
+        this.payload[SUBJECT] = iss;
+        return this;
+    }
 
-	setExpiration(exp: number) {
-		this.payload[EXPIRES_AT] = exp;
-		return this;
-	}
+    setExpiration(exp: number) {
+        this.payload[EXPIRES_AT] = exp;
+        return this;
+    }
 
-	setNotBefore(nbf: string) {
-		this.payload[NOT_BEFORE] = nbf;
-		return this;
-	}
+    setNotBefore(nbf: string) {
+        this.payload[NOT_BEFORE] = nbf;
+        return this;
+    }
 
-	private setIssuedAt() {
-		this.payload[ISSUED_AT] = Math.floor(currentTimeMillies() / 1000);
-	}
+    private setIssuedAt() {
+        this.payload[ISSUED_AT] = Math.floor(currentTimeMillies() / 1000);
+    }
 
-	setJWTID(jti: string) {
-		this.payload[JWT_ID] = jti;
-		return this;
-	}
+    setJWTID(jti: string) {
+        this.payload[JWT_ID] = jti;
+        return this;
+    }
 
-	setAudience(aud: string) {
-		this.payload[AUDIENCE] = aud;
-		return this;
-	}
+    setAudience(aud: string) {
+        this.payload[AUDIENCE] = aud;
+        return this;
+    }
 
-	// End Payload
+    // End Payload
 
-	private getIssuer() {
-		return this.payload[ISSUER];
-	}
+    private getIssuer() {
+        return this.payload[ISSUER];
+    }
 
-	private getAlgorithm() {
-		return this.header[ALGORITHM];
-	}
+    private getAlgorithm() {
+        return this.header[ALGORITHM];
+    }
 
-	private getExpiration() {
-		return this.payload[EXPIRES_AT];
-	}
+    private getExpiration() {
+        return this.payload[EXPIRES_AT];
+    }
 
-	private getType() {
-		return this.header[TYPE];
-	}
+    private getType() {
+        return this.header[TYPE];
+    }
 
-	private assertAlg(alg: Algorithm) {
-		const foundAlg: Algorithm | undefined = ALGORITHMS.find(a => a === alg);
-		if (!foundAlg)
-			throw new BadImplementationException(`Algorithm with name ${alg} is not valid`);
-	}
+    private assertAlg(alg: Algorithm) {
+        const foundAlg: Algorithm | undefined = ALGORITHMS.find(a => a === alg);
+        if (!foundAlg)
+            throw new BadImplementationException(`Algorithm with name ${alg} is not valid`);
+    }
 
-	build(secret: string) {
-		this.setIssuedAt()
-		if (!this.getType())
-			this.setType(TYP_DEFAULT);
+    build(secret: string) {
+        this.setIssuedAt()
+        if (!this.getType())
+            this.setType(TYP_DEFAULT);
 
-		if (!this.getIssuer())
-			// TODO move the config to the module which I need to create
-			this.setIssuer(SecretsModule.getIss())
+        if (!this.getIssuer())
+            // TODO move the config to the module which I need to create
+            this.setIssuer(SecretsModule.getIss())
 
-		if (!this.getExpiration())
-			throw new BadImplementationException("Missing expiration, cannot build a valid JWT without this value")
+        if (!this.getExpiration())
+            throw new BadImplementationException("Missing expiration, cannot build a valid JWT without this value")
 
-		if (!this.getAlgorithm())
-			throw new BadImplementationException("Missing algorithm, cannot build a valid JWT without this value")
+        if (!this.getAlgorithm())
+            throw new BadImplementationException("Missing algorithm, cannot build a valid JWT without this value")
 
-		return sign({secret, payload: this.payload, header: this.header});
-	}
+        return sign({secret, payload: this.payload, header: this.header});
+    }
 }

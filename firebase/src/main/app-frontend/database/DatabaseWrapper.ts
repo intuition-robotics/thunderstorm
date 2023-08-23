@@ -16,10 +16,8 @@
  * limitations under the License.
  */
 
-import {
-	BadImplementationException,
-	Logger
-} from "@intuitionrobotics/ts-common";
+import {Logger} from "@intuitionrobotics/ts-common/core/logger/Logger";
+import {BadImplementationException} from "@intuitionrobotics/ts-common/core/exceptions";
 import {FirebaseType_DB} from "./types";
 // tslint:disable:no-import-side-effect
 import {

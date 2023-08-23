@@ -16,32 +16,19 @@
  * limitations under the License.
  */
 import * as functions from "firebase-functions";
-import {
-    Change,
-    CloudFunction,
-    database,
-    EventContext,
-    firestore,
-    HttpsFunction,
-    RuntimeOptions
-} from "firebase-functions";
+import {Change, CloudFunction, EventContext, HttpsFunction, RuntimeOptions} from "firebase-functions";
 
-import {Request, Response, Express} from "express";
-import {
-    __stringify,
-    addItemToArray,
-    deepClone,
-    dispatch_onServerError,
-    ImplementationMissingException,
-    Module,
-    ServerErrorSeverity,
-    StringMap
-} from "@intuitionrobotics/ts-common";
-import DataSnapshot = database.DataSnapshot;
-import DocumentSnapshot = firestore.DocumentSnapshot;
+import {Module} from "@intuitionrobotics/ts-common/core/module";
+import {Express, Request, Response} from "express";
 import {ObjectMetadata} from "firebase-functions/lib/v1/providers/storage";
 import {Message} from "firebase-functions/lib/v1/providers/pubsub";
-
+import {deepClone} from "@intuitionrobotics/ts-common/utils/object-tools";
+import {ImplementationMissingException} from "@intuitionrobotics/ts-common/core/exceptions";
+import {__stringify} from "@intuitionrobotics/ts-common/utils/tools";
+import {StringMap} from "@intuitionrobotics/ts-common/utils/types";
+import {dispatch_onServerError, ServerErrorSeverity} from "@intuitionrobotics/ts-common/core/error-handling";
+import {DocumentSnapshot} from "firebase-admin/firestore";
+import { DataSnapshot } from "firebase-functions/lib/v1/providers/database";
 
 export interface FirebaseFunctionInterface {
     getFunction(): HttpsFunction;
@@ -172,7 +159,7 @@ export abstract class FirebaseScheduledFunction<Config extends RuntimeOptsConfig
     private runningCondition: (() => Promise<boolean>)[] = [];
 
     addRunningCondition(runningCondition: () => Promise<boolean>) {
-        addItemToArray(this.runningCondition, runningCondition);
+        this.runningCondition.push(runningCondition);
         return this;
     }
 
@@ -223,11 +210,11 @@ export abstract class Firebase_StorageFunction<Config extends BucketConfigs = Bu
         if (this.function)
             return this.function;
 
-		this.logInfo(`Initializing ${this.getName()} with configs ${JSON.stringify(this.config)}`)
-		this.runtimeOpts = {
-			timeoutSeconds: this.config?.runtimeOpts?.timeoutSeconds || 300,
-			memory: this.config?.runtimeOpts?.memory || "2GB"
-		};
+        this.logInfo(`Initializing ${this.getName()} with configs ${JSON.stringify(this.config)}`)
+        this.runtimeOpts = {
+            timeoutSeconds: this.config?.runtimeOpts?.timeoutSeconds || 300,
+            memory: this.config?.runtimeOpts?.memory || "2GB"
+        };
 
         return this.function = functions.runWith(this.runtimeOpts).storage.bucket(this.config.bucketName).object().onFinalize(
             async (object: ObjectMetadata, context: EventContext) => {

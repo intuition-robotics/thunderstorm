@@ -1,22 +1,17 @@
-import {Module} from "@intuitionrobotics/ts-common";
-import {
-	User_Group
-} from "../..";
-import {
-	PermissionsAssert
-} from "./permissions-assert";
-
+import {Module} from "@intuitionrobotics/ts-common/core/module";
+import {User_Group} from "../../shared/assign-types";
+import {PermissionsAssert} from "./permissions-assert";
 
 export class PermissionsShare_Class
-	extends Module {
+    extends Module {
 
-	constructor() {
-		super("PermissionsShare");
-	}
+    constructor() {
+        super("PermissionsShare");
+    }
 
-	async verifyPermissionGrantingAllowed(granterUserId: string, shareGroup: User_Group) {
-		await PermissionsAssert.assertUserSharingGroup(granterUserId, shareGroup);
-	}
+    async verifyPermissionGrantingAllowed(granterUserId: string, shareGroup: User_Group) {
+        await PermissionsAssert.assertUserSharingGroup(granterUserId, shareGroup);
+    }
 
 }
 

@@ -17,9 +17,9 @@
  * limitations under the License.
  */
 
-import {StormTester} from "@intuitionrobotics/thunderstorm/backend-test";
+import {StormTester} from "@intuitionrobotics/thunderstorm/test-backend/StormTester";
 import {__scenario} from "@intuitionrobotics/testelot";
-import { FirebaseModule } from "@intuitionrobotics/firebase/backend";
+import { FirebaseModule } from "@intuitionrobotics/firebase/app-backend/FirebaseModule";
 import {
 	deleteTest,
 	ExampleModule,

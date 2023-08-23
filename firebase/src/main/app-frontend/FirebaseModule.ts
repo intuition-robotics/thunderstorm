@@ -20,15 +20,11 @@
  * Created by tacb0ss on 25/08/2018.
  */
 
-import {
-	__stringify,
-	BadImplementationException,
-	ImplementationMissingException,
-	Module
-} from "@intuitionrobotics/ts-common";
-import {FirebaseConfig} from "..";
 import {FirebaseSession} from "./auth/FirebaseSession";
 import {SwFirebaseSession} from "./auth/SwFirebaseSession";
+import {FirebaseConfig} from "../shared/types";
+import { Module } from "@intuitionrobotics/ts-common/core/module";
+import {BadImplementationException, ImplementationMissingException } from "@intuitionrobotics/ts-common/core/exceptions";
 
 const localSessionId = 'local';
 

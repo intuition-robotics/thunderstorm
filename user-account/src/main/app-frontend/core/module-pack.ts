@@ -20,8 +20,6 @@
 import {AccountModule} from "../modules/AccountModule";
 
 export const Frontend_ModulePack_Users = [
-	AccountModule,
+    AccountModule,
 ];
-
-export * from "../modules/AccountModule"
 

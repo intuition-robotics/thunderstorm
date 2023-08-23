@@ -20,11 +20,6 @@
  */
 
 import {
-	__stringify,
-	BadImplementationException,
-	Module
-} from "@intuitionrobotics/ts-common";
-import {
 	HeaderKey,
 	ServerApi_Middleware
 } from "./server/HttpServer";
@@ -37,6 +32,9 @@ import {
 } from "../../shared/force-upgrade";
 import {PlatformName} from "../../shared/consts";
 import {ExpressRequest} from "../utils/types";
+import { Module } from "@intuitionrobotics/ts-common/core/module";
+import { BadImplementationException } from "@intuitionrobotics/ts-common/core/exceptions";
+import { __stringify } from "@intuitionrobotics/ts-common/utils/tools";
 
 type VersionConfig = {
 	[K in PlatformName]: {

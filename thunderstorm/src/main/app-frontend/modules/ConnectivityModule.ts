@@ -1,35 +1,35 @@
-import {Module} from "@intuitionrobotics/ts-common";
+import {Module} from "@intuitionrobotics/ts-common/core/module";
 import {ThunderDispatcher} from "../core/thunder-dispatcher";
 
 export interface OnConnectivityChange {
-	__onConnectivityChange(): void
+    __onConnectivityChange(): void
 }
 
 class ConnectivityModule_Class
-	extends Module {
+    extends Module {
 
-	private connected: boolean;
-	private dispatch_onConnectivityChange = new ThunderDispatcher<OnConnectivityChange, '__onConnectivityChange'>('__onConnectivityChange');
+    private connected: boolean;
+    private dispatch_onConnectivityChange = new ThunderDispatcher<OnConnectivityChange, '__onConnectivityChange'>('__onConnectivityChange');
 
-	constructor() {
-		super("ConnectivityModule");
-		this.connected = this.getConnectivityStatus();
-	}
+    constructor() {
+        super("ConnectivityModule");
+        this.connected = this.getConnectivityStatus();
+    }
 
-	protected init(): void {
-		window.addEventListener('online', this.handleConnectionChange);
-		window.addEventListener('offline', this.handleConnectionChange);
-	}
+    protected init(): void {
+        window.addEventListener('online', this.handleConnectionChange);
+        window.addEventListener('offline', this.handleConnectionChange);
+    }
 
-	isConnected = () => this.connected;
+    isConnected = () => this.connected;
 
-	handleConnectionChange = () => {
-		this.connected = this.getConnectivityStatus();
-		this.dispatch_onConnectivityChange.dispatchModule([]);
-		this.dispatch_onConnectivityChange.dispatchUI([])
-	};
+    handleConnectionChange = () => {
+        this.connected = this.getConnectivityStatus();
+        this.dispatch_onConnectivityChange.dispatchModule([]);
+        this.dispatch_onConnectivityChange.dispatchUI([])
+    };
 
-	private getConnectivityStatus = () => navigator.onLine;
+    private getConnectivityStatus = () => navigator.onLine;
 }
 
 export const ConnectivityModule = new ConnectivityModule_Class();

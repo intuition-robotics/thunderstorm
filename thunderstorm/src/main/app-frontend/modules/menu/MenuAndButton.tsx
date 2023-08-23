@@ -8,12 +8,11 @@ import {
 	Menu_Model,
 	MenuBuilder,
 	MenuListener,
-	// resolveGenericPosition,
 	resolveRealPosition
 } from "./MenuModule";
-import {BadImplementationException} from "@intuitionrobotics/ts-common";
 import {Adapter} from "../../components/adapter/Adapter";
 import {MenuPosition} from "./PopupMenu";
+import { BadImplementationException } from "@intuitionrobotics/ts-common/core/exceptions";
 
 type Props = {
 	id: string
@@ -61,8 +60,6 @@ export class MenuAndButton
 			</div>
 		</div>
 	}
-
-
 
 	open = () => {
 		if (!this.ref.current)

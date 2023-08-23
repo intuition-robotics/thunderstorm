@@ -1,35 +1,19 @@
-/*
- * ts-common is the basic building blocks of our typescript projects
- *
- * Copyright (C) 2020 Intuition Robotics
- *
- * Licensed under the Apache License, Version 2.0 (the "License");
- * you may not use this file except in compliance with the License.
- * You may obtain a copy of the License at
- *
- *     http://www.apache.org/licenses/LICENSE-2.0
- *
- * Unless required by applicable law or agreed to in writing, software
- * distributed under the License is distributed on an "AS IS" BASIS,
- * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
- * See the License for the specific language governing permissions and
- * limitations under the License.
- */
-
-import {ImplementationMissingException, Module, StringMap} from "@intuitionrobotics/ts-common";
+import {PermissionsAssert} from "./permissions-assert";
+import {ApiPermissionsDB, ProjectPermissionsDB} from "./db-types/managment";
+import {GroupPermissionsDB, UserPermissionsDB} from "./db-types/assign";
+import {DB_PermissionProject} from "../../shared/manager-types";
 import {
-    DB_PermissionProject,
     PredefinedGroup,
     PredefinedUser,
     Request_RegisterProject,
     Response_UsersCFsByShareGroups,
     UserUrlsPermissions
-} from "./_imports";
-import {PermissionsAssert} from "./permissions-assert";
-import {ApiPermissionsDB, ProjectPermissionsDB} from "./db-types/managment";
-import {HttpServer_Class} from "@intuitionrobotics/thunderstorm/backend";
-import {GroupPermissionsDB, UserPermissionsDB} from "./db-types/assign";
-import {AccountModule} from "@intuitionrobotics/user-account/backend";
+} from "../../shared/apis";
+import {Module} from "@intuitionrobotics/ts-common/core/module";
+import {ImplementationMissingException} from "@intuitionrobotics/ts-common/core/exceptions";
+import {StringMap} from "@intuitionrobotics/ts-common/utils/types";
+import {AccountModule} from "@intuitionrobotics/user-account/app-backend/modules/AccountModule";
+import {HttpServer_Class} from "@intuitionrobotics/thunderstorm/app-backend/modules/server/HttpServer";
 
 type Config = {
     project: DB_PermissionProject

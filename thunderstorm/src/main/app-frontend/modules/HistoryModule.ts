@@ -1,163 +1,137 @@
-/*
- * Thunderstorm is a full web app framework!
- *
- * Typescript & Express backend infrastructure that natively runs on firebase function
- * Typescript & React frontend infrastructure
- *
- * Copyright (C) 2020 Intuition Robotics
- *
- * Licensed under the Apache License, Version 2.0 (the "License");
- * you may not use this file except in compliance with the License.
- * You may obtain a copy of the License at
- *
- *     http://www.apache.org/licenses/LICENSE-2.0
- *
- * Unless required by applicable law or agreed to in writing, software
- * distributed under the License is distributed on an "AS IS" BASIS,
- * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
- * See the License for the specific language governing permissions and
- * limitations under the License.
- */
-
-/**
- * Created by tacb0ss on 27/07/2018.
- */
-import {
-	_keys,
-	Module,
-} from "@intuitionrobotics/ts-common";
-import {
-	createBrowserHistory,
-	History,
-	LocationDescriptorObject
-} from "history";
-import {QueryParams} from "../../index";
+import {Module} from "@intuitionrobotics/ts-common/core/module";
+import {_keys} from "@intuitionrobotics/ts-common/utils/object-tools";
+import {createBrowserHistory, History, LocationDescriptorObject} from "history";
+import {QueryParams} from "../../shared/types";
 
 export class BrowserHistoryModule_Class
-	extends Module {
-	private readonly history: History<any>;
+    extends Module {
+    private readonly history: History<any>;
 
-	constructor() {
-		super("BrowserHistoryModule");
-		this.history = createBrowserHistory();
-	}
+    constructor() {
+        super("BrowserHistoryModule");
+        this.history = createBrowserHistory();
+    }
 
-	push(push: LocationDescriptorObject) {
-		this.history.push(push);
-	}
+    push(push: LocationDescriptorObject) {
+        this.history.push(push);
+    }
 
-	replace(push: LocationDescriptorObject) {
-		this.history.replace(push);
-	}
+    replace(push: LocationDescriptorObject) {
+        this.history.replace(push);
+    }
 
-	private composeQuery(queryParams: QueryParams) {
-		const queryAsString = _keys(queryParams).map((key) => `${key}=${queryParams[key]}`).join("&");
-		if (queryAsString.length === 0)
-			return undefined;
+    private composeQuery(queryParams: QueryParams) {
+        const queryAsString = _keys(queryParams).map((key) => `${key}=${queryParams[key]}`).join("&");
+        if (queryAsString.length === 0)
+            return undefined;
 
-		return queryAsString;
-	}
+        return queryAsString;
+    }
 
-	private getEncodedQueryParams = (): QueryParams => {
-		const queryParams: QueryParams = {};
-		let queryAsString = window.location.search;
-		if (!queryAsString || queryAsString.length === 0)
-			return {};
+    private getEncodedQueryParams = (): QueryParams => {
+        const queryParams: QueryParams = {};
+        let queryAsString = window.location.search;
+        if (!queryAsString || queryAsString.length === 0)
+            return {};
 
-		while (true) {
-			if (queryAsString.startsWith("?"))
-				queryAsString = queryAsString.substring(1);
-			else if (queryAsString.startsWith("/?"))
-				queryAsString = queryAsString.substring(1);
-			else
-				break;
-		}
+        while (true) {
+            if (queryAsString.startsWith("?"))
+                queryAsString = queryAsString.substring(1);
+            else if (queryAsString.startsWith("/?"))
+                queryAsString = queryAsString.substring(1);
+            else
+                break;
+        }
 
-		const query = queryAsString.split("&");
-		return query.map(param => {
-			const parts = param.split("=");
-			return {key: parts[0], value: parts[1]};
-		}).reduce((toRet, param) => {
-			if (param.key && param.value)
-				toRet[param.key] = param.value;
+        const query = queryAsString.split("&");
+        return query.map(param => {
+            const parts = param.split("=");
+            return {key: parts[0], value: parts[1]};
+        }).reduce((toRet, param) => {
+            if (param.key && param.value)
+                toRet[param.key] = param.value;
 
-			return toRet;
-		}, queryParams);
-	};
+            return toRet;
+        }, queryParams);
+    };
 
-	getQueryParams() {
-		const params = this.getEncodedQueryParams();
-		_keys(params).forEach(key => {
-			const value = params[key];
-			if (!value) {
-				delete params[key];
-				return;
-			}
+    getQueryParams() {
+        const params = this.getEncodedQueryParams();
+        _keys(params).forEach(key => {
+            const value = params[key];
+            if (!value) {
+                delete params[key];
+                return;
+            }
 
-			params[key] = decodeURIComponent(value);
-		});
-		return params;
-	}
+            params[key] = decodeURIComponent(value);
+        });
+        return params;
+    }
 
-	setQuery(queryParams: QueryParams) {
-		const encodedQueryParams = {...queryParams};
-		_keys(encodedQueryParams).forEach(key => {
-			const value = encodedQueryParams[key];
-			if (!value) {
-				delete encodedQueryParams[key];
-				return;
-			}
+    getQueryParam(k: string) {
+        return this.getQueryParams()[k];
+    }
 
-			encodedQueryParams[key] = encodeURIComponent(value);
-		});
+    setQuery(queryParams: QueryParams) {
+        const encodedQueryParams = {...queryParams};
+        _keys(encodedQueryParams).forEach(key => {
+            const value = encodedQueryParams[key];
+            if (!value) {
+                delete encodedQueryParams[key];
+                return;
+            }
 
-		this.updateQueryParams(encodedQueryParams);
-	}
+            encodedQueryParams[key] = encodeURIComponent(value);
+        });
 
-	addQueryParam(key: string, value: string) {
-		const encodedQueryParams = this.getEncodedQueryParams();
-		encodedQueryParams[key] = encodeURIComponent(value);
+        this.updateQueryParams(encodedQueryParams);
+    }
 
-		this.updateQueryParams(encodedQueryParams);
-	}
+    addQueryParam(key: string, value: string) {
+        const encodedQueryParams = this.getEncodedQueryParams();
+        encodedQueryParams[key] = encodeURIComponent(value);
 
-	removeQueryParam(key: string) {
-		const encodedQueryParams = this.getEncodedQueryParams();
-		delete encodedQueryParams[key];
+        this.updateQueryParams(encodedQueryParams);
+    }
 
-		const data = this.createHistoryDataFromQueryParams(encodedQueryParams);
+    removeQueryParam(key: string) {
+        const encodedQueryParams = this.getEncodedQueryParams();
+        delete encodedQueryParams[key];
 
-		this.replace(data);
-	}
+        const data = this.createHistoryDataFromQueryParams(encodedQueryParams);
 
-	setUrl(url: string, queryParams?: QueryParams) {
-		this.push(this.createHistoryDataFromQueryParams(queryParams, url));
-	}
+        this.replace(data);
+    }
 
-	private createHistoryDataFromQueryParams(encodedQueryParams?: QueryParams, pathname: string = window.location.pathname) {
-		return {
-			pathname: !pathname.endsWith("/") ? pathname : pathname.substring(0, pathname.length - 1),
-			search: !encodedQueryParams ? "" : this.composeQuery(encodedQueryParams)
-		};
-	}
+    setUrl(url: string, queryParams?: QueryParams) {
+        this.push(this.createHistoryDataFromQueryParams(queryParams, url));
+    }
 
-	private updateQueryParams(encodedQueryParams: QueryParams) {
-		const data = this.createHistoryDataFromQueryParams(encodedQueryParams);
+    private createHistoryDataFromQueryParams(encodedQueryParams?: QueryParams, pathname: string = window.location.pathname) {
+        return {
+            pathname: !pathname.endsWith("/") ? pathname : pathname.substring(0, pathname.length - 1),
+            search: !encodedQueryParams ? "" : this.composeQuery(encodedQueryParams)
+        };
+    }
 
-		this.push(data);
-	}
+    private updateQueryParams(encodedQueryParams: QueryParams) {
+        const data = this.createHistoryDataFromQueryParams(encodedQueryParams);
 
-	getOrigin() {
-		return window.location.origin;
-	}
+        this.push(data);
+    }
 
-	getCurrent() {
-		return this.history.location;
-	}
+    getOrigin() {
+        return window.location.origin;
+    }
 
-	getHistory() {
-		return this.history;
-	}
+    getCurrent() {
+        return this.history.location;
+    }
+
+    getHistory() {
+        return this.history;
+    }
 }
 
 export const BrowserHistoryModule = new BrowserHistoryModule_Class();

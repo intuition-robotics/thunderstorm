@@ -1,5 +1,5 @@
 import * as React from "react";
-import {ReactNode} from "react";
+import {Component, CSSProperties, ReactNode} from "react";
 
 export type CheckboxProps<T> = {
 	key?: number | string
@@ -17,10 +17,10 @@ export type CheckboxProps<T> = {
 }
 
 export class TS_Checkbox<T>
-	extends React.Component<CheckboxProps<T>> {
+	extends Component<CheckboxProps<T>> {
 
 	render() {
-		const defaultButtonStyle: React.CSSProperties = {
+		const defaultButtonStyle: CSSProperties = {
 			borderRadius: this.props.circle ? "50%" : "1px",
 			border: "1px solid #68678d50",
 			boxShadow: "0px 0 1px 0px #867979",
@@ -28,11 +28,11 @@ export class TS_Checkbox<T>
 			marginLeft: this.props.rtl ? 10 : 'unset',
 		};
 
-		const radioContainer: React.CSSProperties = {
+		const radioContainer: CSSProperties = {
 			cursor: !this.props.disabled && this.props.onCheck ? "pointer" : "inherit"
 		};
 
-		const btnInner: React.CSSProperties = {
+		const btnInner: CSSProperties = {
 			width: 15,
 			height: 15,
 			borderRadius: this.props.circle ? "50%" : "1px",

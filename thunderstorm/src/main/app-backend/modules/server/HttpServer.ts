@@ -25,14 +25,16 @@
 
 import * as compression from 'compression';
 import * as fs from "fs";
-import {addAllItemToArray, addItemToArray, LogLevel, Module, ObjectTS} from "@intuitionrobotics/ts-common";
 import {ApiResponse, HttpRequestData, ServerApi} from "./server-api";
 import {ApiException} from "../../exceptions";
 import * as express from "express";
 
 import {Express, ExpressRequest, ExpressRequestHandler, ExpressResponse} from "../../utils/types";
 import {DefaultApiErrorMessageComposer} from "./server-errors";
-import {HeaderKey_FunctionExecutionId, HeaderKey_JWT} from '../_imports';
+import {ObjectTS} from '@intuitionrobotics/ts-common/utils/types';
+import {Module} from '@intuitionrobotics/ts-common/core/module';
+import {LogLevel} from '@intuitionrobotics/ts-common/core/logger/types';
+import {HeaderKey_FunctionExecutionId, HeaderKey_JWT} from '../../../shared/consts';
 
 const ALL_Methods: string[] = [
     'GET',
@@ -137,7 +139,7 @@ export class HttpServer_Class
 
         cors.headers = DefaultHeaders.reduce((toRet, item: string) => {
             if (!toRet.includes(item))
-                addItemToArray(toRet, item);
+                toRet.push(item);
 
             return toRet;
         }, cors.headers || []);
@@ -218,7 +220,7 @@ export class HttpServer_Class
         const routes: (HttpRoute | HttpRoute[])[] = resolveRoutes(this.express._router.stack);
         this.routes = routes.reduce((toRet: HttpRoute[], route) => {
             const toAdd: HttpRoute[] = Array.isArray(route) ? route : [route];
-            addAllItemToArray(toRet, toAdd);
+            toRet.push(...toAdd);
             return toRet;
         }, []);
         console.timeEnd('Resolving Apis')
@@ -291,7 +293,7 @@ export class RouteResolver {
         });
     }
 
-    public routeApis(apis: ServerApi<any>[], urlPrefix: string, baseUrl: string,_exp: Express) {
+    public routeApis(apis: ServerApi<any>[], urlPrefix: string, baseUrl: string, _exp: Express) {
         apis.forEach(api => {
             api.addMiddlewares(...this.middlewares);
             api.route(_exp, urlPrefix, baseUrl);

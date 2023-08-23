@@ -1,32 +1,9 @@
-/*
- * Permissions management system, define access level for each of
- * your server apis, and restrict users by giving them access levels
- *
- * Copyright (C) 2020 Intuition Robotics
- *
- * Licensed under the Apache License, Version 2.0 (the "License");
- * you may not use this file except in compliance with the License.
- * You may obtain a copy of the License at
- *
- *     http://www.apache.org/licenses/LICENSE-2.0
- *
- * Unless required by applicable law or agreed to in writing, software
- * distributed under the License is distributed on an "AS IS" BASIS,
- * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
- * See the License for the specific language governing permissions and
- * limitations under the License.
- */
-
-import {Module, Second} from "@intuitionrobotics/ts-common";
-import {
-    BaseComponent,
-    BrowserHistoryModule,
-    OnUnauthenticatedResponse,
-    StorageKey,
-    ThunderDispatcher,
-    ToastModule,
-    XhrHttpModule
-} from "@intuitionrobotics/thunderstorm/frontend";
+import {StorageKey} from "@intuitionrobotics/thunderstorm/app-frontend/modules/StorageModule"
+import {XhrHttpModule} from "@intuitionrobotics/thunderstorm/app-frontend/modules/http/XhrHttpModule"
+import {ToastModule} from "@intuitionrobotics/thunderstorm/app-frontend/modules/toaster/ToasterModule"
+import {BrowserHistoryModule} from "@intuitionrobotics/thunderstorm/app-frontend/modules/HistoryModule"
+import {ThunderDispatcher} from "@intuitionrobotics/thunderstorm/app-frontend/core/thunder-dispatcher"
+import {OnUnauthenticatedResponse} from "@intuitionrobotics/thunderstorm/app-frontend/core/thunder"
 import {
     AccountApi_Create,
     AccountApi_ListAccounts,
@@ -43,13 +20,13 @@ import {
     Response_LoginSAML,
     UI_Account
 } from "../../shared/api";
-import {
-    BaseHttpRequest,
-    HeaderKey_FunctionExecutionId,
-    HeaderKey_JWT,
-    HttpMethod
-} from "@intuitionrobotics/thunderstorm";
-import {AUTHENTICATION_KEY, AUTHENTICATION_PREFIX} from "../..";
+
+import {AUTHENTICATION_KEY, AUTHENTICATION_PREFIX} from "../../shared/utils/AuthenticationConsts";
+import {Module} from "@intuitionrobotics/ts-common/core/module";
+import {BaseHttpRequest} from "@intuitionrobotics/thunderstorm/shared/BaseHttpRequest";
+import {HeaderKey_FunctionExecutionId, HeaderKey_JWT} from "@intuitionrobotics/thunderstorm/shared/consts";
+import {HttpMethod} from "@intuitionrobotics/thunderstorm/shared/types"
+import {Second} from "@intuitionrobotics/ts-common/utils/date-time-tools"
 
 export const StorageKey_UserEmail: StorageKey<string> = new StorageKey<string>(`storage-${QueryParam_Email}`);
 export const StorageKey_JWT: StorageKey<string> = new StorageKey<string>(`storage-${QueryParam_JWT}`);
@@ -92,14 +69,14 @@ export class AccountModule_Class
                 return false;
 
             try {
-                const functionExecutionId = request?.getResponseHeader?.(HeaderKey_FunctionExecutionId)
-                XhrHttpModule.logDebug(`${request.key} Function execution id: ${functionExecutionId}`)
-
                 const jwt: string | undefined = request.getResponseHeader(HeaderKey_JWT);
                 if (jwt)
                     StorageKey_JWT.set(jwt);
+
+                const functionExecutionId = request?.getResponseHeader?.(HeaderKey_FunctionExecutionId)
+                XhrHttpModule.logDebug(`${request.key} Function execution id: ${functionExecutionId}`)
             } catch (e) {
-                XhrHttpModule.logError(`${request.key} - Failed to retrieve headers from xhr call`, e)
+                XhrHttpModule.logWarning(`${request.key} - Failed to retrieve headers from xhr call`, e)
             }
             return false;
         });
@@ -133,8 +110,8 @@ export class AccountModule_Class
         XhrHttpModule.addDefaultHeader(AUTHENTICATION_KEY, () => `${AUTHENTICATION_PREFIX} ${StorageKey_JWT.get()}`);
 
         this.dispatchUI_loginChanged = new ThunderDispatcher<OnLoginStatusUpdated, "onLoginStatusUpdated">("onLoginStatusUpdated");
-        const email = BaseComponent.getQueryParameter(QueryParam_Email);
-        const jwt = BaseComponent.getQueryParameter(QueryParam_JWT);
+        const email = BrowserHistoryModule.getQueryParam(QueryParam_Email);
+        const jwt = BrowserHistoryModule.getQueryParam(QueryParam_JWT);
 
         if (email && jwt) {
             StorageKey_JWT.set(jwt);

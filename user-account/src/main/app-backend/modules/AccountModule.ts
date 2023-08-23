@@ -1,40 +1,7 @@
-/*
- * Permissions management system, define access level for each of
- * your server apis, and restrict users by giving them access levels
- *
- * Copyright (C) 2020 Intuition Robotics
- *
- * Licensed under the Apache License, Version 2.0 (the "License");
- * you may not use this file except in compliance with the License.
- * You may obtain a copy of the License at
- *
- *     http://www.apache.org/licenses/LICENSE-2.0
- *
- * Unless required by applicable law or agreed to in writing, software
- * distributed under the License is distributed on an "AS IS" BASIS,
- * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
- * See the License for the specific language governing permissions and
- * limitations under the License.
- */
+import {DB_Account, RequestBody_SamlAssertOptions} from "./types";
+import {SecretsModule} from "./SecretsModule";
+import {SamlModule} from "./SamlModule";
 import {
-    __stringify,
-    auditBy,
-    BadImplementationException,
-    currentTimeMillies,
-    Day,
-    Dispatcher,
-    generateHex,
-    hashPasswordWithSalt,
-    Minute,
-    Module,
-    validate,
-    validateEmail
-} from "@intuitionrobotics/ts-common";
-
-
-import {FirebaseModule, FirestoreCollection, FirestoreTransaction} from "@intuitionrobotics/firebase/backend";
-import {
-    DB_Account,
     DB_Session,
     FrontType,
     HeaderKey_SessionId,
@@ -46,22 +13,27 @@ import {
     Request_CreateAccount,
     Request_LoginAccount,
     Request_UpsertAccount,
-    RequestBody_SamlAssertOptions,
     Response_Auth,
     Response_Validation,
     UI_Account,
     UI_Session
-} from "./_imports";
-import {
-    ApiException,
-    ApiResponse,
-    ExpressRequest,
-    HeaderKey,
-    QueryRequestInfo
-} from "@intuitionrobotics/thunderstorm/backend";
-import {SecretsModule} from "./SecretsModule";
-import {SamlModule} from "./SamlModule";
-import {HeaderKey_JWT} from "@intuitionrobotics/thunderstorm";
+} from "../../shared/api";
+import {HeaderKey} from "@intuitionrobotics/thunderstorm/app-backend/modules/server/HttpServer";
+import {Dispatcher} from "@intuitionrobotics/ts-common/core/dispatcher";
+import {Module} from "@intuitionrobotics/ts-common/core/module";
+import {ExpressRequest, QueryRequestInfo} from "@intuitionrobotics/thunderstorm/app-backend/utils/types";
+import {auditBy, currentTimeMillies, Day, Minute} from "@intuitionrobotics/ts-common/utils/date-time-tools";
+import {hashPasswordWithSalt} from "@intuitionrobotics/ts-common/utils/crypto-tools";
+import {FirestoreCollection} from "@intuitionrobotics/firebase/app-backend/firestore/FirestoreCollection"
+import {FirebaseModule} from "@intuitionrobotics/firebase/app-backend/FirebaseModule"
+import {ApiResponse} from "@intuitionrobotics/thunderstorm/app-backend/modules/server/server-api";
+import {FirestoreTransaction} from "@intuitionrobotics/firebase/app-backend/firestore/FirestoreTransaction";
+import {ApiException} from "@intuitionrobotics/thunderstorm/app-backend/exceptions";
+import {validate, validateEmail} from "@intuitionrobotics/ts-common/validator/validator";
+import {generateHex} from "@intuitionrobotics/ts-common/utils/random-tools";
+import {__stringify} from "@intuitionrobotics/ts-common/utils/tools";
+import {BadImplementationException} from "@intuitionrobotics/ts-common/core/exceptions";
+import {HeaderKey_JWT} from "@intuitionrobotics/thunderstorm/shared/consts"
 
 export const Header_SessionId = new HeaderKey(HeaderKey_SessionId, 404);
 

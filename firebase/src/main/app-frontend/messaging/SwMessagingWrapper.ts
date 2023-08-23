@@ -17,7 +17,7 @@
  * limitations under the License.
  */
 
-import {Logger} from "@intuitionrobotics/ts-common";
+import {Logger} from "@intuitionrobotics/ts-common/core/logger/Logger";
 import {FirebaseType_Messaging} from "./types";
 import {onBackgroundMessage} from "firebase/messaging/sw";
 

@@ -20,7 +20,7 @@
  * Created by IR on 3/18/17.
  */
 import {Action} from "./Action";
-import {timeout} from "@intuitionrobotics/ts-common";
+import {timeout} from "@intuitionrobotics/ts-common/utils/date-time-tools";
 
 
 export class Action_Sleep

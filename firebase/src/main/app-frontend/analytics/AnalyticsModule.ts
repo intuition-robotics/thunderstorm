@@ -16,7 +16,8 @@
  * limitations under the License.
  */
 
-import {ImplementationMissingException, Module} from "@intuitionrobotics/ts-common";
+import {Module} from "@intuitionrobotics/ts-common/core/module";
+import {ImplementationMissingException} from "@intuitionrobotics/ts-common/core/exceptions";
 import {FirebaseModule} from "../FirebaseModule";
 import {AnalyticsWrapper} from "./AnalyticsWrapper";
 

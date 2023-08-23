@@ -17,21 +17,15 @@
  */
 
 import {
-	ComparatorMap,
-	FirestoreQuery
-} from "../..";
-import {
 	FirestoreType_QueryDocumentSnapshot,
 	FirestoreType_Query
 } from "./types";
 import {FirestoreCollection} from "./FirestoreCollection";
-import {
-	__stringify,
-	_keys,
-	BadImplementationException,
-	ImplementationMissingException
-} from "@intuitionrobotics/ts-common";
 import {CollectionReference, Query} from "firebase-admin/firestore";
+import { FirestoreQuery } from "../../shared/types";
+import { BadImplementationException, ImplementationMissingException } from "@intuitionrobotics/ts-common/core/exceptions";
+import { __stringify } from "@intuitionrobotics/ts-common/utils/tools";
+import { _keys } from "@intuitionrobotics/ts-common/utils/object-tools";
 
 export class FirestoreInterface {
 

@@ -19,9 +19,12 @@
  * limitations under the License.
  */
 
-import {FirebaseModule} from "@intuitionrobotics/firebase/backend";
-import {BeLogged, LogClient_Function, LogClient_Terminal, Module} from "@intuitionrobotics/ts-common";
-import {Firebase_ExpressFunction, FirebaseFunction} from '@intuitionrobotics/firebase/backend-functions';
+import {FirebaseModule} from "@intuitionrobotics/firebase/app-backend/FirebaseModule";
+import {Module} from "@intuitionrobotics/ts-common/core/module";
+import {LogClient_Function} from "@intuitionrobotics/ts-common/core/logger/LogClient_Function";
+import {BeLogged} from "@intuitionrobotics/ts-common/core/logger/BeLogged";
+import {LogClient_Terminal} from "@intuitionrobotics/ts-common/core/logger/LogClient_Terminal";
+import {Firebase_ExpressFunction, FirebaseFunction} from '@intuitionrobotics/firebase/app-backend/functions/firebase-function';
 import {HttpServer_Class, RouteResolver} from "../modules/server/HttpServer";
 import {ServerApi} from "../modules/server/server-api";
 import {BaseStorm} from "./BaseStorm";

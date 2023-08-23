@@ -20,7 +20,7 @@
  */
 
 import * as React from "react";
-import {Module} from "@intuitionrobotics/ts-common";
+import { Module } from "@intuitionrobotics/ts-common/core/module";
 import {ThunderDispatcher} from "../../core/thunder-dispatcher";
 import { Stylable, StylableBuilder } from "../../tools/Stylable";
 import {Color, Properties} from "../../components/types";

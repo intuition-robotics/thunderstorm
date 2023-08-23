@@ -1,53 +1,35 @@
-/*
- * A backend boilerplate with example apis
- *
- * Copyright (C) 2020 Intuition Robotics
- *
- * Licensed under the Apache License, Version 2.0 (the "License");
- * you may not use this file except in compliance with the License.
- * You may obtain a copy of the License at
- *
- *     http://www.apache.org/licenses/LICENSE-2.0
- *
- * Unless required by applicable law or agreed to in writing, software
- * distributed under the License is distributed on an "AS IS" BASIS,
- * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
- * See the License for the specific language governing permissions and
- * limitations under the License.
- */
-
-import {Firebase_StorageFunction} from "@intuitionrobotics/firebase/backend-functions";
+import {Firebase_StorageFunction} from "@intuitionrobotics/firebase/app-backend/functions/firebase-function";
 import {ObjectMetadata} from "firebase-functions/lib/v1/providers/storage";
 import {EventContext} from "firebase-functions";
-import {Dispatcher} from "@intuitionrobotics/ts-common";
+import {Dispatcher} from "@intuitionrobotics/ts-common/core/Dispatcher";
 
 export interface OnFileUploaded {
-	__onFileUploaded(filePath?: string): void;
+    __onFileUploaded(filePath?: string): void;
 }
 
 const dispatcher_onFileUploaded = new Dispatcher<OnFileUploaded, "__onFileUploaded">("__onFileUploaded");
 
 
 export class BucketListener_Class
-	extends Firebase_StorageFunction {
-	constructor() {
-		super("BucketListener");
-	}
+    extends Firebase_StorageFunction {
+    constructor() {
+        super("BucketListener");
+    }
 
 
-	init() {
-		super.init();
-		// @ts-ignore
-		this.logInfo("Bucket Listener config", this.config)
-		this.logInfo("bucketName", this.config.bucketName);
-	}
+    init() {
+        super.init();
+        // @ts-ignore
+        this.logInfo("Bucket Listener config", this.config)
+        this.logInfo("bucketName", this.config.bucketName);
+    }
 
-	async onFinalize(object: ObjectMetadata, context: EventContext): Promise<any> {
-		const filePath = object.name;
-		await dispatcher_onFileUploaded.dispatchModuleAsync([filePath]);
-		this.logInfo("Object is ", object);
-		this.logInfo("Context is ", context);
-	}
+    async onFinalize(object: ObjectMetadata, context: EventContext): Promise<any> {
+        const filePath = object.name;
+        await dispatcher_onFileUploaded.dispatchModuleAsync([filePath]);
+        this.logInfo("Object is ", object);
+        this.logInfo("Context is ", context);
+    }
 
 }
 

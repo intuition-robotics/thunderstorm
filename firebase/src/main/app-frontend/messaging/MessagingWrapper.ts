@@ -16,7 +16,7 @@
  * limitations under the License.
  */
 
-import {Logger} from "@intuitionrobotics/ts-common";
+import {Logger} from "@intuitionrobotics/ts-common/core/logger/Logger";
 import {FirebaseType_Messaging, FirebaseType_Unsubscribe} from "./types";
 import {getToken, GetTokenOptions, MessagePayload, NextFn, Observer, onMessage} from "firebase/messaging";
 

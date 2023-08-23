@@ -1,48 +1,7 @@
-/*
- * Thunderstorm is a full web app framework!
- *
- * Typescript & Express backend infrastructure that natively runs on firebase function
- * Typescript & React frontend infrastructure
- *
- * Copyright (C) 2020 Intuition Robotics
- *
- * Licensed under the Apache License, Version 2.0 (the "License");
- * you may not use this file except in compliance with the License.
- * You may obtain a copy of the License at
- *
- *     http://www.apache.org/licenses/LICENSE-2.0
- *
- * Unless required by applicable law or agreed to in writing, software
- * distributed under the License is distributed on an "AS IS" BASIS,
- * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
- * See the License for the specific language governing permissions and
- * limitations under the License.
- */
-
-/**
- * Created by tacb0ss on 11/07/2018.
- */
-import {
-    _keys,
-    BadImplementationException,
-    dispatch_onServerError,
-    isErrorOfType,
-    Logger,
-    LogLevel,
-    merge,
-    MUSTNeverHappenException,
-    ObjectTS,
-    ServerErrorSeverity,
-    validate,
-    ValidationException,
-    ValidatorTypeResolver
-} from "@intuitionrobotics/ts-common";
-
 import {Stream} from "stream";
 import {parse} from "url";
 import {ServerApi_Middleware} from "./HttpServer";
 import {IncomingHttpHeaders} from "http";
-// noinspection TypeScriptPreferShortImport
 import {
     ApiTypeBinder,
     ApiWithBody,
@@ -59,6 +18,18 @@ import {ApiException} from "../../exceptions";
 import {ExpressRequest, ExpressResponse, ExpressRouter} from "../../utils/types";
 import {RemoteProxy} from "../proxy/RemoteProxy";
 import {Storm} from "../../core/Storm";
+import {Logger} from "@intuitionrobotics/ts-common/core/logger/Logger";
+import {validate, ValidationException, ValidatorTypeResolver} from "@intuitionrobotics/ts-common/validator/validator";
+import {LogLevel} from "@intuitionrobotics/ts-common/core/logger/types";
+import {dispatch_onServerError, ServerErrorSeverity} from "@intuitionrobotics/ts-common/core/error-handling";
+import {
+    BadImplementationException,
+    isErrorOfType,
+    MUSTNeverHappenException
+} from "@intuitionrobotics/ts-common/core/exceptions";
+import {ObjectTS} from "@intuitionrobotics/ts-common/utils/types";
+import {merge} from "@intuitionrobotics/ts-common/utils/merge-tools";
+import {_keys} from "@intuitionrobotics/ts-common/utils/object-tools";
 
 export type HttpRequestData = {
     originalUrl: string

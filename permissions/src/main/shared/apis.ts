@@ -1,81 +1,60 @@
-/*
- * ts-common is the basic building blocks of our typescript projects
- *
- * Copyright (C) 2020 Intuition Robotics
- *
- * Licensed under the Apache License, Version 2.0 (the "License");
- * you may not use this file except in compliance with the License.
- * You may obtain a copy of the License at
- *
- *     http://www.apache.org/licenses/LICENSE-2.0
- *
- * Unless required by applicable law or agreed to in writing, software
- * distributed under the License is distributed on an "AS IS" BASIS,
- * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
- * See the License for the specific language governing permissions and
- * limitations under the License.
- */
-
-import {
-	ApiWithBody,
-	ApiWithQuery
-} from "@intuitionrobotics/thunderstorm";
-import {StringMap} from "@intuitionrobotics/ts-common";
 import {DB_PermissionProject} from "./manager-types";
 import {User_Group} from "./assign-types";
-import { UI_Account } from "@intuitionrobotics/user-account";
+import {StringMap} from "@intuitionrobotics/ts-common/utils/types";
+import {UI_Account} from "@intuitionrobotics/user-account/shared/api";
+import {ApiWithBody, ApiWithQuery} from "@intuitionrobotics/thunderstorm/shared/types";
 
 
 export type UserUrlsPermissions = {
-	[url: string]: boolean
+    [url: string]: boolean
 }
 
 export type Request_AssertApiForUser = {
-	projectId: string
-	path: string
-	requestCustomField: StringMap
+    projectId: string
+    path: string
+    requestCustomField: StringMap
 }
 
 export type Request_UserUrlsPermissions = {
-	projectId: string
-	urls: UserUrlsPermissions
-	requestCustomField: StringMap
+    projectId: string
+    urls: UserUrlsPermissions
+    requestCustomField: StringMap
 }
 
 export type Request_UserCFsByShareGroups = {
-	groupsIds: string[]
+    groupsIds: string[]
 }
 
 export type Request_UsersCFsByShareGroups = Request_UserCFsByShareGroups & {
-	usersEmails: string[]
+    usersEmails: string[]
 }
 
 export type Response_UsersCFsByShareGroups = {
-	[userEmail: string]: StringMap[]
+    [userEmail: string]: StringMap[]
 }
 
 export type Request_AssignAppPermissions<T extends StringMap = StringMap> = {
-	projectId: string,
-	groupsToRemove: PredefinedGroup[],
-	group: PredefinedGroup,
-	customField: T
-	assertKeys?: (keyof T)[],
-	customKey: string,
-	sharedUserIds?: string[],
-	appAccountId?: string
+    projectId: string,
+    groupsToRemove: PredefinedGroup[],
+    group: PredefinedGroup,
+    customField: T
+    assertKeys?: (keyof T)[],
+    customKey: string,
+    sharedUserIds?: string[],
+    appAccountId?: string
 }
 
-export type AssignAppPermissions = Request_AssignAppPermissions & {granterUserId: string};
+export type AssignAppPermissions = Request_AssignAppPermissions & { granterUserId: string };
 
 export type PredefinedGroup = { _id: string, key: string, label: string, customKeys?: string[] };
 
 export type PredefinedUser = { accountId: string, _id: string, groups: PredefinedGroup[] };
 
 export type Request_RegisterProject = {
-	project: DB_PermissionProject,
-	routes: string[];
-	predefinedGroups?: PredefinedGroup[]
-	predefinedUser?: PredefinedUser
+    project: DB_PermissionProject,
+    routes: string[];
+    predefinedGroups?: PredefinedGroup[]
+    predefinedUser?: PredefinedUser
 };
 
 export type Response_User = UI_Account

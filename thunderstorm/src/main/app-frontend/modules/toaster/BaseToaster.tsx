@@ -20,13 +20,11 @@
  */
 
 import * as React from "react";
-// noinspection TypeScriptPreferShortImport
 import {
 	Toast_Model,
 	ToastListener,
 	ToastModule
 } from "./ToasterModule";
-// noinspection TypeScriptPreferShortImport
 import {BaseComponent} from "../../core/BaseComponent";
 
 type State = { model?: Toast_Model };

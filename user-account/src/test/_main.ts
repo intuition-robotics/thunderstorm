@@ -17,6 +17,5 @@
  * limitations under the License.
  */
 
-export * from "../main/app-backend/modules/_imports"
-export * from "../main/backend"
-export * from "../main/index"
+export * from "../main/app-backend/modules/types"
+export * from "../main/app-backend/modules/AccountModule"

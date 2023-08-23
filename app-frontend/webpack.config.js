@@ -163,7 +163,6 @@ module.exports = (env, argv) => {
 			}),
 			new HtmlWebPackPlugin({
 				inject: true,
-				favicon: './main/res/favicon.ico',
 				template: "./main/index.ejs",
 				filename: "./index.html",
 				minify: envConfig.htmlMinificationOptions()

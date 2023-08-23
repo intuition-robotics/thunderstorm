@@ -20,15 +20,11 @@
  */
 
 import * as React from "react";
-import {
-	addAllItemToArray,
-	Module,
-	Second
-} from "@intuitionrobotics/ts-common";
-// noinspection TypeScriptPreferShortImport
+import { Module } from "@intuitionrobotics/ts-common/core/module";
 import {ThunderDispatcher} from "../../core/thunder-dispatcher";
 import { Stylable, StylableBuilder } from "../../tools/Stylable";
 import {Color} from "../../components/types";
+import { Second } from "@intuitionrobotics/ts-common/utils/date-time-tools";
 
 export enum ToastType {
 	"success",
@@ -93,7 +89,7 @@ export class ToastBuilder
 	}
 
 	addActions(...actions: React.ReactElement[]) {
-		addAllItemToArray(this.actions, actions);
+		this.actions.push(...actions);
 		return this;
 	}
 

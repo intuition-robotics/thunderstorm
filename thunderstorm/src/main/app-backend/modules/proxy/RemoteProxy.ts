@@ -18,7 +18,9 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-import {ImplementationMissingException, Module, ObjectTS} from "@intuitionrobotics/ts-common";
+import {Module} from "@intuitionrobotics/ts-common/core/module";
+import {ObjectTS} from "@intuitionrobotics/ts-common/utils/types";
+import {ImplementationMissingException} from "@intuitionrobotics/ts-common/core/exceptions";
 
 import {HeaderKey, ServerApi_Middleware} from "../server/HttpServer";
 import {ApiException} from "../../exceptions";

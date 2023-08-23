@@ -20,19 +20,15 @@
  * Created by tacb0ss on 25/08/2018.
  */
 
-import {
-    _keys,
-    BadImplementationException,
-    ImplementationMissingException,
-    Module,
-    moduleResolver,
-    ThisShouldNotHappenException
-} from "@intuitionrobotics/ts-common";
 import {FirebaseSession_Admin} from "./auth/FirebaseSession_Admin";
 import {readFileSync} from "fs";
 import {Firebase_UserCredential} from "./auth/firebase-session";
 import {FirestoreCollection} from "./firestore/FirestoreCollection";
 import {FirebaseProjectCollections} from "../shared/types";
+import { Module } from "@intuitionrobotics/ts-common/core/module";
+import {BadImplementationException, ImplementationMissingException, ThisShouldNotHappenException } from "@intuitionrobotics/ts-common/core/exceptions";
+import { moduleResolver } from "@intuitionrobotics/ts-common/core/module-manager";
+import { _keys } from "@intuitionrobotics/ts-common/utils/object-tools";
 export type JWTInput = {
     type?: string;
     client_email?: string;

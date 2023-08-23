@@ -20,7 +20,7 @@
  * Created by IR on 3/18/17.
  */
 import {Action} from "./Action";
-import {LogLevel} from "@intuitionrobotics/ts-common";
+import {LogLevel} from "@intuitionrobotics/ts-common/core/logger/types";
 
 
 export class Action_Log

@@ -21,7 +21,8 @@
 // noinspection TypeScriptPreferShortImport
 import axios from 'axios';
 import {ApiTypeBinder, DeriveErrorType, DeriveResponseType, ErrorResponse, HttpMethod} from "../../../shared/types";
-import {BadImplementationException, StringMap,} from "@intuitionrobotics/ts-common";
+import {BadImplementationException} from "@intuitionrobotics/ts-common/core/exceptions";
+import {StringMap} from "@intuitionrobotics/ts-common/utils/types";
 import {BaseHttpRequest} from "../../../shared/BaseHttpRequest";
 import {BaseHttpModule_Class} from "../../../shared/BaseHttpModule";
 import {Axios_CancelTokenSource, Axios_Method, Axios_RequestConfig, Axios_Response, Axios_ResponseType} from "./types";

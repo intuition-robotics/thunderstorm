@@ -1,213 +1,183 @@
-/*
- * Permissions management system, define access level for each of
- * your server apis, and restrict users by giving them access levels
- *
- * Copyright (C) 2020 Intuition Robotics
- *
- * Licensed under the Apache License, Version 2.0 (the "License");
- * you may not use this file except in compliance with the License.
- * You may obtain a copy of the License at
- *
- *     http://www.apache.org/licenses/LICENSE-2.0
- *
- * Unless required by applicable law or agreed to in writing, software
- * distributed under the License is distributed on an "AS IS" BASIS,
- * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
- * See the License for the specific language governing permissions and
- * limitations under the License.
- */
-import {
-	__stringify,
-	BadImplementationException,
-	Dispatcher,
-	generateHex,
-	Minute,
-	Module,
-	Queue
-} from "@intuitionrobotics/ts-common";
-import {
-	BaseHttpModule_Class,
-	BaseHttpRequest,
-	ErrorResponse,
-	HttpMethod,
-	TS_Progress
-} from "@intuitionrobotics/thunderstorm";
-
-import {
-	Api_GetUploadUrl,
-	BaseUploaderFile,
-	DB_Temp_File,
-	Request_Uploader,
-	TempSecureUrl
-} from "../../shared/types";
+import {BaseHttpModule_Class} from "@intuitionrobotics/thunderstorm/shared/BaseHttpModule";
+import {BaseHttpRequest} from "@intuitionrobotics/thunderstorm/shared/BaseHttpRequest";
+import {TS_Progress} from "@intuitionrobotics/thunderstorm/shared/request-types";
+import {ErrorResponse, HttpMethod} from "@intuitionrobotics/thunderstorm/shared/types";
+import {Dispatcher} from "@intuitionrobotics/ts-common/core/dispatcher";
+import {BadImplementationException} from "@intuitionrobotics/ts-common/core/exceptions";
+import {Module} from "@intuitionrobotics/ts-common/core/module";
+import {Minute} from "@intuitionrobotics/ts-common/utils/date-time-tools";
+import {Queue} from "@intuitionrobotics/ts-common/utils/queue";
+import {generateHex} from "@intuitionrobotics/ts-common/utils/random-tools";
+import {__stringify} from "@intuitionrobotics/ts-common/utils/tools";
+import {Api_GetUploadUrl, BaseUploaderFile, DB_Temp_File, Request_Uploader, TempSecureUrl} from "../types";
 
 const RequestKey_UploadUrl = 'get-upload-url';
 const RequestKey_UploadFile = 'upload-file';
 
 export enum FileStatus {
-	ObtainingUrl   = "ObtainingUrl",
-	UrlObtained    = "UrlObtained",
-	UploadingFile  = "UploadingFile",
-	// I can assume that in between I upload and I get
-	// the push I'm processing the file in the be
-	PostProcessing = "PostProcessing",
-	Completed      = "Completed",
-	Error          = "Error"
+    ObtainingUrl = "ObtainingUrl",
+    UrlObtained = "UrlObtained",
+    UploadingFile = "UploadingFile",
+    // I can assume that in between I upload and I get
+    // the push I'm processing the file in the be
+    PostProcessing = "PostProcessing",
+    Completed = "Completed",
+    Error = "Error"
 }
 
 export type FileInfo = {
-	status: FileStatus
-	messageStatus?: string
-	progress?: number
-	name: string
-	request?: BaseHttpRequest<any>
-	file?: any
-	fileName?: string
-	tempDoc?: DB_Temp_File
+    status: FileStatus
+    messageStatus?: string
+    progress?: number
+    name: string
+    request?: BaseHttpRequest<any>
+    file?: any
+    fileName?: string
+    tempDoc?: DB_Temp_File
 };
 
 export interface OnFileStatusChanged {
-	__onFileStatusChanged: (id?: string) => void
+    __onFileStatusChanged: (id?: string) => void
 }
 
 export type FilesToUpload = Request_Uploader & {
-	// Unfortunately be doesnt know File and File doesnt map to ArrayBuffer
-	file: any
+    // Unfortunately be doesnt know File and File doesnt map to ArrayBuffer
+    file: any
 }
 
 type Config = {
-	uploadQueueParallelCount?: number
+    uploadQueueParallelCount?: number
 }
 
 export abstract class BaseUploaderModule_Class<HttpModule extends BaseHttpModule_Class, CustomConfig extends object = {}>
-	extends Module<Config & CustomConfig> {
-	protected files: { [id: string]: FileInfo } = {};
-	private readonly uploadQueue: Queue = new Queue("File Uploader").setParallelCount(2);
-	protected readonly dispatch_fileStatusChange = new Dispatcher<OnFileStatusChanged, '__onFileStatusChanged'>('__onFileStatusChanged');
-	private httpModule: HttpModule;
+    extends Module<Config & CustomConfig> {
+    protected files: { [id: string]: FileInfo } = {};
+    private readonly uploadQueue: Queue = new Queue("File Uploader").setParallelCount(2);
+    protected readonly dispatch_fileStatusChange = new Dispatcher<OnFileStatusChanged, '__onFileStatusChanged'>('__onFileStatusChanged');
+    private httpModule: HttpModule;
 
-	protected constructor(httpModule: HttpModule, moduleName: string) {
-		super(moduleName);
-		this.httpModule = httpModule;
-	}
+    protected constructor(httpModule: HttpModule, moduleName: string) {
+        super(moduleName);
+        this.httpModule = httpModule;
+    }
 
-	init() {
-		if (this.config.uploadQueueParallelCount)
-			this.uploadQueue.setParallelCount(this.config.uploadQueueParallelCount);
-	}
+    init() {
+        if (this.config.uploadQueueParallelCount)
+            this.uploadQueue.setParallelCount(this.config.uploadQueueParallelCount);
+    }
 
-	protected abstract subscribeToPush(toSubscribe: TempSecureUrl[]): Promise<void>
+    protected abstract subscribeToPush(toSubscribe: TempSecureUrl[]): Promise<void>
 
-	getFileInfo<K extends keyof FileInfo>(id: string, key: K): FileInfo[K] | undefined {
-		return this.files[id] && this.files[id][key];
-	}
+    getFileInfo<K extends keyof FileInfo>(id: string, key: K): FileInfo[K] | undefined {
+        return this.files[id] && this.files[id][key];
+    }
 
-	getFullFileInfo(id: string): FileInfo | undefined {
-		return this.files[id];
-	}
+    getFullFileInfo(id: string): FileInfo | undefined {
+        return this.files[id];
+    }
 
-	protected setFileInfo<K extends keyof FileInfo>(id: string, key: K, value: FileInfo[K]) {
-		if (!this.files[id])
-			throw new BadImplementationException(`Trying to set ${key} for non existent file with id: ${id}`);
+    protected setFileInfo<K extends keyof FileInfo>(id: string, key: K, value: FileInfo[K]) {
+        if (!this.files[id])
+            throw new BadImplementationException(`Trying to set ${key} for non existent file with id: ${id}`);
 
-		this.files[id][key] = value;
-		this.dispatchFileStatusChange(id);
-	}
+        this.files[id][key] = value;
+        this.dispatchFileStatusChange(id);
+    }
 
-	protected dispatchFileStatusChange(id?: string) {
-		this.dispatch_fileStatusChange.dispatchModule([id]);
-	}
+    protected dispatchFileStatusChange(id?: string) {
+        this.dispatch_fileStatusChange.dispatchModule([id]);
+    }
 
-	uploadImpl(files: FilesToUpload[]): BaseUploaderFile[] {
-		const body: BaseUploaderFile[] = files.map(fileData => {
-			const fileInfo: BaseUploaderFile = {
-				name: fileData.name,
-				mimeType: fileData.mimeType,
-				feId: generateHex(32)
-			};
+    uploadImpl(files: FilesToUpload[]): BaseUploaderFile[] {
+        const body: BaseUploaderFile[] = files.map(fileData => {
+            const fileInfo: BaseUploaderFile = {
+                name: fileData.name,
+                mimeType: fileData.mimeType,
+                feId: generateHex(32)
+            };
 
-			if (fileData.key)
-				fileInfo.key = fileData.key;
+            if (fileData.key)
+                fileInfo.key = fileData.key;
 
-			if (fileData.public)
-				fileInfo.public = fileData.public;
+            if (fileData.public)
+                fileInfo.public = fileData.public;
 
-			this.files[fileInfo.feId] = {
-				file: fileData.file,
-				fileName: fileData.file.name,
-				status: FileStatus.ObtainingUrl,
-				name: fileData.name
-			};
+            this.files[fileInfo.feId] = {
+                file: fileData.file,
+                fileName: fileData.file.name,
+                status: FileStatus.ObtainingUrl,
+                name: fileData.name
+            };
 
-			return fileInfo;
-		});
+            return fileInfo;
+        });
 
-		this
-			.httpModule
-			.createRequest<Api_GetUploadUrl>(HttpMethod.POST, RequestKey_UploadUrl)
-			.setRelativeUrl('/v1/upload/get-url')
-			.setJsonBody(body)
-			.setOnError((request: BaseHttpRequest<any>, resError?: ErrorResponse) => {
-				body.forEach(f => {
-					this.setFileInfo(f.feId, "messageStatus", __stringify(resError?.debugMessage));
-					this.setFileInfo(f.feId, "status", FileStatus.Error);
-				});
-			})
-			.execute(async (response: TempSecureUrl[]) => {
-				body.forEach(f => this.setFileInfo(f.feId, "status", FileStatus.UrlObtained));
-				if (!response)
-					return;
+        this
+            .httpModule
+            .createRequest<Api_GetUploadUrl>(HttpMethod.POST, RequestKey_UploadUrl)
+            .setRelativeUrl('/v1/upload/get-url')
+            .setJsonBody(body)
+            .setOnError((request: BaseHttpRequest<any>, resError?: ErrorResponse) => {
+                body.forEach(f => {
+                    this.setFileInfo(f.feId, "messageStatus", __stringify(resError?.debugMessage));
+                    this.setFileInfo(f.feId, "status", FileStatus.Error);
+                });
+            })
+            .execute(async (response: TempSecureUrl[]) => {
+                body.forEach(f => this.setFileInfo(f.feId, "status", FileStatus.UrlObtained));
+                if (!response)
+                    return;
 
-				// Not a relevant await but still...
-				await this.uploadFiles(response);
-			});
+                // Not a relevant await but still...
+                await this.uploadFiles(response);
+            });
 
-		return body;
-	}
+        return body;
+    }
 
-	private uploadFiles = async (response: TempSecureUrl[]) => {
-		// Subscribe
-		await this.subscribeToPush(response);
+    private uploadFiles = async (response: TempSecureUrl[]) => {
+        // Subscribe
+        await this.subscribeToPush(response);
 
-		response.forEach(r => {
-			const feId = r.tempDoc.feId;
-			this.uploadQueue.addItem(async () => {
-				await this.uploadFile(r);
-				delete this.files[feId].file;
-				this.setFileInfo(feId, "progress", undefined);
-				//TODO: Probably need to set a timer here in case we dont get a push back (contingency)
-			}, () => {
-				this.setFileInfo(feId, "status", FileStatus.PostProcessing);
-			}, error => {
-				this.setFileInfo(feId, "status", FileStatus.Error);
-				this.setFileInfo(feId, "messageStatus", __stringify(error));
-			});
-		});
-	};
+        response.forEach(r => {
+            const feId = r.tempDoc.feId;
+            this.uploadQueue.addItem(async () => {
+                await this.uploadFile(r);
+                delete this.files[feId].file;
+                this.setFileInfo(feId, "progress", undefined);
+                //TODO: Probably need to set a timer here in case we dont get a push back (contingency)
+            }, () => {
+                this.setFileInfo(feId, "status", FileStatus.PostProcessing);
+            }, error => {
+                this.setFileInfo(feId, "status", FileStatus.Error);
+                this.setFileInfo(feId, "messageStatus", __stringify(error));
+            });
+        });
+    };
 
-	private uploadFile = async (response: TempSecureUrl) => {
-		const feId = response.tempDoc.feId;
-		this.setFileInfo(feId, "status", FileStatus.UploadingFile);
-		this.setFileInfo(feId, "tempDoc", response.tempDoc);
-		const fileInfo = this.files[feId];
-		if (!fileInfo)
-			throw new BadImplementationException(`Missing file with id ${feId} and name: ${response.tempDoc.name}`);
+    private uploadFile = async (response: TempSecureUrl) => {
+        const feId = response.tempDoc.feId;
+        this.setFileInfo(feId, "status", FileStatus.UploadingFile);
+        this.setFileInfo(feId, "tempDoc", response.tempDoc);
+        const fileInfo = this.files[feId];
+        if (!fileInfo)
+            throw new BadImplementationException(`Missing file with id ${feId} and name: ${response.tempDoc.name}`);
 
-		const request = this
-			.httpModule
-			.createRequest(HttpMethod.PUT, RequestKey_UploadFile)
-			.setUrl(response.secureUrl)
-			// Don't change this because it replaces the default headers which we dont need
-			.setDefaultHeaders({'Content-Type': response.tempDoc.mimeType})
-			.setTimeout(20 * Minute)
-			.setBody(fileInfo.file)
-			.setOnProgressListener((ev: TS_Progress) => {
-				this.setFileInfo(feId, "progress", ev.loaded / ev.total);
-			});
+        const request = this
+            .httpModule
+            .createRequest(HttpMethod.PUT, RequestKey_UploadFile)
+            .setUrl(response.secureUrl)
+            // Don't change this because it replaces the default headers which we dont need
+            .setDefaultHeaders({'Content-Type': response.tempDoc.mimeType})
+            .setTimeout(20 * Minute)
+            .setBody(fileInfo.file)
+            .setOnProgressListener((ev: TS_Progress) => {
+                this.setFileInfo(feId, "progress", ev.loaded / ev.total);
+            });
 
-		this.setFileInfo(feId, "request", request);
-		await request.executeSync();
-	};
+        this.setFileInfo(feId, "request", request);
+        await request.executeSync();
+    };
 }
 
 

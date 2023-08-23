@@ -16,11 +16,8 @@
  * limitations under the License.
  */
 
-import {
-	AssertionException,
-	BadImplementationException
-} from "../index";
 
+import {AssertionException, BadImplementationException} from "../core/exceptions";
 
 export function deepClone<T>(obj: T): T {
 	if (typeof obj === 'string' || typeof obj === 'number' || typeof obj === 'boolean' || typeof obj === 'undefined' || obj === null)

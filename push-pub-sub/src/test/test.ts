@@ -27,6 +27,6 @@ const mainScenario = __scenario("Push Pub Sub Test");
 mainScenario.add(scenarioCleanup);
 
 module.exports = new Tester()
-	.addModules(FirebaseModule, PushPubSubModule)
-	.setScenario(mainScenario)
-	.build();
+    .addModules(FirebaseModule, PushPubSubModule)
+    .setScenario(mainScenario)
+    .build();

@@ -1,26 +1,13 @@
-/*
- * A backend boilerplate with example apis
- *
- * Copyright (C) 2018  Intuition Robotics
- *
- * Licensed under the Apache License, Version 2.0 (the "License");
- * you may not use this file except in compliance with the License.
- * You may obtain a copy of the License at
- *
- *     http://www.apache.org/licenses/LICENSE-2.0
- *
- * Unless required by applicable law or agreed to in writing, software
- * distributed under the License is distributed on an "AS IS" BASIS,
- * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
- * See the License for the specific language governing permissions and
- * limitations under the License.
- */
-import {__stringify, BadImplementationException, Exception, Module} from "@intuitionrobotics/ts-common";
 import * as jws from "jws";
 import {Octokit, RestEndpointMethodTypes} from '@octokit/rest';
 import {OctokitResponse, ReposGetContentResponseData} from "@octokit/types"
 import * as path from "path";
-import {ApiException, ExpressRequest, promisifyRequest} from "@intuitionrobotics/thunderstorm/backend";
+import {Module} from "@intuitionrobotics/ts-common/core/module";
+import {BadImplementationException, Exception} from "@intuitionrobotics/ts-common/core/exceptions";
+import {ExpressRequest} from "@intuitionrobotics/thunderstorm/app-backend/utils/types";
+import {promisifyRequest} from "@intuitionrobotics/thunderstorm/app-backend/utils/promisify-request";
+import {ApiException} from "@intuitionrobotics/thunderstorm/app-backend/exceptions";
+import {__stringify} from "@intuitionrobotics/ts-common/utils/tools";
 
 type Config = {
     appId: string
@@ -63,7 +50,7 @@ export class GithubModule_Class
             iss: parseInt(this.config.appId)
         };
         const signedToken = jws.sign({
-			header: {alg: "RS256"},
+            header: {alg: "RS256"},
             payload,
             privateKey: this.config.privateKey
         });

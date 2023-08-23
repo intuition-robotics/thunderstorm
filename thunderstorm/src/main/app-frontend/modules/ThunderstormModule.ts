@@ -1,4 +1,4 @@
-import {Module} from "@intuitionrobotics/ts-common";
+import { Module } from "@intuitionrobotics/ts-common/core/module";
 
 type Config = {
 	appName: string

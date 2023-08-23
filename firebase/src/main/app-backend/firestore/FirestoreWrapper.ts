@@ -6,7 +6,6 @@ import {FirebaseBaseWrapper} from "../auth/FirebaseBaseWrapper";
 import {CollectionReference, getFirestore} from "firebase-admin/firestore";
 import {enhanceCollection, FirestoreV2Collection} from "./FirestoreV2Collection";
 
-
 export class FirestoreWrapper
     extends FirebaseBaseWrapper {
 

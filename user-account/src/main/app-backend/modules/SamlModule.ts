@@ -17,26 +17,23 @@
  * limitations under the License.
  */
 
+import {ImplementationMissingException} from "@intuitionrobotics/ts-common/core/exceptions";
+import {Module} from "@intuitionrobotics/ts-common/core/module";
+import {__stringify} from "@intuitionrobotics/ts-common/utils/tools";
 import {
-	IdentityProvider,
-	IdentityProviderOptions,
-	SAMLAssertResponse,
-	ServiceProvider,
-	ServiceProviderOptions
+    IdentityProvider,
+    IdentityProviderOptions,
+    SAMLAssertResponse,
+    ServiceProvider,
+    ServiceProviderOptions
 } from "saml2-js";
-import {
-	__stringify,
-	ImplementationMissingException,
-	Module
-} from "@intuitionrobotics/ts-common";
-import {
-	RequestBody_SamlAssertOptions,
-	RequestParams_LoginSAML
-} from "./_imports";
+import {RequestParams_LoginSAML} from "../../shared/api";
+
+import {RequestBody_SamlAssertOptions} from "./types";
 
 type SamlConfig = {
-	idConfig: IdentityProviderOptions,
-	spConfig: ServiceProviderOptions
+    idConfig: IdentityProviderOptions,
+    spConfig: ServiceProviderOptions
 };
 
 // type _SamlAssertResponse = {
@@ -55,64 +52,64 @@ type SamlConfig = {
 // }
 
 type SamlAssertResponse = {
-	fullResponse: SAMLAssertResponse
-	userId: string
-	loginContext: RequestParams_LoginSAML
+    fullResponse: SAMLAssertResponse
+    userId: string
+    loginContext: RequestParams_LoginSAML
 }
 
 export class SamlModule_Class
-	extends Module<SamlConfig> {
+    extends Module<SamlConfig> {
 
-	public identityProvider!: IdentityProvider;
+    public identityProvider!: IdentityProvider;
 
-	constructor() {
-		super("SamlModule");
-	}
+    constructor() {
+        super("SamlModule");
+    }
 
-	protected init(): void {
-		if (!this.config.idConfig)
-			throw new ImplementationMissingException("Config must contain idConfig");
+    protected init(): void {
+        if (!this.config.idConfig)
+            throw new ImplementationMissingException("Config must contain idConfig");
 
-		if (!this.config.spConfig)
-			throw new ImplementationMissingException("Config must contain spConfig");
+        if (!this.config.spConfig)
+            throw new ImplementationMissingException("Config must contain spConfig");
 
-		this.identityProvider = new IdentityProvider(this.config.idConfig);
-	}
+        this.identityProvider = new IdentityProvider(this.config.idConfig);
+    }
 
-	loginRequest = async (loginContext: RequestParams_LoginSAML) => {
-		return new Promise<string>((resolve, rejected) => {
-			const sp = new ServiceProvider(this.config.spConfig);
-			const options = {
-				relay_state: __stringify(loginContext)
-			};
-			sp.create_login_request_url(this.identityProvider, options, (error, loginUrl, requestId) => {
-				if (error)
-					return rejected(error);
+    loginRequest = async (loginContext: RequestParams_LoginSAML) => {
+        return new Promise<string>((resolve, rejected) => {
+            const sp = new ServiceProvider(this.config.spConfig);
+            const options = {
+                relay_state: __stringify(loginContext)
+            };
+            sp.create_login_request_url(this.identityProvider, options, (error, loginUrl, requestId) => {
+                if (error)
+                    return rejected(error);
 
-				resolve(loginUrl);
-			});
-		});
+                resolve(loginUrl);
+            });
+        });
 
-	};
+    };
 
-	assert = async (options: RequestBody_SamlAssertOptions): Promise<SamlAssertResponse> => new Promise<SamlAssertResponse>((resolve, rejected) => {
-		const sp = new ServiceProvider(this.config.spConfig);
-		sp.post_assert(this.identityProvider, options, async (error, response: SAMLAssertResponse) => {
-			if (error)
-				return rejected(error);
+    assert = async (options: RequestBody_SamlAssertOptions): Promise<SamlAssertResponse> => new Promise<SamlAssertResponse>((resolve, rejected) => {
+        const sp = new ServiceProvider(this.config.spConfig);
+        sp.post_assert(this.identityProvider, options, async (error, response: SAMLAssertResponse) => {
+            if (error)
+                return rejected(error);
 
-			const userId = response.user.name_id;
-			const relay_state = options.request_body.RelayState;
-			if (!relay_state)
-				return rejected(`LoginContext lost along the way for userId '${userId}'`);
+            const userId = response.user.name_id;
+            const relay_state = options.request_body.RelayState;
+            if (!relay_state)
+                return rejected(`LoginContext lost along the way for userId '${userId}'`);
 
-			resolve({
-				        userId: userId,
-				        loginContext: JSON.parse(relay_state),
-				        fullResponse: response
-			        });
-		});
-	});
+            resolve({
+                userId: userId,
+                loginContext: JSON.parse(relay_state),
+                fullResponse: response
+            });
+        });
+    });
 }
 
 export const SamlModule = new SamlModule_Class();

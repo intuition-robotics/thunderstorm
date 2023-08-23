@@ -1,7 +1,4 @@
-import {
-	generateHex,
-	Module
-} from "@intuitionrobotics/ts-common";
+import { Module } from "@intuitionrobotics/ts-common/core/module";
 import {
 	MenuPosition
 } from "./PopupMenu";
@@ -12,6 +9,7 @@ import {
 } from "../../components/adapter/Adapter";
 import {BaseRendererMap} from "../../components/adapter/BaseRenderer";
 import {CSSProperties} from "react";
+import { generateHex } from "@intuitionrobotics/ts-common/utils/random-tools";
 
 export const resolveRealPosition = (button: HTMLImageElement): MenuPosition => {
 	const pos = button.getBoundingClientRect();

@@ -16,7 +16,6 @@
  * limitations under the License.
  */
 
-import {BadImplementationException, batchAction, generateHex, Subset} from "@intuitionrobotics/ts-common";
 import {
     FirestoreType_Collection,
     FirestoreType_DocumentSnapshot,
@@ -27,11 +26,11 @@ import {Clause_Select, Clause_Where, FilterKeys, FirestoreQuery} from "../../sha
 import {FirestoreWrapper} from "./FirestoreWrapper";
 import {FirestoreInterface} from "./FirestoreInterface";
 import {FirestoreTransaction} from "./FirestoreTransaction";
-import {firestore} from "firebase-admin";
-import {SetOptions} from "firebase-admin/lib/firestore";
-import admin = require("firebase-admin");
-import CollectionReference = firestore.CollectionReference;
-import WriteResult = firestore.WriteResult;
+import {CollectionReference, SetOptions, Transaction, WriteResult} from "firebase-admin/lib/firestore";
+import {Subset} from "@intuitionrobotics/ts-common/utils/types";
+import {BadImplementationException} from "@intuitionrobotics/ts-common/core/exceptions";
+import {batchAction} from "@intuitionrobotics/ts-common/utils/array-tools";
+import {generateHex} from "@intuitionrobotics/ts-common/utils/random-tools";
 
 export class FirestoreCollection<Type extends object> {
     readonly name: string;
@@ -154,7 +153,7 @@ export class FirestoreCollection<Type extends object> {
     }
 
     async runInTransaction<ReturnType>(processor: (transaction: FirestoreTransaction) => Promise<ReturnType>): Promise<ReturnType> {
-        return this.collection.firestore.runTransaction<ReturnType>(async (transaction: admin.firestore.Transaction) => {
+        return this.collection.firestore.runTransaction<ReturnType>(async (transaction: Transaction) => {
             return processor(new FirestoreTransaction(transaction));
         });
     }

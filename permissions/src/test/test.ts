@@ -1,24 +1,6 @@
-/*
- * ts-common is the basic building blocks of our typescript projects
- *
- * Copyright (C) 2020 Intuition Robotics
- *
- * Licensed under the Apache License, Version 2.0 (the "License");
- * you may not use this file except in compliance with the License.
- * You may obtain a copy of the License at
- *
- *     http://www.apache.org/licenses/LICENSE-2.0
- *
- * Unless required by applicable law or agreed to in writing, software
- * distributed under the License is distributed on an "AS IS" BASIS,
- * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
- * See the License for the specific language governing permissions and
- * limitations under the License.
- */
-
-import {Backend_ModulePack_Permissions} from "../main/backend";
-import {StormTester} from "@intuitionrobotics/thunderstorm/backend-test";
+import {StormTester} from "@intuitionrobotics/thunderstorm/test-backend/StormTester";
 import {__scenario} from "@intuitionrobotics/testelot";
+import {FirebaseModule} from "@intuitionrobotics/firebase/app-backend/FirebaseModule";
 import {createTwoAccessLevels} from "./tests/create-project";
 import {
 	checkAccessLevelsPropertyOfGroup,
@@ -31,6 +13,7 @@ import {
 	checkInsertUserIfNotExistByExistUser,
 	checkPatchOfGroupAccessLevelsProperty,
 	checkPatchOfGroupAccessLevelsPropertyToHigherValue,
+	checkUpdatedUserGroups,
 	checkUpdateOfGroupAccessLevelsProperty,
 	checkUpdateOfGroupAccessLevelsPropertyToHigherValue,
 	createApi,
@@ -45,23 +28,18 @@ import {
 	failedCreateGroupWithDuplicateAccessLevel,
 	failedCreateTwoGroupsWithSameName,
 	failedCreateUserWithDuplicateGroups,
+	failedCreateUserWithDuplicateGroupsButOneUndefinedCFAndOtherEmptyObj,
+	failedDeleteGroupAssociatedToUser,
 	failToCreateGroupWithIllegalCustomField,
 	tryDeleteAccessLevelAssociatedWithApi,
 	tryDeleteAccessLevelAssociatedWithGroup,
-	tryDeleteDomainAssociatedWithAccessLevel,
-	checkUpdatedUserGroups,
-	failedDeleteGroupAssociatedToUser,
-	failedCreateUserWithDuplicateGroupsButOneUndefinedCFAndOtherEmptyObj
+	tryDeleteDomainAssociatedWithAccessLevel
 } from "./tests/permissions-manage";
 import {
 	permissionsAssertDoesCustomFieldsSatisfiesTests,
 	permissionsAssertIsLevelsMatchTests
 } from "./tests/permissions-assert";
-import { FirebaseModule } from "@intuitionrobotics/firebase/backend";
-import { AccountModule } from "@intuitionrobotics/user-account/backend";
-import {
-	assignUserPermissionsTests
-} from "./tests/assign-permissions";
+import {assignUserPermissionsTests} from "./tests/assign-permissions";
 import {
 	expectToFailTestFullAssertUserPermissionsWithNonGroupCFCovered,
 	expectToFailTestFullAssertUserPermissionsWithNonGroupCFRegValueCovered,
@@ -69,6 +47,8 @@ import {
 	testFullAssertUserPermissionsWithEmptyUserCFsArrayAndEmptyRequestCFObj,
 	testFullAssertUserPermissionsWithExtraGroupCFCovered
 } from "./tests/full-permission-user-assert";
+import {AccountModule} from "@intuitionrobotics/user-account/app-backend/modules/AccountModule";
+import {Backend_ModulePack_Permissions} from "../main/app-backend/core/module-pack";
 
 
 export const mainScenario = __scenario("Permissions");
@@ -124,11 +104,11 @@ mainScenario.add(expectToFailTestFullAssertUserPermissionsWithNonGroupCFRegValue
 
 
 module.exports = new StormTester()
-	.addModules(FirebaseModule)
-	.addModules(AccountModule)
-	.addModules(...Backend_ModulePack_Permissions)
-	.setScenario(mainScenario)
-	.build();
+    .addModules(FirebaseModule)
+    .addModules(AccountModule)
+    .addModules(...Backend_ModulePack_Permissions)
+    .setScenario(mainScenario)
+    .build();
 
 
 

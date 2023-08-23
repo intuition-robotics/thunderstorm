@@ -1,65 +1,40 @@
-/*
- * Thunderstorm is a full web app framework!
- *
- * Typescript & Express backend infrastructure that natively runs on firebase function
- * Typescript & React frontend infrastructure
- *
- * Copyright (C) 2020 Intuition Robotics
- *
- * Licensed under the Apache License, Version 2.0 (the "License");
- * you may not use this file except in compliance with the License.
- * You may obtain a copy of the License at
- *
- *     http://www.apache.org/licenses/LICENSE-2.0
- *
- * Unless required by applicable law or agreed to in writing, software
- * distributed under the License is distributed on an "AS IS" BASIS,
- * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
- * See the License for the specific language governing permissions and
- * limitations under the License.
- */
-import {
-	ApiWithQuery,
-	HttpMethod,
-	TS_Progress
-} from "../../../index";
-
-import {Module} from "@intuitionrobotics/ts-common";
-// noinspection TypeScriptPreferShortImport
 import {XhrHttpModule} from "../http/XhrHttpModule";
 import {BrowserHistoryModule} from "../HistoryModule";
+import {ApiWithQuery, HttpMethod} from "../../../shared/types";
+import {Module} from "@intuitionrobotics/ts-common/core/module";
+import {TS_Progress} from "../../../shared/request-types";
 
 type ScriptLoaderBinder = ApiWithQuery<string, string>
 
 export class PageLoadingModule_Class
-	extends Module<{}> {
+    extends Module<{}> {
 
-	constructor() {
-		super("PageLoadingModule");
-	}
+    constructor() {
+        super("PageLoadingModule");
+    }
 
-	private readonly injected: { [src: string]: HTMLScriptElement } = {};
+    private readonly injected: { [src: string]: HTMLScriptElement } = {};
 
-	loadScript(src: string, progressListener: (progress: number) => void) {
-		XhrHttpModule
-			.createRequest<ScriptLoaderBinder>(HttpMethod.GET, src)
-			.setUrl(`${BrowserHistoryModule.getOrigin()}/${src}`)
-			.setOnProgressListener((ev: TS_Progress) => {
-				const progress = ev.loaded / ev.total;
-				progressListener(progress);
-			})
-			.execute(response => {
-				const divElement: HTMLScriptElement = document.createElement("script");
-				divElement.innerHTML = response;
-				divElement.id = src;
-				divElement.async = true;
-				this.injected[src] = divElement;
-			});
-	}
+    loadScript(src: string, progressListener: (progress: number) => void) {
+        XhrHttpModule
+            .createRequest<ScriptLoaderBinder>(HttpMethod.GET, src)
+            .setUrl(`${BrowserHistoryModule.getOrigin()}/${src}`)
+            .setOnProgressListener((ev: TS_Progress) => {
+                const progress = ev.loaded / ev.total;
+                progressListener(progress);
+            })
+            .execute(response => {
+                const divElement: HTMLScriptElement = document.createElement("script");
+                divElement.innerHTML = response;
+                divElement.id = src;
+                divElement.async = true;
+                this.injected[src] = divElement;
+            });
+    }
 
-	getNode(src: string) {
-		return this.injected[src];
-	}
+    getNode(src: string) {
+        return this.injected[src];
+    }
 }
 
 export const EntryComponentLoadingModule = new PageLoadingModule_Class();

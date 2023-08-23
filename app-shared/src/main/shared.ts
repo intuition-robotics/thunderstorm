@@ -20,7 +20,7 @@
 import {
 	ApiWithBody,
 	ApiWithQuery
-} from "@intuitionrobotics/thunderstorm";
+} from "@intuitionrobotics/thunderstorm/shared/types";
 
 export type CommonBodyReq = {
 	message: string

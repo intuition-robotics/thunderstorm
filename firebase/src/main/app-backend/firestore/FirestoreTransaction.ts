@@ -20,10 +20,12 @@ import * as admin from "firebase-admin";
 import {firestore} from "firebase-admin";
 import {FirestoreType_QueryDocumentSnapshot} from "./types";
 import {FirestoreCollection,} from "./FirestoreCollection";
-import {BadImplementationException, merge, Subset} from "@intuitionrobotics/ts-common";
 import {FirestoreQuery} from "../../shared/types";
 import {FirestoreInterface} from "./FirestoreInterface";
 import {Query, SetOptions} from "firebase-admin/firestore";
+import {Subset} from "@intuitionrobotics/ts-common/utils/types";
+import {BadImplementationException} from "@intuitionrobotics/ts-common/core/exceptions";
+import {merge} from "@intuitionrobotics/ts-common/utils/merge-tools";
 import Transaction = firestore.Transaction;
 
 export class FirestoreTransaction {

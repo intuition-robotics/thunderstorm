@@ -1,63 +1,39 @@
-/*
- * Permissions management system, define access level for each of
- * your server apis, and restrict users by giving them access levels
- *
- * Copyright (C) 2020 Intuition Robotics
- *
- * Licensed under the Apache License, Version 2.0 (the "License");
- * you may not use this file except in compliance with the License.
- * You may obtain a copy of the License at
- *
- *     http://www.apache.org/licenses/LICENSE-2.0
- *
- * Unless required by applicable law or agreed to in writing, software
- * distributed under the License is distributed on an "AS IS" BASIS,
- * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
- * See the License for the specific language governing permissions and
- * limitations under the License.
- */
+import {Module} from "@intuitionrobotics/ts-common/core/module";
+import {DB_BugReport, Paths} from "../../shared/api";
+import {FirebaseModule} from "@intuitionrobotics/firebase/app-backend/FirebaseModule";
+import {FirestoreCollection} from "@intuitionrobotics/firebase/app-backend/firestore/FirestoreCollection";
+import {StorageWrapper} from "@intuitionrobotics/firebase/app-backend/storage/StorageWrapper";
 
-import {Module} from "@intuitionrobotics/ts-common";
-import {
-	DB_BugReport,
-	Paths
-} from "../../shared/api";
-
-import {
-	FirebaseModule,
-	FirestoreCollection,
-	StorageWrapper
-} from "@intuitionrobotics/firebase/backend";
 
 type Config = {
-	projectId: string
-	bucket?: string,
+    projectId: string
+    bucket?: string,
 }
 
 export class AdminBRModule_Class
-	extends Module<Config> {
+    extends Module<Config> {
 
-	constructor() {
-		super("AdminBRModule");
-	}
+    constructor() {
+        super("AdminBRModule");
+    }
 
-	private bugReport!: FirestoreCollection<DB_BugReport>;
-	private storage!: StorageWrapper;
+    private bugReport!: FirestoreCollection<DB_BugReport>;
+    private storage!: StorageWrapper;
 
-	protected init(): void {
-		const sessAdmin = FirebaseModule.createAdminSession();
-		const firestore = sessAdmin.getFirestore();
-		this.bugReport = firestore.getCollection<DB_BugReport>('bug-report', ['_id']);
-		this.storage = sessAdmin.getStorage();
-	}
+    protected init(): void {
+        const sessAdmin = FirebaseModule.createAdminSession();
+        const firestore = sessAdmin.getFirestore();
+        this.bugReport = firestore.getCollection<DB_BugReport>('bug-report', ['_id']);
+        this.storage = sessAdmin.getStorage();
+    }
 
-	getFilesFirebase = async () => this.bugReport.getAll();
+    getFilesFirebase = async () => this.bugReport.getAll();
 
-	downloadFiles = async (path: Paths) => {
-		const bucket = await this.storage.getOrCreateBucket(this.config?.bucket);
-		const file = await bucket.getFile(path.path);
-		return file.getReadSecuredUrl(600000);
-	}
+    downloadFiles = async (path: Paths) => {
+        const bucket = await this.storage.getOrCreateBucket(this.config?.bucket);
+        const file = await bucket.getFile(path.path);
+        return file.getReadSecuredUrl(600000);
+    }
 }
 
 export const AdminBRModule = new AdminBRModule_Class();

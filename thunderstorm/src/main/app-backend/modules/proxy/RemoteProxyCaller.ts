@@ -18,8 +18,9 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-import {__stringify, ImplementationMissingException, Module} from "@intuitionrobotics/ts-common";
-// noinspection TypeScriptPreferShortImport
+import {Module} from "@intuitionrobotics/ts-common/core/module";
+import {ImplementationMissingException} from "@intuitionrobotics/ts-common/core/exceptions";
+import {__stringify} from "@intuitionrobotics/ts-common/utils/tools";
 import {
     ApiWithBody,
     ApiWithQuery,

@@ -23,8 +23,7 @@
 import {FirebaseApp} from "firebase/app";
 // tslint:disable:no-import-side-effect
 import "firebase/auth";
-import {Logger} from "@intuitionrobotics/ts-common";
-// noinspection TypeScriptPreferShortImport
+import {Logger} from "@intuitionrobotics/ts-common/core/logger/Logger";
 import {SwMessagingWrapper} from "../messaging/SwMessagingWrapper";
 import {getMessaging} from "firebase/messaging";
 

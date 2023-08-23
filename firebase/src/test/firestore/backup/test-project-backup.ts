@@ -26,7 +26,7 @@ import {
 	FirestoreCollection,
 	// ProjectFirestoreBackup
 } from "../../_main";
-import {Module} from "@intuitionrobotics/ts-common";
+import {Module} from "@intuitionrobotics/ts-common/core/module";
 
 export const testFirestoreBackup: Scenario = __scenario("test-project-backup");
 testFirestoreBackup.add(__custom(async () => {

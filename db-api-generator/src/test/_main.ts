@@ -17,5 +17,6 @@
  * limitations under the License.
  */
 
-export * from "../main/backend"
-export * from "../main/index"
+export * from "../main/app-backend/BaseDB_ApiGenerator"
+export * from "../main/app-backend/apis"
+export * from "../main/shared/types"

@@ -22,12 +22,9 @@
 import {HttpRequestData} from "./server-api";
 import {ApiException} from "../../exceptions";
 import {HttpErrorHandler} from "./HttpServer";
-import {
-	__stringify,
-	_keys,
-	StringMap
-} from "@intuitionrobotics/ts-common";
-
+import { StringMap } from "@intuitionrobotics/ts-common/utils/types";
+import { _keys } from "@intuitionrobotics/ts-common/utils/object-tools";
+import { __stringify } from "@intuitionrobotics/ts-common/utils/tools";
 
 export type AppPropsResolver = (requestData: HttpRequestData) => Promise<StringMap>;
 const _propsResolver: AppPropsResolver = async () => {

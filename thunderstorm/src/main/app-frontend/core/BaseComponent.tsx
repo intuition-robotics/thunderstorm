@@ -1,34 +1,11 @@
-/*
- * Thunderstorm is a full web app framework!
- *
- * Typescript & Express backend infrastructure that natively runs on firebase function
- * Typescript & React frontend infrastructure
- *
- * Copyright (C) 2020 Intuition Robotics
- *
- * Licensed under the Apache License, Version 2.0 (the "License");
- * you may not use this file except in compliance with the License.
- * You may obtain a copy of the License at
- *
- *     http://www.apache.org/licenses/LICENSE-2.0
- *
- * Unless required by applicable law or agreed to in writing, software
- * distributed under the License is distributed on an "AS IS" BASIS,
- * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
- * See the License for the specific language governing permissions and
- * limitations under the License.
- */
-
-/**
- * Created by tacb0ss on 28/07/2018.
- */
 import * as React from "react";
-
-import {_clearTimeout, _setTimeout, Logger, LogLevel, LogParam, TimerHandler, currentTimeMillies} from "@intuitionrobotics/ts-common";
 import {StorageModule} from "../modules/StorageModule";
 import {ResourcesModule} from "../modules/ResourcesModule";
 import {BrowserHistoryModule} from "../modules/HistoryModule";
 import {Thunder} from "./Thunder";
+import { Logger } from "@intuitionrobotics/ts-common/core/logger/Logger";
+import {currentTimeMillies, _clearTimeout, _setTimeout, TimerHandler } from "@intuitionrobotics/ts-common/utils/date-time-tools";
+import {LogLevel, LogParam } from "@intuitionrobotics/ts-common/core/logger/types";
 
 export class BaseComponent<P = any, S = any>
 	extends React.Component<P, S> {
@@ -152,7 +129,7 @@ export class BaseComponent<P = any, S = any>
 	}
 
 	static getQueryParameter(name: string) {
-		return BrowserHistoryModule.getQueryParams()[name];
+		return BrowserHistoryModule.getQueryParam(name);
 	}
 
 	static getUrl() {

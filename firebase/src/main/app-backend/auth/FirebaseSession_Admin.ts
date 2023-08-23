@@ -21,7 +21,7 @@ import {
 	ServiceAccount
 } from "firebase-admin";
 import {FirebaseSession} from "./firebase-session";
-import {ThisShouldNotHappenException} from "@intuitionrobotics/ts-common";
+import {ThisShouldNotHappenException} from "@intuitionrobotics/ts-common/core/exceptions";
 import {
 	Auth,
 	getAuth

@@ -18,8 +18,9 @@
 
 import {
 	RequireOptionals,
-	MandatoryKeys
-} from "@intuitionrobotics/ts-common";
+	MandatoryKeys,
+    DB_Object
+} from "@intuitionrobotics/ts-common/utils/types";
 
 export type Firebase_Message = {
 	token?: string,
@@ -39,10 +40,6 @@ export type FirebaseConfig = {
 	databaseURL?: string,
 	storageBucket?: string,
 	messagingSenderId: string
-}
-
-export type DB_Object = {
-	_id: string
 }
 
 type Comparator = "in" | "array-contains" | "array-contains-any" | ">" | ">=" | "<" | "<=" | "==";

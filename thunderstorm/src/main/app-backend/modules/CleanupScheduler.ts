@@ -1,9 +1,8 @@
-import {
-	currentTimeMillies,
-	Dispatcher
-} from "@intuitionrobotics/ts-common";
+
 import {FirebaseScheduledFunction} from "@intuitionrobotics/firebase/app-backend/functions/firebase-function";
 import {FirebaseModule} from "@intuitionrobotics/firebase/app-backend/FirebaseModule";
+import { Dispatcher } from "@intuitionrobotics/ts-common/core/dispatcher";
+import { currentTimeMillies } from "@intuitionrobotics/ts-common/utils/date-time-tools";
 
 export type ActDetailsDoc = {
 	timestamp: number,
