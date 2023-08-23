@@ -3,7 +3,7 @@ import {XhrHttpModule} from "@intuitionrobotics/thunderstorm/app-frontend/module
 import {ToastModule} from "@intuitionrobotics/thunderstorm/app-frontend/modules/toaster/ToasterModule"
 import {BrowserHistoryModule} from "@intuitionrobotics/thunderstorm/app-frontend/modules/HistoryModule"
 import {ThunderDispatcher} from "@intuitionrobotics/thunderstorm/app-frontend/core/thunder-dispatcher"
-import {OnUnauthenticatedResponse} from "@intuitionrobotics/thunderstorm/app-frontend/core/thunder"
+import {OnUnauthenticatedResponse} from "@intuitionrobotics/thunderstorm/app-frontend/core/Thunder"
 import {
     AccountApi_Create,
     AccountApi_ListAccounts,
