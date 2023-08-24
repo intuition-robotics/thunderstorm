@@ -24,9 +24,7 @@ export function createUser() {
 export function testSuccessfulLogin() {
 	const scenario = __scenario("successful login");
 	scenario.add(__custom(async () => {
-		// @ts-ignore
-		const responseAuth = await AccountModule.login({email: "test-account1@gmail.com", password: "pah"});
-		await AccountModule.validateSessionId(responseAuth.sessionId);
+		await AccountModule.loginValidate({email: "test-account1@gmail.com", password: "pah"});
 	}).setReadKey(userContextKey1));
 	return scenario;
 }
@@ -34,8 +32,7 @@ export function testSuccessfulLogin() {
 export function testLoginWithWrongPass() {
 	const scenario = __scenario("wrong pass");
 	scenario.add(__custom(async () => {
-		// @ts-ignore
-		await AccountModule.login({email: "test-account1@gmail.com", password: "wrong"});
+		await AccountModule.loginValidate({email: "test-account1@gmail.com", password: "wrong"});
 	}).setReadKey(userContextKey1).expectToFail(ApiException));
 	return scenario;
 }
@@ -43,8 +40,7 @@ export function testLoginWithWrongPass() {
 export function testLoginWithWrongUser() {
 	const scenario = __scenario("wrong user");
 	scenario.add(__custom(async () => {
-		// @ts-ignore
-		await AccountModule.login({email: "wrong@gmail.com", password: "pah"});
+		await AccountModule.loginValidate({email: "wrong@gmail.com", password: "pah"});
 	}).setReadKey(userContextKey1).expectToFail(ApiException));
 	return scenario;
 }

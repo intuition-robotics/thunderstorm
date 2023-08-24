@@ -231,9 +231,9 @@ export class AccountsModule_Class
         return this.loginValidate(request, response);
     }
 
-    private async loginValidate(request: Request_LoginAccount): Promise<undefined>
-    private async loginValidate(request: Request_LoginAccount, response?: ApiResponse): Promise<Response_Auth>
-    private async loginValidate(request: Request_LoginAccount, response?: ApiResponse) {
+    public async loginValidate(request: Request_LoginAccount): Promise<undefined>
+    public async loginValidate(request: Request_LoginAccount, response?: ApiResponse): Promise<Response_Auth>
+    public async loginValidate(request: Request_LoginAccount, response?: ApiResponse) {
         request.email = request.email.toLowerCase();
         const query = {where: {email: request.email}};
         const account = await this.accounts.queryUnique(query);

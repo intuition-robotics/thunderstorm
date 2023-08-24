@@ -13,7 +13,7 @@ import {
 } from "../../main/app-backend/modules/db-types/managment";
 import {DB_PermissionsGroup, User_Group} from "../../main/shared/assign-types";
 import {FirestoreTransaction} from "@intuitionrobotics/firebase/app-backend/firestore/FirestoreTransaction";
-import {UserPermissionsDB} from "../../main/app-backend/modules/db-types/assign";
+import {GroupPermissionsDB, UserPermissionsDB} from "../../main/app-backend/modules/db-types/assign";
 import {PermissionsAssert} from "../../main/app-backend/modules/permissions-assert";
 import {ApiException} from "@intuitionrobotics/thunderstorm/app-backend/exceptions";
 
@@ -65,11 +65,9 @@ export async function testUserPermissions(groupCustomFields: StringMap[], extraG
 
     console.log('Groups dbInstances ready to upsert');
 
-    // @ts-ignore
+
     const collection = GroupPermissionsDB.collection;
     await collection.runInTransaction(async (transaction: FirestoreTransaction) => {
-
-        // @ts-ignore
         await Promise.all(dbInstances.map(dbInstance => GroupPermissionsDB.assertUniqueness(transaction, dbInstance)));
         return transaction.upsertAll(collection, dbInstances);
     });

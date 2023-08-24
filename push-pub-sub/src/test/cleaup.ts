@@ -1,26 +1,10 @@
-/*
- * Firebase is a simpler Typescript wrapper to all of firebase services.
- *
- * Copyright (C) 2020 Intuition Robotics
- *
- * Licensed under the Apache License, Version 2.0 (the "License");
- * you may not use this file except in compliance with the License.
- * You may obtain a copy of the License at
- *
- *     http://www.apache.org/licenses/LICENSE-2.0
- *
- * Unless required by applicable law or agreed to in writing, software
- * distributed under the License is distributed on an "AS IS" BASIS,
- * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
- * See the License for the specific language governing permissions and
- * limitations under the License.
- */
-
+import { FirestoreTransaction } from "@intuitionrobotics/firebase/app-backend/firestore/FirestoreTransaction";
 import {__custom, __scenario} from "@intuitionrobotics/testelot";
+import { currentTimeMillies, Hour } from "@intuitionrobotics/ts-common/utils/date-time-tools";
+import {assert, compare } from "@intuitionrobotics/ts-common/utils/object-tools";
+import { generateHex } from "@intuitionrobotics/ts-common/utils/random-tools";
 import {PushPubSubModule} from "../main/app-backend/modules/PushPubSubModule";
-import {assert, compare, currentTimeMillies, generateHex, Hour} from "@intuitionrobotics/ts-common";
-import {DB_PushKeys, DB_PushSession, Request_PushRegister} from "../main";
-import {FirestoreCollection, FirestoreTransaction} from "@intuitionrobotics/firebase/backend";
+import {DB_PushKeys, DB_PushSession, Request_PushRegister } from "../main/shared/types";
 
 const arrayOf2 = Array(2).fill(0);
 export const scenarioCleanup = __scenario("Scheduled Cleaup");
@@ -46,7 +30,7 @@ const testRegister = async function (request: Request_PushRegister, timestamp: n
     const pushKeysCollection: FirestoreCollection<DB_PushKeys> = PushPubSubModule.pushKeys;
 
     return pushKeysCollection.runInTransaction(async (transaction: FirestoreTransaction) => {
-        const data = await transaction.query(pushKeysCollection, {where: {pushSessionId: request.pushSessionId}});
+        const data: DB_PushKeys[] = await transaction.query<DB_PushKeys>(pushKeysCollection, {where: {pushSessionId: request.pushSessionId}});
         const toInsert = subscriptions.filter(s => !data.find((d: DB_PushKeys) => compare(d, s)));
         return Promise.all(toInsert.map(instance => transaction.insert(pushKeysCollection, instance)));
     });
@@ -54,8 +38,8 @@ const testRegister = async function (request: Request_PushRegister, timestamp: n
 
 const processClean = __custom(async () => {
     // @ts-ignore
-    const asyncs = [PushPubSubModule.pushKeys.deleteAll(), PushPubSubModule.pushSessions.deleteAll()];
-    return Promise.all(asyncs);
+    const asyncs: Promise<any>[] = [PushPubSubModule.pushKeys.deleteAll(), PushPubSubModule.pushSessions.deleteAll()];
+    await Promise.all(asyncs);
 }).setLabel('Start Clean');
 
 const populate = (timestamp: number) => __custom(async () => {

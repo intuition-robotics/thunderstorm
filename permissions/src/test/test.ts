@@ -1,6 +1,7 @@
 import {StormTester} from "@intuitionrobotics/thunderstorm/test-backend/StormTester";
 import {__scenario} from "@intuitionrobotics/testelot";
 import {FirebaseModule} from "@intuitionrobotics/firebase/app-backend/FirebaseModule";
+import {SecretsModule} from "@intuitionrobotics/user-account/app-backend/modules/SecretsModule";
 import {createTwoAccessLevels} from "./tests/create-project";
 import {
 	checkAccessLevelsPropertyOfGroup,
@@ -104,8 +105,16 @@ mainScenario.add(expectToFailTestFullAssertUserPermissionsWithNonGroupCFRegValue
 
 
 module.exports = new StormTester()
+	.setConfig({
+		SecretsModule: {
+			secrets: {
+				TS_AUTH_SECRET: "1234567890",
+			}
+		}
+	})
     .addModules(FirebaseModule)
     .addModules(AccountModule)
+	.addModules(SecretsModule)
     .addModules(...Backend_ModulePack_Permissions)
     .setScenario(mainScenario)
     .build();
