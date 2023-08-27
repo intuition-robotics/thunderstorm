@@ -48,7 +48,7 @@ export abstract class BaseDB_ApiGeneratorCaller<
     private defaultDispatcher?: ThunderDispatcher<any, string>;
 
     // noinspection TypeScriptAbstractClassConstructorCanBeMadeProtected
-    constructor(config: BaseApiConfig, moduleName: string) {
+    constructor(config: Config, moduleName: string) {
         super(moduleName);
         this.setDefaultConfig(config);
     }
