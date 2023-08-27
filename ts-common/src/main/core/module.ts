@@ -1,26 +1,3 @@
-/*
- * ts-common is the basic building blocks of our typescript projects
- *
- * Copyright (C) 2020 Intuition Robotics
- *
- * Licensed under the Apache License, Version 2.0 (the "License");
- * you may not use this file except in compliance with the License.
- * You may obtain a copy of the License at
- *
- *     http://www.apache.org/licenses/LICENSE-2.0
- *
- * Unless required by applicable law or agreed to in writing, software
- * distributed under the License is distributed on an "AS IS" BASIS,
- * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
- * See the License for the specific language governing permissions and
- * limitations under the License.
- */
-
-/**
- * Created by tacb0ss on 08/07/2018.
- */
-
-
 import {ModuleManager} from "./module-manager";
 import {BadImplementationException} from "./exceptions";
 import {merge} from "../utils/merge-tools";
@@ -37,21 +14,34 @@ export abstract class Module<Config = any>
     protected configValidator?: ValidatorTypeResolver<Config>;
     protected timeoutMap: { [k: string]: number } = {};
 
-	// noinspection TypeScriptAbstractClassConstructorCanBeMadeProtected
-    constructor(name: string) {
-		super(name);
-		this.name = this.deduceName(name).replace("_Class", "");
-	}
+    // noinspection TypeScriptAbstractClassConstructorCanBeMadeProtected
+    constructor(config: Config, tag: string)
+    // noinspection TypeScriptAbstractClassConstructorCanBeMadeProtected
+    constructor(name: string, tag?: string)
+    // noinspection TypeScriptAbstractClassConstructorCanBeMadeProtected
+    constructor(p1: any, p2?: string) {
+        // If we have a tag we use it, if not we try to use the name of the class or else we use the name of the class (bad)
+        super( p2 ? p2 : typeof p1 === "string" ? p1 : undefined);
+        this.name = this.deduceName(p1, p2).replace("_Class", "");
+    }
 
-	private deduceName(name: string | undefined) {
-		if (name)
-			return name
+    private deduceName(p1: any, p2?: string): string {
+        if (typeof p1 === "object") {
+            if (p2 === undefined)
+                throw new BadImplementationException(`Modules initialized with a config object must have a tag`);
 
-		const tempName = this.constructor["name"];
-		if (!tempName.endsWith("_Class"))
-			throw new BadImplementationException(`Module class MUST end with '_Class' e.g. MyModule_Class, check class named: ${tempName}`);
-		return tempName
-	}
+            this.config = p1;
+            return p2;
+        }
+
+        if (p1)
+            return p1
+
+        const tempName = this.constructor["name"];
+        if (!tempName.endsWith("_Class"))
+            throw new BadImplementationException(`Module class MUST end with '_Class' e.g. MyModule_Class, check class named: ${tempName}`);
+        return tempName
+    }
 
     // // possibly to add
     // public async debounceSync(handler: TimerHandler, key: string, ms = 0) {
@@ -99,8 +89,11 @@ export abstract class Module<Config = any>
         this.configValidator = validator;
     }
 
+    /**
+     * @deprecated The method has been deprecated in favour of {@link setConfig}
+     */
     public setDefaultConfig(config: Partial<Config>) {
-        this.config = config as Config;
+        this.setConfig(config as Config);
     }
 
     public getName(): string {
@@ -135,7 +128,7 @@ export abstract class Module<Config = any>
     }
 
     public validate(): void {
-        if(this.configValidator)
+        if (this.configValidator)
             validate(this.config, this.configValidator)
     }
 }
