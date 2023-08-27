@@ -93,7 +93,7 @@ export abstract class Module<Config = any>
      * @deprecated The method has been deprecated in favour of {@link setConfig}
      */
     public setDefaultConfig(config: Partial<Config>) {
-        this.setConfig(config as Config);
+        this.setConfig(config);
     }
 
     public getName(): string {
@@ -104,7 +104,7 @@ export abstract class Module<Config = any>
         this.name = name;
     }
 
-    public setConfig(config: Config): void {
+    public setConfig(config: Partial<Config>): void {
         this.config = this.config ? merge(this.config, config || {}) : config;
     }
 

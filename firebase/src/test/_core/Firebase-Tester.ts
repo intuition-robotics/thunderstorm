@@ -58,7 +58,7 @@ export class FirebaseTester
 		FirebaseModule_Class.localAdminConfigId = "test-permissions";
 
 		const serviceAccount = this.resolveServiceAccount();
-		FirebaseModule.setDefaultConfig({"test-permissions": serviceAccount});
+		FirebaseModule.setConfig({"test-permissions": serviceAccount});
 	};
 
 	private runTestsImpl = async () => {

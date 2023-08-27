@@ -91,7 +91,7 @@ export class Slack_ServerApiError_Class
     implements OnApplicationError {
     constructor() {
         super("Slack_ServerApiError");
-        this.setDefaultConfig({exclude: [], minLevel: ServerErrorSeverity.Info})
+        this.setConfig({exclude: [], minLevel: ServerErrorSeverity.Info})
     }
 
     protected init(): void {

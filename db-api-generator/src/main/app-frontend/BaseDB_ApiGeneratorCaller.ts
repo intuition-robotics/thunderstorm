@@ -1,4 +1,3 @@
-
 import {DB_Object, PartialProperties} from "@intuitionrobotics/ts-common/utils/types"
 import {
     ApiBinder_DBCreate,
@@ -50,7 +49,7 @@ export abstract class BaseDB_ApiGeneratorCaller<
     // noinspection TypeScriptAbstractClassConstructorCanBeMadeProtected
     constructor(config: Config, moduleName: string) {
         super(moduleName);
-        this.setDefaultConfig(config);
+        this.setConfig(config);
     }
 
     setDefaultDispatcher(defaultDispatcher: ThunderDispatcher<any, string>) {

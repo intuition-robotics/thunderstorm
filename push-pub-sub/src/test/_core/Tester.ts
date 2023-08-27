@@ -55,7 +55,7 @@ export class Tester
 
         pathToServiceAccount = pathToServiceAccount.replace("--service-account=", "");
         const key = JSON.parse(fs.readFileSync(pathToServiceAccount, "utf8"));
-        FirebaseModule.setDefaultConfig({"test-permissions": key});
+        FirebaseModule.setConfig({"test-permissions": key});
     };
 
     private runTestsImpl = async () => {

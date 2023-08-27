@@ -34,7 +34,7 @@ export class GoogleCloudManager_Class
 
     constructor() {
         super("GoogleCloudManager");
-        this.setDefaultConfig({scopes: [GCPScope.CloudPlatform]} as GoogleCloudManagerConfig)
+        this.setConfig({scopes: [GCPScope.CloudPlatform]} as GoogleCloudManagerConfig)
     }
 
     protected init() {

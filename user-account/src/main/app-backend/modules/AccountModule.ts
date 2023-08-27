@@ -67,7 +67,7 @@ export class AccountsModule_Class
     implements QueryRequestInfo {
     constructor() {
         super("AccountsModule");
-        this.setDefaultConfig({sessionTTLms: {web: Day, app: Day, jwt: 30 * Minute}, jwtSecretKey: "TS_AUTH_SECRET"});
+        this.setConfig({sessionTTLms: {web: Day, app: Day, jwt: 30 * Minute}, jwtSecretKey: "TS_AUTH_SECRET"});
     }
 
     async __queryRequestInfo(request: ExpressRequest): Promise<{ key: string; data: any; }> {

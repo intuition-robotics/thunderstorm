@@ -35,7 +35,6 @@
     "@intuitionrobotics/ts-common": "~0.0.1",
     "react": "^16.0.0",
     "jws": "^4.0.0",
-    "moment": "^2.29.4",
     "saml2-js": "^4.0.0"
   },
   "devDependencies": {

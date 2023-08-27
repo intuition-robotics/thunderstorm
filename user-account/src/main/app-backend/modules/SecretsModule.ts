@@ -39,7 +39,7 @@ export class SecretsModule_Class
 
     constructor() {
         super("SecretsModule");
-        this.setDefaultConfig({validateKeyId: "AUTH_SECRET"})
+        this.setConfig({validateKeyId: "AUTH_SECRET"})
     }
 
     getSecret(k: string): Secret {

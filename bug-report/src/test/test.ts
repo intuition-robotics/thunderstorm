@@ -8,7 +8,7 @@ mainScenario.add(issueScenario);
 
 const email = 'email';
 const key = 'key';
-JiraModule.setDefaultConfig({auth: {email: email, apiKey: key}});
+JiraModule.setConfig({auth: {email: email, apiKey: key}});
 
 module.exports = new Tester()
     .addModules(JiraModule)

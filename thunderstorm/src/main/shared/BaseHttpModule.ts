@@ -27,7 +27,7 @@ export abstract class BaseHttpModule_Class<Config extends HttpConfig = HttpConfi
 
     constructor(name: string) {
         super(name);
-        this.setDefaultConfig({compress: true} as Partial<Config>);
+        this.setConfig({compress: true} as Partial<Config>);
     }
 
     init() {
