@@ -23,12 +23,10 @@
   "main": "index.js",
   "types": "index.d.ts",
   "scripts": {
-    "___lint": "eslint '*/**/*.{js,ts,tsx}' --quiet --fix",
-    "__lint": "eslint '*/**/*.ts' --fix",
-    "build": "tsc",
-    "eslint": "eslint '*/**/*.ts'"
+    "build": "tsc"
   },
   "dependencies": {
+    "crypto": "^1.0.1",
     "moment": "^2.29.4",
     "node-forge": "^1.3.1"
   },
