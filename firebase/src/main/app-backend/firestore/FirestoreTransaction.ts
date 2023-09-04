@@ -1,5 +1,3 @@
-import * as admin from "firebase-admin";
-import {firestore} from "firebase-admin";
 import {FirestoreType_QueryDocumentSnapshot} from "./types";
 import {FirestoreCollection,} from "./FirestoreCollection";
 import {FirestoreQuery} from "../../shared/types";
@@ -8,12 +6,12 @@ import {Query, SetOptions} from "firebase-admin/firestore";
 import {Subset} from "@intuitionrobotics/ts-common/utils/types";
 import {BadImplementationException} from "@intuitionrobotics/ts-common/core/exceptions";
 import {merge} from "@intuitionrobotics/ts-common/utils/merge-tools";
-import Transaction = firestore.Transaction;
+import {Transaction} from "firebase-admin/lib/firestore";
 
 export class FirestoreTransaction {
-    private transaction: admin.firestore.Transaction;
+    private readonly transaction: Transaction;
 
-    constructor(transaction: admin.firestore.Transaction) {
+    constructor(transaction: Transaction) {
         this.transaction = transaction;
     }
 

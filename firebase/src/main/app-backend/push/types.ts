@@ -1,22 +1,32 @@
-import * as admin from "firebase-admin";
+import {
+    AndroidConfig,
+    ApnsConfig,
+    FcmOptions,
+    Messaging,
+    MessagingTopicManagementResponse,
+    MessagingTopicResponse,
+    MulticastMessage,
+    Notification,
+    WebpushConfig,
+    BatchResponse
+} from "firebase-admin/messaging";
 
 type BaseMessage = {
-	data?: { [key: string]: string };
-	notification?: admin.messaging.Notification;
-	android?: admin.messaging.AndroidConfig;
-	webpush?: admin.messaging.WebpushConfig;
-	apns?: admin.messaging.ApnsConfig;
-	fcmOptions?: admin.messaging.FcmOptions;
+    data?: { [key: string]: string };
+    notification?: Notification;
+    android?: AndroidConfig;
+    webpush?: WebpushConfig;
+    apns?: ApnsConfig;
+    fcmOptions?: FcmOptions;
 };
 
 type TokenMessage = BaseMessage & {
-	token: string;
+    token: string;
 }
 
-export type FirebaseType_PushMessages = admin.messaging.Messaging;
-// export type FirebaseType_Message = admin.messaging.Message;
+export type FirebaseType_PushMessages = Messaging;
 export type FirebaseType_Message = TokenMessage
-export type FirebaseType_BatchResponse = admin.messaging.BatchResponse
-export type FirebaseType_TopicResponse = admin.messaging.MessagingTopicResponse;
-export type FirebaseType_MulticastMessage = admin.messaging.MulticastMessage;
-export type FirebaseType_SubscriptionResponse = admin.messaging.MessagingTopicManagementResponse;
+export type FirebaseType_BatchResponse = BatchResponse
+export type FirebaseType_TopicResponse = MessagingTopicResponse;
+export type FirebaseType_MulticastMessage = MulticastMessage;
+export type FirebaseType_SubscriptionResponse = MessagingTopicManagementResponse;
