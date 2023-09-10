@@ -85,7 +85,7 @@ export interface OnUserLogin {
 const dispatch_onUserLogin = new Dispatcher<OnUserLogin, "__onUserLogin">("__onUserLogin");
 const dispatch_onNewUserRegistered = new Dispatcher<OnNewUserRegistered, "__onNewUserRegistered">("__onNewUserRegistered");
 
-function getUIAccount(account: DB_Account): UI_Account {
+function getUIAccount(account: UI_Account): UI_Account {
     const {email, _id} = account;
     return {email, _id};
 }
@@ -94,7 +94,7 @@ export class AccountsModule_Class
     extends Module<Config>
     implements QueryRequestInfo {
     constructor() {
-        super();
+        super("AccountsModule");
         this.setDefaultConfig({sessionTTLms: {web: Day, app: Day, jwt: 30 * Minute}, jwtSecretKey: "TS_AUTH_SECRET"});
     }
 
@@ -281,7 +281,7 @@ export class AccountsModule_Class
 
         let sessionWithAccountId: Response_Auth | undefined
         if (response) {
-            sessionWithAccountId = await this.upsertSession(account._id, request.frontType);
+            sessionWithAccountId = await this.upsertSession(account, request.frontType);
             this.setJWTinResp(response, sessionWithAccountId.jwt);
         }
         await dispatch_onUserLogin.dispatchModuleAsync([getUIAccount(account)]);
@@ -292,7 +292,7 @@ export class AccountsModule_Class
         const _email = __email.toLowerCase();
         const account = await this.createSAML(_email);
 
-        const sessionWithAccountId = await this.upsertSession(account._id);
+        const sessionWithAccountId = await this.upsertSession(account);
         await dispatch_onUserLogin.dispatchModuleAsync([getUIAccount(account)]);
         return sessionWithAccountId;
     }
@@ -406,6 +406,15 @@ export class AccountsModule_Class
         return getUIAccount(account);
     }
 
+    private async getUserEmailFromUserId(userId: string) {
+        const account = await this.accounts.queryUnique({where: {_id: userId}});
+        if (!account)
+            throw new ApiException(403, `No user found for session: ${userId}`);
+
+        return getUIAccount(account);
+    }
+
+
     private TTLExpired = (session: DB_Session) => {
         const delta = currentTimeMillies() - session.timestamp;
         let sessionTTLms = this.config.sessionTTLms.web;
@@ -416,25 +425,37 @@ export class AccountsModule_Class
         return delta > sessionTTLms || delta < 0;
     };
 
-    public upsertSession = async (userId: string, frontType?: FrontType): Promise<Response_Auth> => {
-        let session = await this.sessions.queryUnique({where: {userId}});
-        if (!session || this.TTLExpired(session)) {
-            session = {
-                sessionId: generateHex(64),
-                timestamp: currentTimeMillies(),
-                userId
-            };
+    private async getAccountFromParams(p: string | UI_Account) {
+        if (typeof p === "string")
+            return this.getUserEmailFromUserId(p);
 
-            if (frontType)
-                session.frontType = frontType;
+        return getUIAccount(p);
+    }
 
-            await this.sessions.upsert(session);
-        }
+    public async upsertSession(p: string | UI_Account, frontType?: FrontType): Promise<Response_Auth> {
+        const account = await this.getAccountFromParams(p);
+        const session = await this.getSessionFromAccount(account, frontType);
 
-        const account = await this.getUserEmailFromSession(session);
         const sessionId = session.sessionId;
         return {sessionId, jwt: this.generateJWT(account, sessionId), email: account.email, _id: account._id};
     };
+
+    private async getSessionFromAccount(account: UI_Account, frontType: FrontType | undefined | FrontType.Web | FrontType.App) {
+        const session = await this.sessions.queryUnique({where: {userId: account._id}});
+        if (session && !this.TTLExpired(session))
+            return session;
+
+        const _session: DB_Session = {
+            sessionId: generateHex(64),
+            timestamp: currentTimeMillies(),
+            userId: account._id,
+        };
+
+        if (frontType)
+            _session.frontType = frontType;
+
+        return this.sessions.upsert(_session);
+    }
 
     async assertApi(body: PostAssertBody, response: ApiResponse) {
         const options: RequestBody_SamlAssertOptions = {
