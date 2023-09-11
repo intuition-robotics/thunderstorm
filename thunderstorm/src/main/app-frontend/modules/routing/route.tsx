@@ -33,14 +33,14 @@ export class RoutePath {
 	readonly key: string;
 	readonly path: string;
 	readonly exact: boolean = false;
-	readonly component: React.ComponentClass | string;
+	readonly component: React.ComponentType<any> | string;
 
 	readonly logMessage?: string;
 	readonly label?: React.ElementType | string;
 	readonly visible: () => boolean = () => !!this.label;
 	readonly enabled?: () => boolean;
 
-	constructor(key: string, route: string, component: React.ComponentClass | string) {
+	constructor(key: string, route: string, component: React.ComponentType<any> | string) {
 		this.key = key;
 		this.path = route;
 		this.component = component;
