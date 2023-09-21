@@ -86,21 +86,21 @@ export class SecretsModule_Class
 
         const token = this.decodeJwt(authToken);
         if (!token)
-            throw new BadImplementationException("Could not decode token");
+            throw new ApiException(401, "Could not decode token");
 
         const kid = token.header.kid || this.config.validateKeyId;
         if (!kid)
-            throw new BadImplementationException("Could not deduce which key to use in order to verify the token, please specify a key ID");
+            throw new ApiException(401, "Could not deduce which key to use in order to verify the token, please specify a key ID");
 
         const secret = this.getAuthSecret(kid);
         const verified = jws.verify(authToken, token.header.alg, secret.value);
         let cause = `The JWT passed is not valid, check. With payload: ${__stringify(token.payload)}.`;
         if (!verified)
-            throw new BadImplementationException(cause)
+            throw new ApiException(401, cause)
 
         if (!token.payload?.[EXPIRES_AT]) {
             cause += ` The JWT is missing the expiration claim`;
-            throw new BadImplementationException(cause)
+            throw new ApiException(401, cause)
         }
 
         return token;
