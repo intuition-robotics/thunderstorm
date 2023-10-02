@@ -69,6 +69,7 @@ import {
 	testFullAssertUserPermissionsWithEmptyUserCFsArrayAndEmptyRequestCFObj,
 	testFullAssertUserPermissionsWithExtraGroupCFCovered
 } from "./tests/full-permission-user-assert";
+import { SecretsModule } from "@intuitionrobotics/user-account/app-backend/modules/SecretsModule";
 
 
 export const mainScenario = __scenario("Permissions");
@@ -124,8 +125,14 @@ mainScenario.add(expectToFailTestFullAssertUserPermissionsWithNonGroupCFRegValue
 
 
 module.exports = new StormTester()
-	.addModules(FirebaseModule)
-	.addModules(AccountModule)
+	.addModules(FirebaseModule, AccountModule, SecretsModule)
+	.setConfig({
+		SecretsModule: {
+			secrets: {
+				AUTH_SECRET: "abc"
+			}
+		}
+	})
 	.addModules(...Backend_ModulePack_Permissions)
 	.setScenario(mainScenario)
 	.build();

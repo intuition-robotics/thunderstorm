@@ -440,7 +440,7 @@ export class AccountsModule_Class
         return {sessionId, jwt: this.generateJWT(account, sessionId), email: account.email, _id: account._id};
     };
 
-    private async getSessionFromAccount(account: UI_Account, frontType: FrontType | undefined | FrontType.Web | FrontType.App) {
+    private async getSessionFromAccount(account: UI_Account, frontType?: FrontType) {
         const session = await this.sessions.queryUnique({where: {userId: account._id}});
         if (session && !this.TTLExpired(session))
             return session;

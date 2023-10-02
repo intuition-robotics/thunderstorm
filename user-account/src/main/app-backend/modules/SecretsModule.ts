@@ -24,7 +24,7 @@ type Config = {
         [k: string]: any
     },
     validateKeyId: string
-    issuer: string
+    issuer?: string
 }
 
 type Secret = {
