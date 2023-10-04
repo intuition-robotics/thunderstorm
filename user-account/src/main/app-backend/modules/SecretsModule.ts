@@ -86,7 +86,7 @@ export class SecretsModule_Class
 
         const token = this.decodeJwt(authToken);
         if (!token)
-            throw new ApiException(401, "Could not decode token");
+            throw new ApiException(401, "Could not decode token " + authToken);
 
         const kid = token.header.kid || this.config.validateKeyId;
         if (!kid)
@@ -94,7 +94,7 @@ export class SecretsModule_Class
 
         const secret = this.getAuthSecret(kid);
         const verified = jws.verify(authToken, token.header.alg, secret.value);
-        let cause = `The JWT passed is not valid, check. With payload: ${__stringify(token.payload)}.`;
+        let cause = `The JWT passed is not valid, check. With payload: ${__stringify(token.payload)} and header ${__stringify(token.header)}.`;
         if (!verified)
             throw new ApiException(401, cause)
 
