@@ -20,7 +20,8 @@
 import {
 	ApiResponse,
 	ExpressRequest,
-	ServerApi
+	ServerApi,
+	RemoteProxy
 } from "@intuitionrobotics/thunderstorm/backend";
 import {
 	PermissionsApi_UsersCFsByShareGroups,
@@ -28,18 +29,17 @@ import {
 	PermissionsModule
 } from "../permissions/_imports";
 import {HttpMethod} from "@intuitionrobotics/thunderstorm";
-import {AccountModule} from "@intuitionrobotics/user-account/backend";
 
-class ServerApi_UsersCFsByShareGroups
+export class ServerApi_UsersCFsByShareGroups
 	extends ServerApi<PermissionsApi_UsersCFsByShareGroups> {
 
 	constructor() {
 		super(HttpMethod.POST, "users-cf-by-share-groups");
 		this.dontPrintResponse();
+		this.setMiddlewares(RemoteProxy.Middleware);
 	}
 
 	protected async process(request: ExpressRequest, response: ApiResponse, queryParams: {}, body: Request_UsersCFsByShareGroups) {
-		await AccountModule.validateSession(request, response);
 		return PermissionsModule.getUsersCFsByShareGroups(body.usersEmails, body.groupsIds);
 	}
 }
