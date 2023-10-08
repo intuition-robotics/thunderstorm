@@ -36,7 +36,7 @@
     "@intuitionrobotics/firebase": "~0.0.1",
     "@intuitionrobotics/thunderstorm": "~0.0.1",
     "@intuitionrobotics/user-account": "~0.0.1",
-    "react": "^16.0.0"
+    "react": "^18.0.0"
   },
   "devDependencies": {
     "@intuitionrobotics/testelot": "~0.0.1",

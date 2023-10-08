@@ -108,7 +108,7 @@ export const defaultNavLinkNode = (route: RoutePath): React.ReactElement => {
 };
 
 export const defaultLinkNode = (route: RoutePath, node?: React.ReactNode): React.ReactElement => {
-	return <Link key={route.key} to={route.path}>{node || route.label || route.key}</Link>;
+	return <Link in key={route.key} to={route.path}>{node || route.label || route.key}</Link>;
 };
 
 export const defaultRouteNode = (route: RoutePath): React.ReactElement => {
