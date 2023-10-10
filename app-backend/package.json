@@ -21,9 +21,9 @@
   "types": "./dist/index.d.ts",
   "scripts": {
     "build": "tsc",
-    "launch": "tsc --watch & firebase emulators:start --import=../.trash/data --export-on-exit",
+    "launch": "unset npm_lifecycle_script && unset npm_config_prefix && tsc --watch & firebase emulators:start --import=../.trash/data --export-on-exit",
     "lint": "tslint --project './tsconfig.json'",
-    "serve": "cd .. && bash ./build-and-install.sh -lb -nb"
+    "serve": "unset npm_lifecycle_script && unset npm_config_prefix && cd .. && bash ./build-and-install.sh -lb -nb"
   },
   "dependencies": {
     "@app/app-shared": "file:.dependencies/app-shared",

@@ -1,8 +1,9 @@
 const path = require('path');
 const HtmlWebPackPlugin = require("html-webpack-plugin");
-const MiniCssExtractPlugin = require("mini-css-extract-plugin");
+const MiniCssExtractPlugin = require('mini-css-extract-plugin');
+const {CleanWebpackPlugin} = require('clean-webpack-plugin');
 const {WebpackManifestPlugin} = require("webpack-manifest-plugin");
-const packageJson = require('./package.json');
+const versionApp = require('../version-app.json');
 const webpack = require("webpack");
 const sourcePath = path.join(__dirname, './src');
 const mainFolder = path.join(__dirname, './src/main/');
@@ -10,11 +11,9 @@ const mainConfig = path.join(__dirname, './src/main/tsconfig.json');
 
 module.exports = (env, argv) => {
 
-	env = env.dev ? "dev" : "prod"
-	const envConfig = require(`./_config/${env}`);
-	console.log("env: " + env);
 	console.log("argv: " + JSON.stringify(argv));
-	console.log("argv.mode: " + argv.mode);
+	env = argv.mode === "development" ? "dev" : "prod"
+	const envConfig = require(`./_config/${env}`);
 	const outputFolder = path.resolve(__dirname, `dist/${envConfig.outputFolder()}`);
 
 	return {
@@ -29,29 +28,14 @@ module.exports = (env, argv) => {
 			publicPath: '/',
 			clean: true
 		},
-		// optimization: {
-		// 	moduleIds: 'deterministic',
-		// 	// minimize: false,
-		// 	splitChunks: {
-		// 		cacheGroups: {
-		// 			defaultVendors: {
-		// 				test: /[\\/]node_modules[\\/]/,
-		// 				name: 'vendors',
-		// 				chunks: 'all',
-		// 			},
-		// 		},
-		// 	},
-		// },
 		devtool: "source-map",
-
 		devServer: {
 			historyApiFallback: true,
 			compress: true,
 			static: outputFolder,
-			server: {type: "https", options: envConfig.getDevServerSSL()},
+			server: {type: "https", options:envConfig.getDevServerSSL() },
 			port: envConfig.getHostingPort(),
 		},
-
 		resolve: {
 			fallback: {
 				"fs": false,
@@ -69,16 +53,15 @@ module.exports = (env, argv) => {
 			alias: {
 				"@modules": path.resolve(__dirname, "src/main/modules"),
 				"@consts": path.resolve(__dirname, "src/main/consts"),
-				"@components": path.resolve(__dirname, "src/main/components"),
-				"@renderers": path.resolve(__dirname, "src/main/renderers"),
-				"@shared": path.resolve(__dirname, "src/main/app-shared"),
+				"@components": path.resolve(__dirname, "src/main/ui/components"),
+				"@renderers": path.resolve(__dirname, "src/main/ui/renderers"),
 				"@styles": path.resolve(__dirname, "src/main/res/styles"),
 				"@res": path.resolve(__dirname, "src/main/res"),
 				// "@utils": path.resolve(__dirname, "src/main/utils")
 			},
-			extensions: ['.js', '.jsx', '.json', '.ts', '.tsx']
+			extensions: ['.js', '.jsx', '.json', '.ts', '.tsx'],
+			symlinks: false
 		},
-
 		module: {
 			rules: [
 				{
@@ -91,13 +74,6 @@ module.exports = (env, argv) => {
 						}
 					}
 				},
-				// {
-				// 	test: /sw\/index.ts$/,
-				// 	include: [swFolder],
-				// 	use: {
-				// 		loader: "ts-loader",
-				// 	}
-				// },
 				{enforce: "pre", test: /\.js$/, loader: "source-map-loader", exclude: [/node_modules/, /dist/, /build/, /__test__/]},
 				{
 					test: /\.[ot]tf$/,
@@ -124,7 +100,7 @@ module.exports = (env, argv) => {
 					test: /\.s?[c|a]ss$/,
 					use: [
 						'style-loader',
-						{loader: MiniCssExtractPlugin.loader, options: { esModule: false}},
+						MiniCssExtractPlugin.loader,
 						// Translates CSS into CommonJS
 						"css-loader",
 						// Compiles Sass to CSS
@@ -137,9 +113,10 @@ module.exports = (env, argv) => {
 			new webpack.DefinePlugin({
 				'process.env': {
 					'appEnv': `"${env}"`,
-					'appVersion': `"${packageJson.version}"`
+					'appVersion': `"${versionApp.version}"`
 				}
 			}),
+			new CleanWebpackPlugin({cleanStaleWebpackAssets: false}),
 			new MiniCssExtractPlugin({
 				filename: 'main/res/styles.[contenthash].css',
 			}),
@@ -150,6 +127,6 @@ module.exports = (env, argv) => {
 				minify: envConfig.htmlMinificationOptions()
 			}),
 			new WebpackManifestPlugin()
-		].filter(plugin => plugin),
-	}
+		].filter(plugin => plugin)
+	};
 };

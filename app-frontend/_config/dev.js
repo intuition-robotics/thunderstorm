@@ -1,5 +1,4 @@
 const WebpackEnvConfig = require('./_base.js');
-const HtmlBeautifyPlugin = require('html-beautify-webpack-plugin');
 const fs = require('fs');
 
 class DevConfig
@@ -25,23 +24,6 @@ class DevConfig
 	}
 
 	getPrettifierPlugin() {
-		return new HtmlBeautifyPlugin({
-			config: {
-				html: {
-					end_with_newline: true,
-					indent_size: 2,
-					indent_with_tabs: true,
-					indent_inner_html: true,
-					preserve_newlines: true,
-					unformatted: [
-						'i',
-						'b',
-						'span'
-					]
-				}
-			},
-			replace: [' type="text/javascript"']
-		})
 	}
 
 	getDevServerSSL() {
