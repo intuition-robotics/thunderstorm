@@ -40,7 +40,7 @@ export class GenericSelect<T>
 			options.forEach((option, idx) => {
 				const optionPresentation = props.presentation(option)
 				const item: SelectItem = {label: optionPresentation, value: "" + idx};
-				if (selectedOption) {
+				if (selectedOption !== undefined) {
 					if (optionPresentation === props.presentation(selectedOption)) {
 						value = item;
 					}

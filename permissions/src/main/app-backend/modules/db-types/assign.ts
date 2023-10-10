@@ -267,8 +267,8 @@ export class UsersDB_Class
                 throw new ApiException(404, `No permissions USER for all user ids`); // TODO mention who miss?
 
 
-            if (!assignAppPermissionsObj.customField || _keys(assignAppPermissionsObj.customField).length === 0)
-                throw new ApiException(400, `Cannot set app permissions '${assignAppPermissionsObj.projectId}--${assignAppPermissionsObj.group._id}', request must have custom fields restriction!!`);
+			if (!assignAppPermissionsObj.customField)
+				throw new ApiException(400, `Cannot set app permissions '${assignAppPermissionsObj.projectId}--${assignAppPermissionsObj.group._id}', request must have custom fields restriction!!`);
 
             const _group = await transaction.queryUnique(GroupPermissionsDB.collection, {where: {_id: groupId}});
             if (!_group)

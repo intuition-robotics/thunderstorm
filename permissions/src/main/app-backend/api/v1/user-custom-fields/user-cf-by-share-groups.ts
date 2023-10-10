@@ -5,7 +5,7 @@ import {AccountModule} from "@intuitionrobotics/user-account/app-backend/modules
 import {PermissionsApi_UserCFsByShareGroups, Request_UserCFsByShareGroups} from "../../../../shared/apis";
 import {PermissionsModule} from "../../../modules/PermissionsModule";
 
-class ServerApi_UserCFsByShareGroups
+export class ServerApi_UserCFsByShareGroups
     extends ServerApi<PermissionsApi_UserCFsByShareGroups> {
 
     constructor() {

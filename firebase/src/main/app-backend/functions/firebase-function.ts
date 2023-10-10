@@ -134,7 +134,11 @@ export abstract class FirestoreFunctionModule<DataType extends object, Config ex
     };
 }
 
-export abstract class FirebaseScheduledFunction<Config extends RuntimeOptsConfigs = any>
+export type ScheduledConfig = RuntimeOptsConfigs & {
+    timeZone?: string
+};
+
+export abstract class FirebaseScheduledFunction<Config extends ScheduledConfig = any>
     extends FirebaseFunction<Config> {
 
     private function!: CloudFunction<Change<DataSnapshot>>;
@@ -160,7 +164,12 @@ export abstract class FirebaseScheduledFunction<Config extends RuntimeOptsConfig
         if (this.function)
             return this.function;
 
-        return this.function = functions.runWith(this.config?.runtimeOpts || {}).pubsub.schedule(this.schedule).onRun(async () => {
+        return this.function = functions
+            .runWith(this.config?.runtimeOpts || {})
+            .pubsub
+            .schedule(this.schedule)
+            .timeZone(this.config?.timeZone || "Etc/UTC")
+            .onRun(async () => {
             const results: boolean[] = await Promise.all(this.runningCondition.map(condition => condition()));
 
             if (results.includes(false)) {

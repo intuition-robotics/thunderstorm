@@ -1,7 +1,6 @@
 import {StormTester} from "@intuitionrobotics/thunderstorm/test-backend/StormTester";
 import {__scenario} from "@intuitionrobotics/testelot";
 import {FirebaseModule} from "@intuitionrobotics/firebase/app-backend/FirebaseModule";
-import {SecretsModule} from "@intuitionrobotics/user-account/app-backend/modules/SecretsModule";
 import {createTwoAccessLevels} from "./tests/create-project";
 import {
 	checkAccessLevelsPropertyOfGroup,
@@ -50,6 +49,7 @@ import {
 } from "./tests/full-permission-user-assert";
 import {AccountModule} from "@intuitionrobotics/user-account/app-backend/modules/AccountModule";
 import {Backend_ModulePack_Permissions} from "../main/app-backend/core/module-pack";
+import { SecretsModule } from "@intuitionrobotics/user-account/app-backend/modules/SecretsModule";
 
 
 export const mainScenario = __scenario("Permissions");
@@ -109,11 +109,10 @@ module.exports = new StormTester()
 		SecretsModule: {
 			secrets: {
 				TS_AUTH_SECRET: "1234567890",
-			}
+                AUTH_SECRET: "abc"
+            }
 		}
 	})
-    .addModules(FirebaseModule)
-    .addModules(AccountModule)
 	.addModules(SecretsModule)
     .addModules(...Backend_ModulePack_Permissions)
     .setScenario(mainScenario)

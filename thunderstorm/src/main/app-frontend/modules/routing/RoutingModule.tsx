@@ -31,11 +31,11 @@ class RoutingModule_Class
         this.ordinalRoutes.splice(0);
     }
 
-    addRoute(key: string, route: string, component: React.ComponentClass | string) {
-        const previousRoute = this.routes[key];
-        if (previousRoute)
-            throw new BadImplementationException(
-                `Route key '${key}' MUST be unique!!\n  Found two routes with matching key: '${route}' && '${previousRoute.path}'`);
+	addRoute(key: string, route: string, component: React.ComponentType<any> | string) {
+		const previousRoute = this.routes[key];
+		if (previousRoute)
+			throw new BadImplementationException(
+				`Route key '${key}' MUST be unique!!\n  Found two routes with matching key: '${route}' && '${previousRoute.path}'`);
 
         this.ordinalRoutes.push(key)
         return this.routes[key] = new RoutePath(key, route, component);
