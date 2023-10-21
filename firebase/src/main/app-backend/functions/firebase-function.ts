@@ -63,7 +63,7 @@ export class Firebase_ExpressFunction
         const runtimeOptions = {
             labels: {
                 infra: "thunderstorm",
-                function_name: this.getName(),
+                function_name: getFormattedFunctionName(this.getName()),
                 type: "https",
                 version: "v1"
             },
@@ -88,7 +88,7 @@ export abstract class Firebase_HttpsFunction<Config = any>
         const runtimeOptions = {
             labels: {
                 infra: "thunderstorm",
-                function_name: this.getName(),
+                function_name: getFormattedFunctionName(this.getName()),
                 type: "https",
                 version: "v1"
             }
@@ -122,7 +122,7 @@ export abstract class FirebaseFunctionModule<DataType = any, Config extends Runt
         const runtimeOptions = {
             labels: {
                 infra: "thunderstorm",
-                function_name: this.getName(),
+                function_name: getFormattedFunctionName(this.getName()),
                 type: "realtime-db-listener",
                 version: "v1"
             },
@@ -166,7 +166,7 @@ export abstract class FirestoreFunctionModule<DataType extends object, Config ex
         const runtimeOptions = {
             labels: {
                 infra: "thunderstorm",
-                function_name: this.getName(),
+                function_name: getFormattedFunctionName(this.getName()),
                 type: "firestore-listener",
                 version: "v1"
             },
@@ -216,7 +216,7 @@ export abstract class FirebaseScheduledFunction<Config extends ScheduledConfig =
         const runtimeOptions = {
             labels: {
                 infra: "thunderstorm",
-                function_name: this.getName(),
+                function_name: getFormattedFunctionName(this.getName()),
                 type: "pubsub-schedule",
                 version: "v1"
             },
@@ -264,7 +264,7 @@ export abstract class Firebase_StorageFunction<Config extends BucketConfigs = Bu
         const runtimeOptions: RuntimeOptions = {
             labels: {
                 infra: "thunderstorm",
-                function_name: this.getName(),
+                function_name: getFormattedFunctionName(this.getName()),
                 type: "https",
                 version: "v1"
             },
@@ -294,6 +294,10 @@ export abstract class Firebase_StorageFunction<Config extends BucketConfigs = Bu
 export type FirebaseEventContext = EventContext;
 
 export type TopicMessage = { data: string, attributes: StringMap };
+
+function getFormattedFunctionName(name: string) {
+    return name.toLowerCase().replace(/\s/g, "_");
+}
 
 export abstract class Firebase_PubSubFunction<T, Config extends RuntimeOptsConfigs = any>
     extends FirebaseFunction<Config> {
@@ -327,7 +331,16 @@ export abstract class Firebase_PubSubFunction<T, Config extends RuntimeOptsConfi
         if (this.function)
             return this.function;
 
-        return this.function = functions.runWith(this.config?.runtimeOpts || {}).pubsub.topic(this.topic).onPublish(async (message: Message, context: FirebaseEventContext) => {
+        const runtimeOptions = {
+            labels: {
+                infra: "thunderstorm",
+                function_name: getFormattedFunctionName(this.getName()),
+                type: "pubsub-topic-publish",
+                version: "v1"
+            },
+            ...this.config?.runtimeOpts
+        };
+        return this.function = functions.runWith(runtimeOptions).pubsub.topic(this.topic).onPublish(async (message: Message, context: FirebaseEventContext) => {
             // need to validate etc...
             const originalMessage: TopicMessage = message.toJSON();
 
