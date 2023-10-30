@@ -15,10 +15,10 @@ class ServerApi_UserUrlsPermissions
         this.dontPrintResponse();
     }
 
-    protected async process(request: ExpressRequest, response: ApiResponse, queryParams: QueryParams, body: Request_AssignAppPermissions) {
-        // TODO add to the request body the api that wants to use this feature.. in order to assert user permissions to perform an action
-        // TODO and save our ass from a potential application security bugs
-        const account = await AccountModule.validateSession(request, response);
+	protected async process(request: ExpressRequest, response: ApiResponse, queryParams: QueryParams, body: Request_AssignAppPermissions) {
+		// TODO add to the request body the api that wants to use this feature.. in order to assert user permissions to perform an action
+		// TODO and save our ass from a potential application security bugs
+		const account = await AccountModule.validateSession(request, this.getScopes(), response);
 
         let assignAppPermissions;
         if (body.appAccountId)

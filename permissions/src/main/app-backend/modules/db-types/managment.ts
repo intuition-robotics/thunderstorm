@@ -54,12 +54,12 @@ export class ProjectDB_Class
         super(CollectionName_Projects, ProjectDB_Class._validator, "project", "ProjectDB");
     }
 
-    protected async preUpsertProcessing(transaction: FirestoreTransaction, dbInstance: DB_PermissionProject, request?: ExpressRequest): Promise<void> {
-        if (request) {
-            const account = await AccountModule.validateSession(request);
-            dbInstance._audit = auditBy(account.email);
-        }
-    }
+	protected async preUpsertProcessing(transaction: FirestoreTransaction, dbInstance: DB_PermissionProject, request?: ExpressRequest): Promise<void> {
+		if (request) {
+			const account = await AccountModule.validateSession(request, []);
+			dbInstance._audit = auditBy(account.email);
+		}
+	}
 
     apis(pathPart?: string): ServerApi<any>[] {
         return [
@@ -94,11 +94,11 @@ export class DomainDB_Class
     protected async preUpsertProcessing(transaction: FirestoreTransaction, dbInstance: DB_PermissionDomain, request?: ExpressRequest) {
         await ProjectPermissionsDB.queryUnique({_id: dbInstance.projectId});
 
-        if (request) {
-            const account = await AccountModule.validateSession(request);
-            dbInstance._audit = auditBy(account.email);
-        }
-    }
+		if (request) {
+			const account = await AccountModule.validateSession(request, []);
+			dbInstance._audit = auditBy(account.email);
+		}
+	}
 }
 
 
@@ -125,11 +125,11 @@ export class LevelDB_Class
     protected async preUpsertProcessing(transaction: FirestoreTransaction, dbInstance: DB_PermissionAccessLevel, request?: ExpressRequest) {
         await DomainPermissionsDB.queryUnique({_id: dbInstance.domainId});
 
-        if (request) {
-            const account = await AccountModule.validateSession(request);
-            dbInstance._audit = auditBy(account.email);
-        }
-    }
+		if (request) {
+			const account = await AccountModule.validateSession(request, []);
+			dbInstance._audit = auditBy(account.email);
+		}
+	}
 
     protected async upsertImpl_Read(transaction: FirestoreTransaction, dbInstance: DB_PermissionAccessLevel, request: ExpressRequest): Promise<() => DB_PermissionAccessLevel> {
         const existDbLevel = await transaction.queryUnique(this.collection, {where: {_id: dbInstance._id}});
@@ -221,11 +221,11 @@ export class ApiDB_Class
         return [{projectId, path}];
     }
 
-    protected async preUpsertProcessing(transaction: FirestoreTransaction, dbInstance: DB_PermissionApi, request?: ExpressRequest) {
-        if (request) {
-            const account = await AccountModule.validateSession(request);
-            dbInstance._audit = auditBy(account.email);
-        }
+	protected async preUpsertProcessing(transaction: FirestoreTransaction, dbInstance: DB_PermissionApi, request?: ExpressRequest) {
+		if (request) {
+			const account = await AccountModule.validateSession(request, []);
+			dbInstance._audit = auditBy(account.email);
+		}
 
         await ProjectPermissionsDB.queryUnique({_id: dbInstance.projectId});
 

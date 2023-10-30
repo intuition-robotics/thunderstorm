@@ -13,11 +13,11 @@ class ServerApi_AssertPermissions
         this.dontPrintResponse();
     }
 
-    protected async process(request: ExpressRequest, response: ApiResponse, queryParams: {}, body: Request_AssertApiForUser) {
-        const account = await AccountModule.validateSession(request, response);
-        await PermissionsAssert.assertUserPermissions(body.projectId, body.path, account._id, body.requestCustomField);
-        return account;
-    }
+	protected async process(request: ExpressRequest, response: ApiResponse, queryParams: {}, body: Request_AssertApiForUser) {
+		const account = await AccountModule.validateSession(request, this.getScopes(), response);
+		await PermissionsAssert.assertUserPermissions(body.projectId, body.path, account._id, body.requestCustomField);
+		return account;
+	}
 }
 
 module.exports = new ServerApi_AssertPermissions();
