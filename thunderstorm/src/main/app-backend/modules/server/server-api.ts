@@ -23,6 +23,7 @@
  * Created by tacb0ss on 11/07/2018.
  */
 import {
+    __stringify,
     _keys,
     BadImplementationException,
     dispatch_onServerError,
@@ -85,6 +86,7 @@ export abstract class ServerApi<Binder extends ApiTypeBinder<string, R, B, P>, R
     private queryValidator?: ValidatorTypeResolver<P>;
     private sideEffects: (() => Promise<any>)[] = [];
     protected baseUrl?: string;
+    private scopes: string[] = [];
 
     protected constructor(method: HttpMethod, relativePath: string, tag?: string) {
         super(tag || relativePath);
@@ -111,6 +113,15 @@ export abstract class ServerApi<Binder extends ApiTypeBinder<string, R, B, P>, R
     addMiddlewares(...middlewares: ServerApi_Middleware[]) {
         this.middlewares = [...(this.middlewares || []), ...middlewares];
         return this;
+    }
+
+    setScopes(...scopes: string[]) {
+        this.scopes = [...scopes];
+        return this;
+    }
+
+    getScopes() {
+        return this.scopes;
     }
 
     addHeaderToLog(...headersToLog: string[]) {
@@ -206,7 +217,7 @@ export abstract class ServerApi<Binder extends ApiTypeBinder<string, R, B, P>, R
             this.bodyValidator && validate<B>(body as B, this.bodyValidator);
             this.queryValidator && validate<P>(reqQuery, this.queryValidator);
 
-            const context = await this.applyMiddlewares(req, requestData, response);
+            const context = await this.applyMiddlewares(req, requestData, response, this.scopes);
 
             const toReturn: unknown = await this.process(req, response, reqQuery, body as B, context);
             if (response.isConsumed())
@@ -297,11 +308,11 @@ export abstract class ServerApi<Binder extends ApiTypeBinder<string, R, B, P>, R
         }
     };
 
-    private async applyMiddlewares(req: ExpressRequest, requestData: HttpRequestData, response: ApiResponse): Promise<ObjectTS> {
+    private async applyMiddlewares(req: ExpressRequest, requestData: HttpRequestData, response: ApiResponse, scopes: string[]): Promise<ObjectTS> {
         if (!this.middlewares)
             return {};
 
-        const contextList = await Promise.all(this.middlewares.map(async m => m(req, requestData, response)));
+        const contextList = await Promise.all(this.middlewares.map(async m => m(req, requestData, response, scopes)));
 
         return contextList.reduce((acc: ObjectTS, c) => merge(acc, c || {}), {})
     }
