@@ -60,13 +60,13 @@ export class PermissionsAssert_Class
 		super("PermissionsAssert");
 	}
 
-	readonly Middleware = (keys: string[]): ServerApi_Middleware => async (req: ExpressRequest, data: HttpRequestData, response: ApiResponse, scopes: string[]) => {
+	readonly Middleware = (keys: string[]): ServerApi_Middleware => async (req: ExpressRequest, data: HttpRequestData, response: ApiResponse) => {
 		let account;
 		await this.CustomMiddleware(keys, async (projectId: string, customFields: StringMap) => {
 
-			account = await AccountModule.validateSession(req, scopes, response);
+			account = await AccountModule.validateSession(req, response);
 			await this.assertUserPermissions(projectId, data.url, account._id, customFields);
-		})(req, data, response, scopes);
+		})(req, data, response);
 
 		return {account};
 	};
