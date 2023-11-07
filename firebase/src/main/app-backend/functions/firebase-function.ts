@@ -48,7 +48,17 @@ export class Firebase_ExpressFunction
         if (this.function)
             return this.function;
 
-        return this.function = functions.runWith(Firebase_ExpressFunction.config).https.onRequest(this.express);
+        const runtimeOptions = {
+            labels: {
+                infra: "thunderstorm",
+                function_name: getFormattedFunctionName(this.getName()),
+                type: "https",
+                version: "v1"
+            },
+            ...Firebase_ExpressFunction.config
+        };
+
+        return this.function = functions.runWith(runtimeOptions).https.onRequest(this.express);
     };
 }
 
@@ -63,7 +73,15 @@ export abstract class Firebase_HttpsFunction<Config = any>
         if (this.function)
             return this.function;
 
-        return this.function = functions.https.onRequest((req: Request, res: Response) => this.process(req, res));
+        const runtimeOptions = {
+            labels: {
+                infra: "thunderstorm",
+                function_name: getFormattedFunctionName(this.getName()),
+                type: "https",
+                version: "v1"
+            }
+        };
+        return this.function = functions.runWith(runtimeOptions).https.onRequest((req: Request, res: Response) => this.process(req, res));
     };
 
     onFunctionReady = async () => {
@@ -89,7 +107,17 @@ export abstract class FirebaseFunctionModule<DataType = any, Config extends Runt
         if (this.function)
             return this.function;
 
-        return this.function = functions.runWith(this.config?.runtimeOpts || {}).database.ref(this.listeningPath).onWrite(
+        const runtimeOptions = {
+            labels: {
+                infra: "thunderstorm",
+                function_name: getFormattedFunctionName(this.getName()),
+                type: "realtime-db-listener",
+                version: "v1"
+            },
+            ...this.config?.runtimeOpts
+        };
+
+        return this.function = functions.runWith(runtimeOptions).database.ref(this.listeningPath).onWrite(
             (change: Change<DataSnapshot>, context: EventContext) => {
                 const before: DataType = change.before && change.before.val();
                 const after: DataType = change.after && change.after.val();
@@ -123,7 +151,16 @@ export abstract class FirestoreFunctionModule<DataType extends object, Config ex
         if (this.function)
             return this.function;
 
-        return this.function = functions.runWith(this.config?.runTimeOptions || {}).firestore.document(`${this.collectionName}/{docId}`).onWrite(
+        const runtimeOptions = {
+            labels: {
+                infra: "thunderstorm",
+                function_name: getFormattedFunctionName(this.getName()),
+                type: "firestore-listener",
+                version: "v1"
+            },
+            ...this.config?.runTimeOptions
+        };
+        return this.function = functions.runWith(runtimeOptions).firestore.document(`${this.collectionName}/{docId}`).onWrite(
             (change: Change<DocumentSnapshot>, context: EventContext) => {
                 const before = change.before && change.before.data() as DataType | undefined;
                 const after = change.after && change.after.data() as DataType | undefined;
@@ -164,8 +201,17 @@ export abstract class FirebaseScheduledFunction<Config extends ScheduledConfig =
         if (this.function)
             return this.function;
 
+        const runtimeOptions = {
+            labels: {
+                infra: "thunderstorm",
+                function_name: getFormattedFunctionName(this.getName()),
+                type: "pubsub-schedule",
+                version: "v1"
+            },
+            ...this.config?.runtimeOpts
+        };
         return this.function = functions
-            .runWith(this.config?.runtimeOpts || {})
+            .runWith(runtimeOptions)
             .pubsub
             .schedule(this.schedule)
             .timeZone(this.config?.timeZone || "Etc/UTC")
@@ -194,7 +240,6 @@ export abstract class Firebase_StorageFunction<Config extends BucketConfigs = Bu
     extends FirebaseFunction<Config> {
 
     private function!: CloudFunction<ObjectMetadata>;
-    private runtimeOpts: RuntimeOptions = {};
 
     abstract onFinalize(object: ObjectMetadata, context: EventContext): Promise<any>;
 
@@ -202,13 +247,21 @@ export abstract class Firebase_StorageFunction<Config extends BucketConfigs = Bu
         if (this.function)
             return this.function;
 
-        this.logInfo(`Initializing ${this.getName()} with configs ${JSON.stringify(this.config)}`)
-        this.runtimeOpts = {
-            timeoutSeconds: this.config?.runtimeOpts?.timeoutSeconds || 300,
-            memory: this.config?.runtimeOpts?.memory || "2GB"
+		this.logInfo(`Initializing ${this.getName()} with configs ${JSON.stringify(this.config)}`)
+
+        const runtimeOptions: RuntimeOptions = {
+            labels: {
+                infra: "thunderstorm",
+                function_name: getFormattedFunctionName(this.getName()),
+                type: "https",
+                version: "v1"
+            },
+            timeoutSeconds: 300,
+            memory: "2GB",
+            ...this.config?.runtimeOpts
         };
 
-        return this.function = functions.runWith(this.runtimeOpts).storage.bucket(this.config.bucketName).object().onFinalize(
+        return this.function = functions.runWith(runtimeOptions).storage.bucket(this.config.bucketName).object().onFinalize(
             async (object: ObjectMetadata, context: EventContext) => {
                 try {
                     return await this.onFinalize(object, context);
@@ -229,6 +282,10 @@ export abstract class Firebase_StorageFunction<Config extends BucketConfigs = Bu
 export type FirebaseEventContext = EventContext;
 
 export type TopicMessage = { data: string, attributes: StringMap };
+
+function getFormattedFunctionName(name: string) {
+    return name.toLowerCase().replace(/\s/g, "_");
+}
 
 export abstract class Firebase_PubSubFunction<T, Config extends RuntimeOptsConfigs = any>
     extends FirebaseFunction<Config> {
@@ -262,7 +319,16 @@ export abstract class Firebase_PubSubFunction<T, Config extends RuntimeOptsConfi
         if (this.function)
             return this.function;
 
-        return this.function = functions.runWith(this.config?.runtimeOpts || {}).pubsub.topic(this.topic).onPublish(async (message: Message, context: FirebaseEventContext) => {
+        const runtimeOptions = {
+            labels: {
+                infra: "thunderstorm",
+                function_name: getFormattedFunctionName(this.getName()),
+                type: "pubsub-topic-publish",
+                version: "v1"
+            },
+            ...this.config?.runtimeOpts
+        };
+        return this.function = functions.runWith(runtimeOptions).pubsub.topic(this.topic).onPublish(async (message: Message, context: FirebaseEventContext) => {
             // need to validate etc...
             const originalMessage: TopicMessage = message.toJSON();
 
