@@ -69,8 +69,8 @@ export class SecretsModule_Class
         return this.config.secrets;
     };
 
-    validateRequestAndCheckExpiration(request: ExpressRequest, scopes: string[]) {
-        const token = this.validateRequest(request, scopes);
+    validateRequestAndCheckExpiration(request: ExpressRequest) {
+        const token = this.validateRequest(request);
 
         if (this.isExpired(token)) {
             const cause = `The JWT passed is not valid, check. With payload: ${__stringify(token.payload)}. The JWT passed is expired`;
@@ -81,7 +81,7 @@ export class SecretsModule_Class
     }
 
     // Specify a kid to force the usage of it
-    validateRequest(request: ExpressRequest, scopes: string[]) {
+    validateRequest(request: ExpressRequest) {
         const authToken = this.extractAuthToken(request);
 
         const token = this.decodeJwt(authToken);
@@ -103,18 +103,7 @@ export class SecretsModule_Class
             throw new ApiException(401, cause)
         }
 
-        const scopesToValidate = token.payload?.scopes;
-        if (scopesToValidate)
-            this.validateScopes(scopesToValidate, scopes)
-
         return token;
-    }
-
-    validateScopes(_scopesToValidate: string, scopes: string[]) {
-        const scopesToValidate: string[] = _scopesToValidate.split(",");
-        const isValidScope = scopesToValidate.some(s => scopes.includes(s));
-        if (!isValidScope)
-            throw new ApiException(403, `User doesn't have valid scopes. It needs ${scopes.join(",")} but it has ${_scopesToValidate}`)
     }
 
     public extractAuthToken(request: ExpressRequest) {
