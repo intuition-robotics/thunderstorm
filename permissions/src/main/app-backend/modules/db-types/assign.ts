@@ -143,7 +143,7 @@ export class GroupsDB_Class
 
 	protected async preUpsertProcessing(transaction: FirestoreTransaction, dbInstance: DB_PermissionsGroup, request?: ExpressRequest) {
 		if (request) {
-			const account = await AccountModule.validateSession(request, []);
+			const account = await AccountModule.validateSession(request);
 			dbInstance._audit = auditBy(account.email);
 		}
 
@@ -198,7 +198,7 @@ export class UsersDB_Class
 
 	protected async preUpsertProcessing(transaction: FirestoreTransaction, dbInstance: DB_PermissionsUser, request?: ExpressRequest): Promise<void> {
 		if (request) {
-			const account = await AccountModule.validateSession(request, []);
+			const account = await AccountModule.validateSession(request);
 			dbInstance._audit = auditBy(account.email);
 		}
 
