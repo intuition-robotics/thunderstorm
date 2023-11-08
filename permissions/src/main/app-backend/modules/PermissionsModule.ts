@@ -16,9 +16,10 @@
  * limitations under the License.
  */
 
-import {ImplementationMissingException, Module, StringMap} from "@intuitionrobotics/ts-common";
+import {arrayToMap, batchActionParallel, ImplementationMissingException, Module, StringMap} from "@intuitionrobotics/ts-common";
 import {
     DB_PermissionProject,
+    DB_PermissionsUser,
     PredefinedGroup,
     PredefinedUser,
     Request_RegisterProject,
@@ -30,6 +31,7 @@ import {ApiPermissionsDB, ProjectPermissionsDB} from "./db-types/managment";
 import {HttpServer_Class} from "@intuitionrobotics/thunderstorm/backend";
 import {GroupPermissionsDB, UserPermissionsDB} from "./db-types/assign";
 import {AccountModule} from "@intuitionrobotics/user-account/backend";
+import {UI_Account} from "@intuitionrobotics/user-account/shared/api";
 
 type Config = {
     project: DB_PermissionProject
@@ -77,35 +79,52 @@ export class PermissionsModule_Class
     }
 
     async getUsersCFsByShareGroups(usersEmails: string[], groupsIds: string[]): Promise<Response_UsersCFsByShareGroups> {
-        const toRet: Response_UsersCFsByShareGroups = {};
-        await Promise.all(usersEmails.map(async email => {
-            const account = await AccountModule.getUser(email);
+        const accounts = await AccountModule.getUsers(usersEmails);
+        const usersMap: { [email: string]: UI_Account } = arrayToMap(accounts, u => u.email);
+        const permissionUsers = await batchActionParallel(accounts.map(u => u._id), 10, async (batchedAccountIds) => {
+            return UserPermissionsDB.query({
+                where: {
+                    accountId: {
+                        $in: batchedAccountIds
+                    }
+                },
+                select: ['_id', 'groups']
+            })
+        });
+        const permissionUsersMap = arrayToMap(permissionUsers, pu => pu._id);
+        return usersEmails.reduce((acc: Response_UsersCFsByShareGroups, e) => {
+            const account = usersMap[e.toLowerCase()];
             if (!account)
-                return;
+                return acc;
 
-            toRet[email] = await this.getUserCFsByShareGroups(account._id, groupsIds);
-        }));
+            const user = permissionUsersMap[account._id];
+            if (!user)
+                return acc;
 
-        return toRet;
+            acc[e] = this.getCustomFields(user, groupsIds);
+            return acc;
+        }, {})
     }
 
     async getUserCFsByShareGroups(userId: string, groupsIds: string[]): Promise<StringMap[]> {
         const user = await UserPermissionsDB.queryUnique({accountId: userId});
-        const userCFs: StringMap[] = [];
-        if (!user.groups)
-            return userCFs;
+        return this.getCustomFields(user, groupsIds);
+    }
 
-        user.groups.forEach(userGroup => {
+    private getCustomFields(user: DB_PermissionsUser, groupsIds: string[]): StringMap[] {
+        if (!user.groups)
+            return [];
+
+        return user.groups.reduce((acc:StringMap[], userGroup) => {
             if (!groupsIds.find(groupId => groupId === userGroup.groupId))
-                return;
+                return acc;
 
             if (!userGroup.customField)
-                return;
+                return acc;
 
-            userCFs.push(userGroup.customField);
-        });
-
-        return userCFs;
+            acc.push(userGroup.customField);
+            return acc;
+        }, []);
     }
 
     async registerProject(server: HttpServer_Class) {

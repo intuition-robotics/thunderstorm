@@ -28,7 +28,8 @@ import {
     Minute,
     Module,
     validate,
-    validateEmail
+    validateEmail,
+    batchActionParallel
 } from "@intuitionrobotics/ts-common";
 
 
@@ -127,6 +128,19 @@ export class AccountsModule_Class
             select: ["email",
                 "_id"]
         });
+    }
+
+    async getUsers(_emails: string[]): Promise<UI_Account[]> {
+        return batchActionParallel(_emails, 10, async (batchedEmails) => {
+            return this.accounts.query({
+                where: {
+                    email: {
+                        $in: batchedEmails.map(e => e.toLowerCase())
+                    }
+                },
+                select: ["email", "_id"]
+            });
+        })
     }
 
     async listUsers(): Promise<UI_Account[]> {
