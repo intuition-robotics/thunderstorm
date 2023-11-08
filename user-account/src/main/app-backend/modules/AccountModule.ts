@@ -102,7 +102,7 @@ export class AccountsModule_Class
     async __queryRequestInfo(request: ExpressRequest): Promise<{ key: string; data: any; }> {
         let data: UI_Account | undefined;
         try {
-            data = await this.validateSession(request);
+            data = await this.validateSession(request, []);
         } catch (e) {
         }
 
@@ -354,8 +354,8 @@ export class AccountsModule_Class
         return {_id, email}
     }
 
-    async validateAuthenticationHeader(request: ExpressRequest, response?: ApiResponse): Promise<Response_Validation> {
-        const token = SecretsModule.validateRequest(request);
+    async validateAuthenticationHeader(request: ExpressRequest, scopes: string[], response?: ApiResponse): Promise<Response_Validation> {
+        const token = SecretsModule.validateRequest(request, scopes);
         const payload = token.payload;
         const isExpired = SecretsModule.isExpired(token);
         const sessionId: string = payload.sessionId;
@@ -390,9 +390,9 @@ export class AccountsModule_Class
         }, this.config.jwtSecretKey)
     }
 
-    validateSession = async (request: ExpressRequest, response?: ApiResponse): Promise<Response_Validation> => {
+    validateSession = async (request: ExpressRequest, scopes: string[], response?: ApiResponse): Promise<Response_Validation> => {
         if (this.isAuthRequest(request))
-            return this.validateAuthenticationHeader(request, response)
+            return this.validateAuthenticationHeader(request, scopes, response)
 
         return await this.validateSessionId(Header_SessionId.get(request));
     };

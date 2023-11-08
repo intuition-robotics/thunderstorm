@@ -38,7 +38,7 @@ class ServerApi_UserUrlsPermissions
 	}
 
 	protected async process(request: ExpressRequest, response: ApiResponse, queryParams: {}, body: Request_UserUrlsPermissions) {
-		const account = await AccountModule.validateSession(request, response);
+		const account = await AccountModule.validateSession(request, this.getScopes(), response);
 		return PermissionsModule.getUserUrlsPermissions(body.projectId, body.urls, account._id, body.requestCustomField);
 	}
 }
