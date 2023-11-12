@@ -20,10 +20,10 @@ import {
     ServerErrorSeverity,
     StringMap
 } from "@intuitionrobotics/ts-common";
-import DataSnapshot = database.DataSnapshot;
-import DocumentSnapshot = firestore.DocumentSnapshot;
 import {ObjectMetadata} from "firebase-functions/lib/v1/providers/storage";
 import {Message} from "firebase-functions/lib/v1/providers/pubsub";
+import DataSnapshot = database.DataSnapshot;
+import DocumentSnapshot = firestore.DocumentSnapshot;
 
 export interface FirebaseFunctionInterface {
     getFunction(): HttpsFunction;
@@ -228,15 +228,15 @@ export abstract class FirebaseScheduledFunction<Config extends ScheduledConfig =
             .schedule(this.schedule)
             .timeZone(this.config?.timeZone || "Etc/UTC")
             .onRun(async () => {
-            const results: boolean[] = await Promise.all(this.runningCondition.map(condition => condition()));
+                const results: boolean[] = await Promise.all(this.runningCondition.map(condition => condition()));
 
-            if (results.includes(false)) {
-                this.logDebug("will not execute backup.. running conditions didn't pass: ", results);
-                return;
-            }
+                if (results.includes(false)) {
+                    this.logDebug("will not execute backup.. running conditions didn't pass: ", results);
+                    return;
+                }
 
-            return this.onScheduledEvent();
-        });
+                return this.onScheduledEvent();
+            });
     };
 }
 
@@ -259,7 +259,7 @@ export abstract class Firebase_StorageFunction<Config extends BucketConfigs = Bu
         if (this.function)
             return this.function;
 
-		this.logInfo(`Initializing ${this.getName()} with configs ${JSON.stringify(this.config)}`)
+        this.logInfo(`Initializing ${this.getName()} with configs ${JSON.stringify(this.config)}`)
 
         const runtimeOptions: RuntimeOptions = {
             labels: {
@@ -296,7 +296,7 @@ export type FirebaseEventContext = EventContext;
 export type TopicMessage = { data: string, attributes: StringMap };
 
 function getFormattedFunctionName(name: string) {
-    return name.toLowerCase().replace(/\s/g, "_");
+    return name.replace(/([A-Z])/g, "_$1").toLowerCase().replace(/\s/g, "_");
 }
 
 export abstract class Firebase_PubSubFunction<T, Config extends RuntimeOptsConfigs = any>
