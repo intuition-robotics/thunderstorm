@@ -88,10 +88,10 @@ export class PermissionsModule_Class
                         $in: batchedAccountIds
                     }
                 },
-                select: ['_id', 'groups']
+                select: ['groups', 'accountId']
             })
         });
-        const permissionUsersMap = arrayToMap(permissionUsers, pu => pu._id);
+        const permissionUsersMap = arrayToMap(permissionUsers, pu => pu.accountId);
         return usersEmails.reduce((acc: Response_UsersCFsByShareGroups, e) => {
             const account = usersMap[e.toLowerCase()];
             if (!account)
