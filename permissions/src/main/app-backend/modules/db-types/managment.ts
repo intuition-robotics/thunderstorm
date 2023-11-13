@@ -78,7 +78,7 @@ export class ProjectDB_Class
 
 	protected async preUpsertProcessing(transaction: FirestoreTransaction, dbInstance: DB_PermissionProject, request?: ExpressRequest): Promise<void> {
 		if (request) {
-			const account = await AccountModule.validateSession(request, []);
+			const account = await AccountModule.validateSession(request);
 			dbInstance._audit = auditBy(account.email);
 		}
 	}
@@ -118,7 +118,7 @@ export class DomainDB_Class
 		await ProjectPermissionsDB.queryUnique({_id: dbInstance.projectId});
 
 		if (request) {
-			const account = await AccountModule.validateSession(request, []);
+			const account = await AccountModule.validateSession(request);
 			dbInstance._audit = auditBy(account.email);
 		}
 	}
@@ -149,7 +149,7 @@ export class LevelDB_Class
 		await DomainPermissionsDB.queryUnique({_id: dbInstance.domainId});
 
 		if (request) {
-			const account = await AccountModule.validateSession(request, []);
+			const account = await AccountModule.validateSession(request);
 			dbInstance._audit = auditBy(account.email);
 		}
 	}
@@ -246,7 +246,7 @@ export class ApiDB_Class
 
 	protected async preUpsertProcessing(transaction: FirestoreTransaction, dbInstance: DB_PermissionApi, request?: ExpressRequest) {
 		if (request) {
-			const account = await AccountModule.validateSession(request, []);
+			const account = await AccountModule.validateSession(request);
 			dbInstance._audit = auditBy(account.email);
 		}
 

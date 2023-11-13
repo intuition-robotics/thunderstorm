@@ -1,15 +1,6 @@
 import * as functions from "firebase-functions";
-import {
-    Change,
-    CloudFunction,
-    database,
-    EventContext,
-    firestore,
-    HttpsFunction,
-    RuntimeOptions
-} from "firebase-functions";
-
-import {Request, Response, Express} from "express";
+import {Change, CloudFunction, database, EventContext, firestore, HttpsFunction, RuntimeOptions} from "firebase-functions";
+import {Express, Request, Response} from "express";
 import {
     __stringify,
     addItemToArray,
