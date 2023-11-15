@@ -209,7 +209,7 @@ export const validateObject = <T>(__validator: TypeValidator<object>, instance: 
 		// @ts-ignore
 		if (!validatorKeys.includes(key))
 			throw new BadImplementationException(
-				`Unexpect key '${path}${key}'\nif you want to ignore the validation of this property,\n add the following to your validator:\n {\n  ...\n  ${key}: undefined\n  ...\n}\n`);
+				`Unexpect key '${path}${key}'\nif you want to ignore the validation of this property,\n add the following to your validator:\n {\n  ...\n  ${key}: undefined\n  ...\n}\nAvailable keys are ${validatorKeys.join()}`);
 	}
 
 	for (const key of validatorKeys) {
