@@ -51,16 +51,16 @@ export abstract class RemoteProxyCaller<Config extends RemoteServerConfig>
 
     protected init(): void {
         if (!this.config)
-            throw new ImplementationMissingException("MUST specify config for this module!!");
+            throw new ImplementationMissingException(`MUST specify config for ${this.getName()}`);
 
         if (!this.config.proxyId)
-            throw new ImplementationMissingException("MUST specify the proxyId for the proxy caller!!");
+            throw new ImplementationMissingException(`MUST specify the proxyId for ${this.getName()}`);
 
         if (!this.config.url)
-            throw new ImplementationMissingException("MUST specify the url for the remote server!!");
+            throw new ImplementationMissingException(`MUST specify the url for the remote server for ${this.getName()}`);
 
         if (!this.config.secret)
-            throw new ImplementationMissingException("MUST specify the secret for the remote server!!");
+            throw new ImplementationMissingException(`MUST specify the secret for the remote server for ${this.getName()}`);
 
         if (!this.config.secretHeaderName)
             this.config.secretHeaderName = 'x-secret';
