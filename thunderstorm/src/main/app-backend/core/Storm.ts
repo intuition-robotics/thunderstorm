@@ -20,7 +20,7 @@
  */
 
 import {FirebaseModule} from "@intuitionrobotics/firebase/backend";
-import {BeLogged, LogClient_Function, LogClient_Terminal, Module} from "@intuitionrobotics/ts-common";
+import {BeLogged, LogClient, LogClient_Function, LogClient_Terminal, Module} from "@intuitionrobotics/ts-common";
 import {Firebase_ExpressFunction, FirebaseFunction} from '@intuitionrobotics/firebase/backend-functions';
 import {HttpServer_Class, RouteResolver} from "../modules/server/HttpServer";
 import {ServerApi} from "../modules/server/server-api";
@@ -36,12 +36,15 @@ export class Storm
     private apis: ServerApi<any>[] = [];
     private readonly express: Express;
     private readonly httpServer: HttpServer_Class;
+    private logClient: LogClient;
 
-    constructor(_express?: Express) {
+    constructor(_express?: Express, logClient: LogClient = LogClient_Function) {
         super();
         this.express = _express || express();
         this.httpServer = new HttpServer_Class(this.express);
         this.addModules(this.httpServer, FirebaseModule);
+
+        this.logClient = logClient;
     }
 
     static getInstance(): Storm {
@@ -53,7 +56,7 @@ export class Storm
     }
 
     init() {
-        BeLogged.addClient(process.env.GCLOUD_PROJECT && process.env.FUNCTIONS_EMULATOR ? LogClient_Terminal : LogClient_Function);
+        BeLogged.addClient(process.env.GCLOUD_PROJECT && process.env.FUNCTIONS_EMULATOR ? LogClient_Terminal : this.logClient);
         ServerApi.isDebug = !!this.config?.isDebug;
 
         super.init();
