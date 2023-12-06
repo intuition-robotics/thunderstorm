@@ -36,15 +36,24 @@ export class Storm
     private apis: ServerApi<any>[] = [];
     private readonly express: Express;
     private readonly httpServer: HttpServer_Class;
-    private logClient: LogClient;
+    private logClient: LogClient = LogClient_Function;
+    private onDestroy?: () => Promise<void>;
 
-    constructor(_express?: Express, logClient: LogClient = LogClient_Function) {
+    constructor(_express?: Express) {
         super();
         this.express = _express || express();
         this.httpServer = new HttpServer_Class(this.express);
         this.addModules(this.httpServer, FirebaseModule);
+    }
 
+    public setLogClient(logClient: LogClient) {
         this.logClient = logClient;
+        return this;
+    }
+
+    public setOnDestroy(onDestroy?: () => Promise<void>) {
+        this.onDestroy = onDestroy;
+        return this;
     }
 
     static getInstance(): Storm {
@@ -86,8 +95,15 @@ export class Storm
 
     startServer(onStarted?: () => Promise<void>) {
         const modulesAsFunction: FirebaseFunction[] = this.modules.filter((module: Module): module is FirebaseFunction => module instanceof FirebaseFunction);
+        const firebaseExpressFunction = new Firebase_ExpressFunction(this.httpServer.express);
 
-        this.functions = [new Firebase_ExpressFunction(this.httpServer.express),
+        const _onDestroy = this.onDestroy;
+        if (_onDestroy) {
+            modulesAsFunction.forEach(func => func.addOnDestroy(_onDestroy));
+            firebaseExpressFunction.addOnDestroy(_onDestroy);
+        }
+
+        this.functions = [firebaseExpressFunction,
             ...modulesAsFunction];
 
         this.init();
