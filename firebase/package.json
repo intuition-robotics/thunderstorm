@@ -29,7 +29,7 @@
     "build": "tsc"
   },
   "dependencies": {
-    "@google-cloud/storage": "^6.10.1",
+    "@google-cloud/storage": "^7.7.0",
     "@intuitionrobotics/ts-common": "~0.0.1",
     "express": "^4.16.4",
     "firebase": "^10.0.0",
