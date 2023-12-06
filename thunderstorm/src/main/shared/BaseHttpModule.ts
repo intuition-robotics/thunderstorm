@@ -27,7 +27,7 @@ import {RequestErrorHandler, RequestSuccessHandler, ResponseHandler} from "./req
 // noinspection TypeScriptPreferShortImport
 import {BaseHttpRequest} from "./BaseHttpRequest";
 
-type HttpConfig = {
+export type HttpConfig = {
     origin?: string
     timeout?: number
     compress?: boolean

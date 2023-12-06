@@ -23,7 +23,7 @@ import axios from 'axios';
 import {ApiTypeBinder, DeriveErrorType, DeriveResponseType, ErrorResponse, HttpMethod} from "../../../shared/types";
 import {BadImplementationException, StringMap,} from "@intuitionrobotics/ts-common";
 import {BaseHttpRequest} from "../../../shared/BaseHttpRequest";
-import {BaseHttpModule_Class} from "../../../shared/BaseHttpModule";
+import {BaseHttpModule_Class, HttpConfig} from "../../../shared/BaseHttpModule";
 import {Axios_CancelTokenSource, Axios_Method, Axios_RequestConfig, Axios_Response, Axios_ResponseType} from "./types";
 import * as fs from "fs";
 
@@ -211,3 +211,42 @@ class AxiosHttpRequest<Binder extends ApiTypeBinder<any, any, any, any>>
         return this.response.headers[headerKey];
     }
 }
+
+
+
+export class AxiosHttpClient
+    extends BaseHttpModule_Class {
+    private requestOption: Axios_RequestConfig = {};
+
+    constructor(name: string, config: HttpConfig) {
+        super(name);
+        this.setConfig(config);
+        this.init();
+    }
+
+    init() {
+        super.init()
+        const origin = this.config.origin;
+        if (origin)
+            this.origin = origin;
+    }
+
+    createRequest<Binder extends ApiTypeBinder<any, any, any, any>>(method: HttpMethod, key: string, data?: string): AxiosHttpRequest<DeriveRealBinder<Binder>> {
+        return new AxiosHttpRequest<DeriveRealBinder<Binder>>(key, data, this.shouldCompress())
+            .setOrigin(this.origin)
+            .setMethod(method)
+            .setTimeout(this.timeout)
+            .setDefaultHeaders(this.defaultHeaders)
+            .setHandleRequestSuccess(this.handleRequestSuccess)
+            .setHandleRequestFailure(this.handleRequestFailure)
+            .setDefaultRequestHandler(this.processDefaultResponseHandlers)
+            .setRequestOption(this.requestOption);
+    }
+
+    setRequestOption(requestOption: Axios_RequestConfig) {
+        this.requestOption = requestOption;
+        return this;
+    }
+
+}
+
