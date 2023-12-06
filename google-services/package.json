@@ -30,7 +30,7 @@
     "build": "tsc"
   },
   "dependencies": {
-    "@google-cloud/pubsub": "^3.6.0",
+    "@google-cloud/pubsub": "^4.0.7",
     "@intuitionrobotics/ts-common": "~0.0.1",
     "google-auth-library": "^9.0.0",
     "googleapis": "^129.0.0"
