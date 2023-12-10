@@ -76,6 +76,11 @@ class Pipeline_Build
 		})
 		publish()
 	}
+
+	@Override
+	String getVersion(String path) {
+		return "1.0.0"
+	}
 }
 
 node() {
