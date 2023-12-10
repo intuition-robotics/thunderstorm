@@ -17,6 +17,9 @@
   "author": "IR",
   "main": "./index.js",
   "types": "./index.d.ts",
+  "scripts": {
+    "build": "tsc -v && tsc -p src/main/tsconfig.json --rootDir ./src/main --outDir dist"
+  },
   "dependencies": {
     "@intuitionrobotics/ts-common": "~0.0.1",
     "@intuitionrobotics/thunderstorm": "~0.0.1",
