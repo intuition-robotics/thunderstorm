@@ -1,4 +1,4 @@
-@Library('dev-tools@alan/secrets')
+@Library('dev-tools')
 
 import com.nu.art.pipeline.modules.SlackModule
 import com.nu.art.pipeline.modules.git.Cli
