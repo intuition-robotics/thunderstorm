@@ -226,9 +226,9 @@ export abstract class BaseDB_ApiGenerator<DBType extends DB_Object, ConfigType e
 	 *
 	 * @throws `ApiException` for bad implementation or invalid input.
 	 */
-	public async validateImpl(instance: DBType) {
+	public validateImpl(instance: DBType) {
 		try {
-			await validate(instance, this.validator);
+			validate(instance, this.validator);
 		} catch (e: any) {
 
 			const badImplementation = isErrorOfType(e, BadImplementationException);
