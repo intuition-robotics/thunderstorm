@@ -1,5 +1,13 @@
 import * as functions from "firebase-functions";
-import {Change, CloudFunction, database, EventContext, firestore, HttpsFunction, RuntimeOptions} from "firebase-functions";
+import {
+    Change,
+    CloudFunction,
+    database,
+    EventContext,
+    firestore,
+    HttpsFunction,
+    RuntimeOptions
+} from "firebase-functions";
 import {Express, Request, Response} from "express";
 import {
     __stringify,
@@ -17,14 +25,27 @@ import DataSnapshot = database.DataSnapshot;
 import DocumentSnapshot = firestore.DocumentSnapshot;
 
 export interface FirebaseFunctionInterface {
+    onDestroy: (() => Promise<void>)[]
     getFunction(): HttpsFunction;
+
+    addOnDestroy(onDestroy: () => Promise<void>): void;
 }
 
 export abstract class FirebaseFunction<Config = any>
     extends Module<Config>
     implements FirebaseFunctionInterface {
+    onDestroy: (() => Promise<void>)[] = [];
 
+    constructor(name: string, onDestroy?: () => Promise<void>) {
+        super(name);
+        onDestroy && this.onDestroy.push(onDestroy);
+    }
     abstract getFunction(): HttpsFunction
+
+    public addOnDestroy(onDestroy: () => Promise<void>): void {
+        this.onDestroy.push(onDestroy);
+    };
+
 }
 
 export class Firebase_ExpressFunction
@@ -33,15 +54,21 @@ export class Firebase_ExpressFunction
     private function!: HttpsFunction;
     private readonly name: string;
     static config: RuntimeOptions = {};
+    onDestroy: (() => Promise<void>)[] = [];
 
-    constructor(_express: Express, name = "api") {
+    constructor(_express: Express, name = "api", onDestroy?: () => Promise<void>) {
         this.express = _express;
         this.name = name;
+        onDestroy && this.onDestroy.push(onDestroy);
     }
 
     static setConfig(config: RuntimeOptions) {
         this.config = config;
     }
+
+    public addOnDestroy(onDestroy: () => Promise<void>): void {
+        this.onDestroy.push(onDestroy);
+    };
 
     getName() {
         return this.name;
@@ -61,7 +88,15 @@ export class Firebase_ExpressFunction
             ...Firebase_ExpressFunction.config
         };
 
-        return this.function = functions.runWith(runtimeOptions).https.onRequest(this.express);
+        return this.function = functions.runWith(runtimeOptions).https.onRequest(async (req: Request, resp: Response) => {
+            const result = await this.express(req, resp);
+
+            for (const _onDestroy of this.onDestroy) {
+                await _onDestroy();
+            }
+
+            return result;
+        });
     };
 }
 
@@ -84,7 +119,13 @@ export abstract class Firebase_HttpsFunction<Config = any>
                 version: "v1"
             }
         };
-        return this.function = functions.runWith(runtimeOptions).https.onRequest((req: Request, res: Response) => this.process(req, res));
+        return this.function = functions.runWith(runtimeOptions).https.onRequest(async (req: Request, res: Response) => {
+            const result = await this.process(req, res);
+            for (const _onDestroy of this.onDestroy) {
+                await _onDestroy();
+            }
+            return result;
+        });
     };
 
     onFunctionReady = async () => {
@@ -99,9 +140,10 @@ export abstract class FirebaseFunctionModule<DataType = any, Config extends Runt
     private readonly listeningPath: string;
     private function!: CloudFunction<Change<DataSnapshot>>;
 
-    protected constructor(listeningPath: string, name: string) {
+    protected constructor(listeningPath: string, name: string, onDestroy?: () => Promise<void>) {
         super(name);
         this.listeningPath = listeningPath;
+        onDestroy && this.addOnDestroy(onDestroy);
     }
 
     abstract processChanges(before: DataType, after: DataType, params: { [param: string]: any }): Promise<any>;
@@ -121,12 +163,17 @@ export abstract class FirebaseFunctionModule<DataType = any, Config extends Runt
         };
 
         return this.function = functions.runWith(runtimeOptions).database.ref(this.listeningPath).onWrite(
-            (change: Change<DataSnapshot>, context: EventContext) => {
+            async (change: Change<DataSnapshot>, context: EventContext) => {
                 const before: DataType = change.before && change.before.val();
                 const after: DataType = change.after && change.after.val();
                 const params = deepClone(context.params);
 
-                return this.processChanges(before, after, params);
+                const result = await this.processChanges(before, after, params);
+                for (const _onDestroy of this.onDestroy) {
+                    await _onDestroy();
+                }
+                return result;
+
             });
     };
 }
@@ -143,8 +190,8 @@ export abstract class FirestoreFunctionModule<DataType extends object, Config ex
     private readonly collectionName: string;
     private function!: CloudFunction<Change<DocumentSnapshot>>;
 
-    protected constructor(collectionName: string, name: string) {
-        super(name);
+    protected constructor(collectionName: string, name: string, onDestroy?: () => Promise<void>) {
+        super(name, onDestroy);
         this.collectionName = collectionName;
     }
 
@@ -164,12 +211,16 @@ export abstract class FirestoreFunctionModule<DataType extends object, Config ex
             ...this.config?.runTimeOptions
         };
         return this.function = functions.runWith(runtimeOptions).firestore.document(`${this.collectionName}/{docId}`).onWrite(
-            (change: Change<DocumentSnapshot>, context: EventContext) => {
+            async (change: Change<DocumentSnapshot>, context: EventContext) => {
                 const before = change.before && change.before.data() as DataType | undefined;
                 const after = change.after && change.after.data() as DataType | undefined;
                 const params = deepClone(context.params);
 
-                return this.processChanges(params, before, after);
+                const result = await this.processChanges(params, before, after);
+                for (const _onDestroy of this.onDestroy) {
+                    await _onDestroy();
+                }
+                return result;
             });
     };
 }
@@ -226,7 +277,11 @@ export abstract class FirebaseScheduledFunction<Config extends ScheduledConfig =
                     return;
                 }
 
-                return this.onScheduledEvent();
+                const result = await this.onScheduledEvent();
+                for (const _onDestroy of this.onDestroy) {
+                    await _onDestroy();
+                }
+                return result;
             });
     };
 }
@@ -277,6 +332,10 @@ export abstract class Firebase_StorageFunction<Config extends BucketConfigs = Bu
                     } catch (_e) {
                         this.logError("Error while handing bucket listener error", _e);
                     }
+                } finally {
+                    for (const _onDestroy of this.onDestroy) {
+                        await _onDestroy();
+                    }
                 }
             });
     };
@@ -296,8 +355,8 @@ export abstract class Firebase_PubSubFunction<T, Config extends RuntimeOptsConfi
     private function!: CloudFunction<Message>;
     private readonly topic: string;
 
-    protected constructor(topic: string, name: string) {
-        super(name);
+    protected constructor(topic: string, name: string, onDestroy?: () => Promise<void>) {
+        super(name, onDestroy);
         this.topic = topic;
     }
 
@@ -314,6 +373,10 @@ export abstract class Firebase_PubSubFunction<T, Config extends RuntimeOptsConfi
                 await dispatch_onServerError.dispatchModuleAsync(ServerErrorSeverity.Critical, this, _message);
             } catch (_e) {
                 this.logError("Error while handing pubsub error", _e);
+            }
+        } finally {
+            for (const _onDestroy of this.onDestroy) {
+                await _onDestroy();
             }
         }
     };
