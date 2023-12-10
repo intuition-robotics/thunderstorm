@@ -1,6 +1,6 @@
 [submodule "dev-tools"]
 	path = dev-tools
-	url = git@github.com:nu-art/dev-tools.git
+	url = git@github.com:intuition-robotics/dev-tools.git
 	branch = master
 
 [submodule "_wiki"]

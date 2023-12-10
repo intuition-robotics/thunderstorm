@@ -1,4 +1,4 @@
-@Library('dev-tools')
+@Library('dev-tools@alan/secrets')
 
 import com.nu.art.pipeline.modules.SlackModule
 import com.nu.art.pipeline.modules.git.Cli
@@ -43,7 +43,7 @@ class Pipeline_Build
 
 		if (cause) {
 			workflow.terminate("Detected push from Jenkins")
-		}    
+		}
 
 		super.postInit()
 	}
