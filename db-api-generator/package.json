@@ -23,7 +23,7 @@
   "main": "./index.js",
   "types": "./index.d.ts",
   "scripts": {
-    "build": "tsc -p src/main/tsconfig.json --rootDir ./src/main --outDir dist"
+    "build": "tsc -v && tsc -p src/main/tsconfig.json --rootDir ./src/main --outDir dist"
   },
   "dependencies": {
     "@intuitionrobotics/ts-common": "~0.0.1",
