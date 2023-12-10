@@ -20,7 +20,7 @@ export function calculateJsonSizeMb(data: ObjectTS) {
 }
 
 export function __stringify<T>(obj: T, pretty?: boolean | (keyof T)[]): string {
-	if (Array.isArray(pretty) && typeof obj == "object") {
+	if (Array.isArray(pretty) && typeof obj === "object") {
 		return `${_keys(obj as unknown as object).reduce((carry: string, key: keyof T, idx: number) => {
 			// @ts-ignore
 			return carry + `  ${String(key)}: ${__stringify(obj[key], pretty.includes(key))}${idx !== _keys(obj).length - 1 && ',\n'}`;
