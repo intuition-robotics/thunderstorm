@@ -54,7 +54,7 @@ export type _GenericRenderer<Rm extends BaseRendererMap<any>, ItemType extends I
 }
 
 
-export class BaseAdapter<T extends any = any, R extends React.ComponentType<T> = React.ComponentType<T>> {
+export class BaseAdapter<T= any, R extends React.ComponentType<T> = React.ComponentType<T>> {
 
 	data: any;
 
@@ -74,7 +74,7 @@ export class BaseAdapter<T extends any = any, R extends React.ComponentType<T> =
 	getChildren = <K extends object>(obj: K): (keyof K)[] => _keys(obj);
 	isParent = (obj: any) => true;
 
-	getFilteredChildren<K extends any>(obj: K): (keyof K)[] | [] {
+	getFilteredChildren<K>(obj: K): (keyof K)[] | [] {
 		if (obj === undefined || obj === null)
 			return [];
 
@@ -97,7 +97,7 @@ export class BaseAdapter<T extends any = any, R extends React.ComponentType<T> =
 	}
 }
 
-export class Adapter<T extends any = any, I extends NodeRendererProps<T> = NodeRendererProps<T>>
+export class Adapter<T= any, I extends NodeRendererProps<T> = NodeRendererProps<T>>
 	extends BaseAdapter<I> {
 
 	hideRoot: boolean = false;
@@ -114,8 +114,8 @@ export class Adapter<T extends any = any, I extends NodeRendererProps<T> = NodeR
 }
 
 // type NodeAdjuster = (obj: any) => { data: any; deltaPath?: string };
-type NestedType<T extends any = any> = { item: T, _children: NestedObjectOfType<T>[] };
-type NestedObjectOfType<T extends any = any> = T | NestedType<T>;
+type NestedType<T= any> = { item: T, _children: NestedObjectOfType<T>[] };
+type NestedObjectOfType<T= any> = T | NestedType<T>;
 
 type ListData<I> = I[];
 type AdapterData<D> = D | (() => D);
@@ -133,7 +133,7 @@ class BaseAdapterBuilder<I, Data> {
 	}
 }
 
-class ListSingleAdapterBuilder<ItemType extends any = any>
+class ListSingleAdapterBuilder<ItemType= any>
 	extends BaseAdapterBuilder<ItemType, AdapterData<ListData<ItemType>>> {
 
 	readonly renderer: _BaseNodeRenderer<ItemType>
@@ -253,7 +253,7 @@ class ListMultiAdapterBuilder<Rm extends TreeRendererMap, ItemType extends FlatI
 type NestedTreeData<I> = { [k: string]: I | TreeData<I> }
 type TreeData<I> = NestedTreeData<I>
 
-class TreeSingleAdapterBuilder<RenderItemType extends any = any>
+class TreeSingleAdapterBuilder<RenderItemType= any>
 	extends BaseAdapterBuilder<RenderItemType, AdapterData<TreeData<RenderItemType>>> {
 
 	readonly renderer: _BaseNodeRenderer<RenderItemType>

@@ -18,9 +18,9 @@
 
 import * as admin from "firebase-admin";
 
-export type FirestoreType_Collection<T extends any = any> = admin.firestore.CollectionReference<T> ;
-export type FirestoreType_QueryDocumentSnapshot<T extends any = any> = admin.firestore.QueryDocumentSnapshot<T> ;
-export type FirestoreType_DocumentSnapshot<T extends any = any> = admin.firestore.DocumentSnapshot<T> ;
+export type FirestoreType_Collection<T= any> = admin.firestore.CollectionReference<T> ;
+export type FirestoreType_QueryDocumentSnapshot<T= any> = admin.firestore.QueryDocumentSnapshot<T> ;
+export type FirestoreType_DocumentSnapshot<T= any> = admin.firestore.DocumentSnapshot<T> ;
 export type FirestoreType_QuerySnapshot<T> = admin.firestore.QuerySnapshot<T> ;
 export type FirestoreType_Query = admin.firestore.Query;
 export type FirestoreType_DocumentReference = admin.firestore.DocumentReference ;

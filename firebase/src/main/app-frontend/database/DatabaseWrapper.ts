@@ -71,6 +71,7 @@ export class DatabaseWrapper
 		try {
 			await set(this.getRef(path), value);
 		} catch (e) {
+			this.logError(`Error while setting value to path: ${path}`, e);
 			throw new BadImplementationException(`Error while setting value to path: ${path}`);
 		}
 	}

@@ -181,7 +181,7 @@ export class AccountsModule_Class
         const account = await this.createAccount(request);
 
         const session = await this.login(request, response);
-        await dispatch_onNewUserRegistered.dispatchModuleAsync([getUIAccount(account)]);
+        await dispatch_onNewUserRegistered.dispatchModuleAsync(getUIAccount(account));
         return session;
     }
 
@@ -192,7 +192,7 @@ export class AccountsModule_Class
             if (existAccount)
                 return this.changePassword(request.email, request.password, transaction);
 
-            callback = async () => dispatch_onNewUserRegistered.dispatchModuleAsync([getUIAccount(account)]);
+            callback = async () => dispatch_onNewUserRegistered.dispatchModuleAsync(getUIAccount(account));
             return this.createImpl(request, transaction);
         });
 
@@ -205,7 +205,7 @@ export class AccountsModule_Class
         let account: DB_Account;
         if (password && password_check) {
             account = await this.createAccount({password, password_check, email});
-            await dispatch_onNewUserRegistered.dispatchModuleAsync([getUIAccount(account)]);
+            await dispatch_onNewUserRegistered.dispatchModuleAsync(getUIAccount(account));
         } else
             account = await this.createSAML(email);
 
@@ -298,7 +298,7 @@ export class AccountsModule_Class
             sessionWithAccountId = await this.upsertSession(account, request.frontType);
             this.setJWTinResp(response, sessionWithAccountId.jwt);
         }
-        await dispatch_onUserLogin.dispatchModuleAsync([getUIAccount(account)]);
+        await dispatch_onUserLogin.dispatchModuleAsync(getUIAccount(account));
         return sessionWithAccountId;
     }
 
@@ -307,7 +307,7 @@ export class AccountsModule_Class
         const account = await this.createSAML(_email);
 
         const sessionWithAccountId = await this.upsertSession(account);
-        await dispatch_onUserLogin.dispatchModuleAsync([getUIAccount(account)]);
+        await dispatch_onUserLogin.dispatchModuleAsync(getUIAccount(account));
         return sessionWithAccountId;
     }
 
@@ -332,7 +332,7 @@ export class AccountsModule_Class
         });
 
         if (dispatchEvent)
-            await dispatch_onNewUserRegistered.dispatchModuleAsync([getUIAccount(toRet)]);
+            await dispatch_onNewUserRegistered.dispatchModuleAsync(getUIAccount(toRet));
 
         return toRet;
     }

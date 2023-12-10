@@ -23,7 +23,7 @@ import {_keys} from "@intuitionrobotics/ts-common";
 import {Adapter,} from "../adapter/Adapter";
 import {BaseRendererMap} from "../adapter/BaseRenderer";
 
-export class MultiTypeAdapter<Rm extends BaseRendererMap<any>, T extends any = any>
+export class MultiTypeAdapter<Rm extends BaseRendererMap<any>, T= any>
 	extends Adapter<T> {
 
 	private readonly rendererMap: Rm;

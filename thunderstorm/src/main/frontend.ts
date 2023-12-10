@@ -72,7 +72,6 @@ export * from "./app-frontend/components/tree/MenuComponent";
 
 export * from "./app-frontend/components/GenericSelect";
 export * from "./app-frontend/components/playground/Playground";
-export * from "./app-frontend/components/playground/Example_NewProps";
 
 export * from "./app-frontend/components/checkbox/TS_Checkbox";
 export * from "./app-frontend/components/checkbox/TS_CheckboxField";

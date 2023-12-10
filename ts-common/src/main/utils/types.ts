@@ -25,7 +25,7 @@ export type Subset<T> = {
 };
 
 export type OptionalKeys<T extends object> = Exclude<{ [K in keyof T]: T extends Record<K, T[K]> ? never : K }[keyof T], undefined>
-export type MandatoryKeys<T extends object, V extends any = any> = Exclude<{ [K in keyof T]: T extends Record<K, T[K]> ? (T[K] extends V ? K : never) : never }[keyof T], undefined>
+export type MandatoryKeys<T extends object, V= any> = Exclude<{ [K in keyof T]: T extends Record<K, T[K]> ? (T[K] extends V ? K : never) : never }[keyof T], undefined>
 
 export type RequireOptionals<T extends object, Keys extends OptionalKeys<T> = OptionalKeys<T>> = Pick<T, Exclude<keyof T, Keys>>
 	& { [K in Keys]-?: Required<Pick<T, K>> & Partial<Pick<T, Exclude<Keys, K>>> }[Keys]
@@ -64,11 +64,12 @@ export type Timestamp = {
 	timezone?: string;
 };
 
-export type FunctionKeys<T> = { [K in keyof T]: T[K] extends Function ? K : never }[keyof T];
+export type FunctionKeys<T> = { [K in keyof T]: T[K] extends (...args: any) => any ? K : never }[keyof T];
+export type ParamResolver<T, K extends keyof T> = T[K] extends (...args: any) => any ? Parameters<T[K]> : never
+export type ReturnTypeResolver<T, K extends keyof T> = T[K] extends (...args: any) => any ? ReturnPromiseType<T[K]> : never
 
 export const Void = (() => {
 })();
-
 
 export type PackageJson = {
 	version: string;

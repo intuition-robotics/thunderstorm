@@ -1,51 +1,28 @@
-/*
- * Thunderstorm is a full web app framework!
- *
- * Typescript & Express backend infrastructure that natively runs on firebase function
- * Typescript & React frontend infrastructure
- *
- * Copyright (C) 2020 Intuition Robotics
- *
- * Licensed under the Apache License, Version 2.0 (the "License");
- * you may not use this file except in compliance with the License.
- * You may obtain a copy of the License at
- *
- *     http://www.apache.org/licenses/LICENSE-2.0
- *
- * Unless required by applicable law or agreed to in writing, software
- * distributed under the License is distributed on an "AS IS" BASIS,
- * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
- * See the License for the specific language governing permissions and
- * limitations under the License.
- */
-
 import {Dispatcher} from "@intuitionrobotics/ts-common/core/dispatcher";
-import {
-	FunctionKeys,
-	ReturnPromiseType
-} from "@intuitionrobotics/ts-common/utils/types";
+import {FunctionKeys, ParamResolver, ReturnTypeResolver} from "@intuitionrobotics/ts-common/utils/types";
 
-export class ThunderDispatcher<T extends object, K extends FunctionKeys<T>>
-	extends Dispatcher<T, K> {
+export class ThunderDispatcher<T,
+    K extends FunctionKeys<T>,
+    P extends ParamResolver<T, K> = ParamResolver<T, K>,
+    R extends ReturnTypeResolver<T, K> = ReturnTypeResolver<T, K>>
+    extends Dispatcher<T, K, P, R> {
 
-	static readonly listenersResolver: () => any[];
+    static readonly listenersResolver: () => any[];
 
-	constructor(method: K) {
-		super(method);
-	}
+    constructor(method: K) {
+        super(method);
+    }
 
-	public dispatchUI(p: Parameters<T[K]>): ReturnPromiseType<T[K]>[] {
-		const listeners = ThunderDispatcher.listenersResolver();
-		// @ts-ignore
-		return listeners.filter(this.filter).map((listener: T) => listener[this.method](...p));
-	}
+    public dispatchUI(...p: P): R[] {
+        const listeners = ThunderDispatcher.listenersResolver();
+        // @ts-ignore
+        return listeners.filter(this.filter).map((listener: T) => listener[this.method](...p));
+    }
 
-	public async dispatchUIAsync(p: Parameters<T[K]>): Promise<ReturnPromiseType<T[K]>[]> {
-		const listeners = ThunderDispatcher.listenersResolver();
-		return Promise.all(listeners.filter(this.filter).map(async (listener: T) => {
-			const params: any = p;
-			return listener[this.method](...params);
-		}));
-	}
+    public async dispatchUIAsync(...p: P): Promise<R[]> {
+        const filtered = ThunderDispatcher.listenersResolver().filter(this.filter);
+        // @ts-ignore
+        return Promise.all(filtered.map(async (listener: T) => listener[this.method](...p)));
+    }
 }
 

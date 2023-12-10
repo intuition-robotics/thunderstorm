@@ -19,7 +19,7 @@
  * limitations under the License.
  */
 // noinspection TypeScriptPreferShortImport
-import {ApiTypeBinder, ErrorResponse, HttpMethod} from "./types";
+import {ApiTypeBinder, ErrorResponse, HttpMethod, QueryParams} from "./types";
 
 import {addItemToArray, Module, removeItemFromArray,} from "@intuitionrobotics/ts-common";
 // noinspection TypeScriptPreferShortImport
@@ -32,7 +32,6 @@ export type HttpConfig = {
     timeout?: number
     compress?: boolean
 }
-export type DeriveRealBinder<Binder> = Binder extends ApiTypeBinder<infer U, infer R, infer B, infer P> ? ApiTypeBinder<U, R, B, P> : void;
 
 export abstract class BaseHttpModule_Class<Config extends HttpConfig = HttpConfig>
     extends Module<Config> {
@@ -62,7 +61,12 @@ export abstract class BaseHttpModule_Class<Config extends HttpConfig = HttpConfi
         this.defaultHeaders[key.toLowerCase()] = header;
     }
 
-    abstract createRequest<Binder extends ApiTypeBinder<any, any, any, any> = ApiTypeBinder<void, void, void, {}>>(method: HttpMethod, key: string, data?: string): BaseHttpRequest<DeriveRealBinder<Binder>, any>
+    abstract createRequest<Binder extends ApiTypeBinder<U, R, B, P, E>,
+        U extends string = Binder["url"],
+        R = Binder["response"],
+        B = Binder["body"],
+        P extends QueryParams = Binder["queryParams"],
+        E extends void | object = Binder["error"]>(method: HttpMethod, key: string, data?: string): BaseHttpRequest<Binder>
 
     processDefaultResponseHandlers = (httpRequest: BaseHttpRequest<any>) => {
         let resolved = false;

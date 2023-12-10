@@ -63,7 +63,7 @@ export class GithubModule_Class
             iss: parseInt(this.config.appId)
         };
         const signedToken = jws.sign({
-			header: {alg: "RS256"},
+            header: {alg: "RS256"},
             payload,
             privateKey: this.config.privateKey
         });
@@ -122,8 +122,12 @@ export class GithubModule_Class
                     path: filePath,
                     ref: branch
                 });
-        } catch (error) {
-            this.logError(error);
+        } catch (e) {
+            this.logError(e);
+            if (!(e instanceof Error))
+                throw new Exception("Failed to get file from Github \n" + JSON.stringify(e));
+
+            const error = e as any;
             if (error.status === 403 && error.errors && error.errors.length === 1 &&
                 error.errors[0].code === 'too_large') {
                 this.logWarning(`File ${filePath} is too large, will attempt to get as Blob.`);
@@ -145,8 +149,7 @@ export class GithubModule_Class
         }
 
         const buffer = Buffer.from(contents.data.content, 'base64');
-        const decodedContent = buffer.toString('utf8');
-        return decodedContent;
+        return buffer.toString('utf8');
     }
 
     private async getLargeFile(client: Octokit, repo: string, filePath: string, branch: string) {
@@ -177,7 +180,7 @@ export class GithubModule_Class
             };
             parentDirectoryResponse = await client.repos.getContent(request);
         } catch (error) {
-            throw new Exception(`Failed to fetch parent directory contents of file ${filePath}`, error);
+            throw new Exception(`Failed to fetch parent directory contents of file ${filePath}` + "\n" + JSON.stringify(error));
         }
 
         if (!parentDirectoryResponse || !parentDirectoryResponse.data)

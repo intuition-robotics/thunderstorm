@@ -1,29 +1,4 @@
-/*
- * Thunderstorm is a full web app framework!
- *
- * Typescript & Express backend infrastructure that natively runs on firebase function
- * Typescript & React frontend infrastructure
- *
- * Copyright (C) 2020 Intuition Robotics
- *
- * Licensed under the Apache License, Version 2.0 (the "License");
- * you may not use this file except in compliance with the License.
- * You may obtain a copy of the License at
- *
- *     http://www.apache.org/licenses/LICENSE-2.0
- *
- * Unless required by applicable law or agreed to in writing, software
- * distributed under the License is distributed on an "AS IS" BASIS,
- * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
- * See the License for the specific language governing permissions and
- * limitations under the License.
- */
-
-/**
- * Created by tacb0ss on 11/07/2018.
- */
 import {
-    __stringify,
     _keys,
     BadImplementationException,
     dispatch_onServerError,
@@ -44,17 +19,7 @@ import {parse} from "url";
 import {ServerApi_Middleware} from "./HttpServer";
 import {IncomingHttpHeaders} from "http";
 // noinspection TypeScriptPreferShortImport
-import {
-    ApiTypeBinder,
-    ApiWithBody,
-    ApiWithQuery,
-    DeriveBodyType,
-    DeriveQueryType,
-    DeriveResponseType,
-    DeriveUrlType,
-    HttpMethod,
-    QueryParams
-} from "../../../shared/types";
+import {ApiTypeBinder, ApiWithBody, ApiWithQuery, HttpMethod, QueryParams} from "../../../shared/types";
 import {assertProperty} from "../../utils/to-be-removed";
 import {ApiException} from "../../exceptions";
 import {ExpressRequest, ExpressResponse, ExpressRouter} from "../../utils/types";
@@ -71,7 +36,10 @@ export type HttpRequestData = {
 }
 
 
-export abstract class ServerApi<Binder extends ApiTypeBinder<string, R, B, P>, R = DeriveResponseType<Binder>, B = DeriveBodyType<Binder>, P extends QueryParams | {} = DeriveQueryType<Binder>>
+export abstract class ServerApi<Binder extends ApiTypeBinder<string, R, B, P>,
+    R = Binder["response"],
+    B = Binder["body"],
+    P extends QueryParams = Binder["queryParams"]>
     extends Logger {
     public static isDebug: boolean;
 
@@ -137,7 +105,7 @@ export abstract class ServerApi<Binder extends ApiTypeBinder<string, R, B, P>, R
     }
 
     asProxy(): ServerApi<Binder> {
-        return new ServerApi_Proxy<Binder>(this);
+        return new ServerApi_Proxy<Binder, Binder["response"]>(this);
     }
 
     getUrl() {
@@ -190,9 +158,9 @@ export abstract class ServerApi<Binder extends ApiTypeBinder<string, R, B, P>, R
             this.logDebug(`-- Headers: `, headers);
         }
 
-        const reqQuery: P = parse(req.url, true).query as P;
-        if (reqQuery && typeof reqQuery === "object" && Object.keys(reqQuery as QueryParams).length)
-            this.logVerbose(`-- Url Params: `, reqQuery);
+        const reqQuery: P = parse(req.url, true).query as unknown as P;
+        if (reqQuery && typeof reqQuery === "object" && Object.keys(reqQuery).length)
+            this.logVerbose(`-- Url Params: `, reqQuery as unknown as object);
         else
             this.logVerbose(`-- No Params`);
 
@@ -292,11 +260,11 @@ export abstract class ServerApi<Binder extends ApiTypeBinder<string, R, B, P>, R
                 const httpServer = Storm.getInstance()?.getHttpServer();
                 if (httpServer) {
                     const message = await httpServer.errorMessageComposer(requestData, apiException);
-                    await dispatch_onServerError.dispatchModuleAsync([
+                    await dispatch_onServerError.dispatchModuleAsync(
                         severity,
                         httpServer,
                         message
-                    ]);
+                    );
                 }
             } catch (e) {
                 this.logError("Error while handing server error", e);
@@ -321,7 +289,10 @@ export abstract class ServerApi<Binder extends ApiTypeBinder<string, R, B, P>, R
 
 }
 
-export abstract class ServerApi_Get<Binder extends ApiWithQuery<U, R, P>, U extends string = DeriveUrlType<Binder>, R = DeriveResponseType<Binder>, P extends QueryParams | {} = DeriveQueryType<Binder>>
+export abstract class ServerApi_Get<Binder extends ApiWithQuery<U, R, P>,
+    U extends string = Binder["url"],
+    R = Binder["response"],
+    P extends QueryParams | {} = Binder["queryParams"]>
     extends ServerApi<Binder> {
 
     protected constructor(apiName: string) {
@@ -329,7 +300,10 @@ export abstract class ServerApi_Get<Binder extends ApiWithQuery<U, R, P>, U exte
     }
 }
 
-export abstract class ServerApi_Post<Binder extends ApiWithBody<U, R, B>, U extends string = DeriveUrlType<Binder>, R = DeriveResponseType<Binder>, B = DeriveBodyType<Binder>>
+export abstract class ServerApi_Post<Binder extends ApiWithBody<U, B, R>,
+    U extends string = Binder["url"],
+    R = Binder["response"],
+    B = Binder["body"]>
     extends ServerApi<Binder> {
 
     protected constructor(apiName: string) {
@@ -337,7 +311,10 @@ export abstract class ServerApi_Post<Binder extends ApiWithBody<U, R, B>, U exte
     }
 }
 
-export class ServerApi_Proxy<Binder extends ApiTypeBinder<string, R, B, P>, R = DeriveResponseType<Binder>, B = DeriveBodyType<Binder>, P extends QueryParams | {} = DeriveQueryType<Binder>>
+export class ServerApi_Proxy<Binder extends ApiTypeBinder<string, R, B, P>,
+    R = Binder["response"],
+    B = Binder["body"],
+    P extends QueryParams = Binder["queryParams"]>
     extends ServerApi<Binder> {
     private readonly api: ServerApi<Binder>;
 
@@ -347,7 +324,7 @@ export class ServerApi_Proxy<Binder extends ApiTypeBinder<string, R, B, P>, R = 
         this.setMiddlewares(RemoteProxy.Middleware);
     }
 
-    protected async process(request: ExpressRequest, response: ApiResponse, queryParams: DeriveQueryType<Binder>, body: DeriveBodyType<Binder>, context: ObjectTS): Promise<DeriveResponseType<Binder>> {
+    protected async process(request: ExpressRequest, response: ApiResponse, queryParams: P, body: B, context: ObjectTS): Promise<R> {
         // @ts-ignore
         return this.api.process(request, response, queryParams, body, context);
     }

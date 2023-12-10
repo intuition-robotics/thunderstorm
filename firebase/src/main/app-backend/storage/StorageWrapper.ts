@@ -213,9 +213,9 @@ export class FileWrapper {
 			try {
 				await file.delete();
 			} catch (err) {
-				throw new ThisShouldNotHappenException('Error during the deletion of the recently copied file, check the attached error', err);
+				throw new ThisShouldNotHappenException('Error during the deletion of the recently copied file, check the attached error', err as Error);
 			}
-			throw new BadImplementationException('Error during the deletion of the file after a successful copy, attached error stack', e);
+			throw new BadImplementationException('Error during the deletion of the file after a successful copy, attached error stack', e as Error);
 		}
 	}
 

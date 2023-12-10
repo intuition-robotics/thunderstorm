@@ -51,12 +51,12 @@ export function __http<T extends object = any>(method: HttpMethod): Action_Http 
 	return new Action_Http<T>(method);
 }
 
-export function __custom<P extends any = any, R extends any = any>(action: (action: Action_Custom, param?: P) => Promise<R>): Action_Custom {
+export function __custom<P= any, R= any>(action: (action: Action_Custom, param?: P) => Promise<R>): Action_Custom {
 	// @ts-ignore
 	return new Action_Custom<P, R>(action);
 }
 
-export function __compareKeys<P extends any = any>(key1: ContextKey<P>, key2: ContextKey<P>): Action_Custom {
+export function __compareKeys<P= any>(key1: ContextKey<P>, key2: ContextKey<P>): Action_Custom {
 	return __custom<P, void>(async (action: Action_Custom) => {
 		if (objectHash(action.get(key1)) !== objectHash(action.get(key2)))
 			throw new TestException(`NON matched values for keys '${key1.key}' !== '${key2.key}'`);

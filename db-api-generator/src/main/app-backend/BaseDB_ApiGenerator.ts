@@ -1,22 +1,3 @@
-/*
- * Permissions management system, define access level for each of
- * your server apis, and restrict users by giving them access levels
- *
- * Copyright (C) 2020 Intuition Robotics
- *
- * Licensed under the Apache License, Version 2.0 (the "License");
- * you may not use this file except in compliance with the License.
- * You may obtain a copy of the License at
- *
- *     http://www.apache.org/licenses/LICENSE-2.0
- *
- * Unless required by applicable law or agreed to in writing, software
- * distributed under the License is distributed on an "AS IS" BASIS,
- * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
- * See the License for the specific language governing permissions and
- * limitations under the License.
- */
-
 import {
 	Clause_Where,
 	DB_Object,
@@ -230,7 +211,7 @@ export abstract class BaseDB_ApiGenerator<DBType extends DB_Object, ConfigType e
 
 			const query = uniqueQueries[idx];
 			const message = _keys(query).reduce((carry, key) => {
-				return carry + "\n" + `${key}: ${query[key]}`;
+				return carry + "\n" + `${String(key)}: ${query[key]}`;
 			}, `${this.config.itemName} uniqueness violation. There is already a document with`);
 
 			this.logWarning(message);
@@ -248,7 +229,7 @@ export abstract class BaseDB_ApiGenerator<DBType extends DB_Object, ConfigType e
 	public async validateImpl(instance: DBType) {
 		try {
 			await validate(instance, this.validator);
-		} catch (e) {
+		} catch (e: any) {
 
 			const badImplementation = isErrorOfType(e, BadImplementationException);
 			if (badImplementation)
@@ -259,6 +240,8 @@ export abstract class BaseDB_ApiGenerator<DBType extends DB_Object, ConfigType e
 				const errorBody = {type: ErrorKey_BadInput, body: {path: error.path, input: error.input}};
 				throw new ApiException<BadInputErrorBody>(400, error.message).setErrorBody(errorBody);
 			}
+
+			throw e;
 		}
 	}
 
@@ -569,7 +552,7 @@ export abstract class BaseDB_ApiGenerator<DBType extends DB_Object, ConfigType e
 			// If the caller has specified props to be changed, make sure the don't conflict with the lockKeys.
 			const wrongKey = propsToPatch?.find(prop => this.config.lockKeys.includes(prop));
 			if (wrongKey)
-				throw new BadImplementationException(`Key ${wrongKey} is part of the 'lockKeys' and cannot be updated.`);
+				throw new BadImplementationException(`Key ${String(wrongKey)} is part of the 'lockKeys' and cannot be updated.`);
 
 			// If the caller has not specified props, we remove the keys from the caller's instance
 			// before merging with the original dbInstance.

@@ -1,51 +1,32 @@
-/*
- * ts-common is the basic building blocks of our typescript projects
- *
- * Copyright (C) 2020 Intuition Robotics
- *
- * Licensed under the Apache License, Version 2.0 (the "License");
- * you may not use this file except in compliance with the License.
- * You may obtain a copy of the License at
- *
- *     http://www.apache.org/licenses/LICENSE-2.0
- *
- * Unless required by applicable law or agreed to in writing, software
- * distributed under the License is distributed on an "AS IS" BASIS,
- * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
- * See the License for the specific language governing permissions and
- * limitations under the License.
- */
+import {FunctionKeys, ParamResolver, ReturnTypeResolver} from "../utils/types";
 
-import {
-	FunctionKeys,
-	ReturnPromiseType
-} from "../utils/types";
+export class Dispatcher<T,
+    K extends FunctionKeys<T>,
+    P extends ParamResolver<T, K> = ParamResolver<T, K>,
+    R extends ReturnTypeResolver<T, K> = ReturnTypeResolver<T, K>> {
 
-export class Dispatcher<T extends object, K extends FunctionKeys<T>> {
+    static modulesResolver: () => any[];
 
-	static modulesResolver: () => any[];
+    protected readonly method: K;
+    protected readonly filter: (listener: any) => boolean;
 
-	protected readonly method: K;
-	protected readonly filter: (listener: any) => boolean;
+    constructor(method: K) {
+        this.method = method;
+        this.filter = (listener: any) => !!listener[this.method];
+    }
 
-	constructor(method: K) {
-		this.method = method;
-		this.filter = (listener: any) => !!listener[this.method];
-	}
+    public dispatchModule(...p: P): R[] {
+        const listeners = Dispatcher.modulesResolver();
+        // @ts-ignore
+        return listeners.filter(this.filter).map((listener: T) => listener[this.method](...p));
+    }
 
-	public dispatchModule(p: Parameters<T[K]>): ReturnPromiseType<T[K]>[] {
-		const listeners = Dispatcher.modulesResolver();
-		const params: any = p;
-		return listeners.filter(this.filter).map((listener: T) => listener[this.method](...params));
-	}
-
-	public async dispatchModuleAsync(p: Parameters<T[K]>): Promise<ReturnPromiseType<T[K]>[]> {
-		const listeners = Dispatcher.modulesResolver();
-		return Promise.all(listeners.filter(this.filter).map(async (listener: T) => {
-			const params: any = p;
-			return listener[this.method](...params);
-		}));
-	}
+    public async dispatchModuleAsync(...p: P): Promise<R[]> {
+        const filtered = Dispatcher.modulesResolver().filter(this.filter);
+        // @ts-ignore
+        return Promise.all(filtered.map(async (listener: T) => listener[this.method](...p)));
+    }
 }
+
 
 

@@ -26,7 +26,7 @@
 //
 // export type Renderer<Item> = React.ElementType<{ item: Item }>
 //
-// export type RendererMap<T extends any = any> = {
+// export type RendererMap<T= any> = {
 // 	[k: string]: Renderer<T>
 // }
 //

@@ -49,9 +49,9 @@ export const enum ErrorPolicy {
 
 export type ShouldFailCondition<T extends Error> = (e: T) => boolean;
 
-export type ReturnValueProcessor<ReturnValue extends any = any> = (returnValue?: ReturnValue) => void;
+export type ReturnValueProcessor<ReturnValue= any> = (returnValue?: ReturnValue) => void;
 
-export abstract class Action<ParamValue extends any = any, ReturnValue extends any = any>
+export abstract class Action<ParamValue= any, ReturnValue= any>
 	extends Logger {
 	private static testsToRun: string[] = [];
 

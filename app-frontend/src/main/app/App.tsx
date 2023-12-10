@@ -26,7 +26,6 @@ import {
 	WrapperProps
 } from "@intuitionrobotics/thunderstorm/frontend";
 
-import {VersionOnScreen} from './components/VersionOnScreen';
 import {
 	AccountModule,
 	OnLoginStatusUpdated
@@ -55,7 +54,6 @@ export class App
 				<BugReport>
 					{RoutingModule.getRoutesMap()}
 				</BugReport>
-				<VersionOnScreen/>
 				<Dialog/>
 				<Toaster/>
 				<PopupMenu/>

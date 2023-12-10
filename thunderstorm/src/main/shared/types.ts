@@ -32,7 +32,7 @@ export enum HttpMethod {
 
 export type QueryParams = { [key: string]: string | undefined; };
 
-export type ApiTypeBinder<U extends string | void, R extends any, B, P extends QueryParams | {}, E extends any = any> = {
+export type ApiTypeBinder<U extends string | void, R, B, P extends QueryParams | {}, E= any> = {
 	url: U
 	response: R
 	body: B
@@ -40,14 +40,8 @@ export type ApiTypeBinder<U extends string | void, R extends any, B, P extends Q
 	error: E
 };
 
-export type ApiWithBody<U extends string, B, R, E extends any = any> = ApiTypeBinder<U, R, B, {}, E>;
-export type ApiWithQuery<U extends string, R extends any, P extends QueryParams | {} = {}, E extends any = any> = ApiTypeBinder<U, R, void, P, E>;
-
-export type DeriveResponseType<Binder extends {response?: any}> = Binder["response"];
-export type DeriveBodyType<Binder extends {body?: any}> = Binder["body"];
-export type DeriveUrlType<Binder extends {url: string}> = Binder["url"];
-export type DeriveQueryType<Binder extends {query?: QueryParams | {}}> = Binder["query"];
-export type DeriveErrorType<Binder extends {error?: any}> = Binder["error"];
+export type ApiWithBody<U extends string, B, R, E= any> = ApiTypeBinder<U, R, B, {}, E>;
+export type ApiWithQuery<U extends string, R, P extends QueryParams | {} = {}, E= any> = ApiTypeBinder<U, R, void, P, E>;
 
 export type ErrorBody<E extends object | void = void> = {
 	type: string

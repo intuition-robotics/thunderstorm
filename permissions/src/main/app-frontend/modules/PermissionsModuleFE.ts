@@ -98,7 +98,7 @@ export class PermissionsModuleFE_Class
 						this.retryCounter++;
 						return _setTimeout(this.setPermissions, 5 * Second);
 					}
-					dispatch_onPermissionsFailed.dispatchModule([]);
+					dispatch_onPermissionsFailed.dispatchModule();
 				})
 				.execute(async (userUrlsPermissions: UserUrlsPermissions) => {
 					this.retryCounter = 0;
@@ -106,7 +106,7 @@ export class PermissionsModuleFE_Class
 						this.loadingUrls.delete(url);
 						this.userUrlsPermissions[url] = userUrlsPermissions[url];
 					});
-					dispatch_onPermissionsChanged.dispatchUI([]);
+					dispatch_onPermissionsChanged.dispatchUI();
 				});
 		}, "get-permissions", this.debounceTime);
 	};

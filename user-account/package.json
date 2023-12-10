@@ -46,6 +46,6 @@
     "@types/saml2-js": "^3.0.0",
     "ts-node": "^8.6.2",
     "tslint": "^5.16.0",
-    "typescript": "~4.1.0"
+    "typescript": "^5.3.0"
   }
 }

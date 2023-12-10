@@ -55,7 +55,7 @@ export function cloneObj<T extends object>(obj: T): T {
 	}, {} as T)
 }
 
-export function compare<T extends any>(one?: T, two?: T, keys?: (keyof T)[]): boolean {
+export function compare<T>(one?: T, two?: T, keys?: (keyof T)[]): boolean {
 	const typeofOne = typeof one;
 	const typeofTwo = typeof two;
 

@@ -33,24 +33,6 @@ import {
 	Day
 } from "..";
 
-/*
- * ts-common is the basic building blocks of
- * all my typescript projects
- *
- * Copyright (C) 2018  Intuition Robotics
- *
- * Licensed under the Apache License, Version 2.0 (the "License");
- * you may not use this file except in compliance with the License.
- * You may obtain a copy of the License at
- *
- *     http://www.apache.org/licenses/LICENSE-2.0
- *
- * Unless required by applicable law or agreed to in writing, software
- * distributed under the License is distributed on an "AS IS" BASIS,
- * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
- * See the License for the specific language governing permissions and
- * limitations under the License.
- */
 export type ValidatorTypeResolver<K> =
 	K extends any[] ? Validator<K> :
 		K extends object ? TypeValidator<K> | Validator<K> :
@@ -104,14 +86,14 @@ export const validateBoolean = (mandatory = true): Validator<any> => {
 	return validateType('boolean', mandatory);
 };
 
-export const validateObjectValues = <V, T = { [k: string]: V }>(validator: ValidatorTypeResolver<V>, mandatory = true): Validator<T> =>
+export const validateObjectValues = <V, T extends { [k: string]: V } = { [k: string]: V }>(validator: ValidatorTypeResolver<V>, mandatory = true): Validator<T> =>
 	(path: string, input?: T) => {
 		assertMandatory(mandatory, path, input);
 		if (!input)
 			return;
 
 
-		for (const key of _keys(input)) {
+		for (const key of _keys<T, string>(input)) {
 			const inputValue = input[key];
 			if (typeof inputValue === "object") {
 				const objectValidator = validateObjectValues(validator, mandatory);
@@ -179,7 +161,7 @@ export const validateRange = (ranges: [number, number][], mandatory = true): Val
 };
 
 
-export const validate = <T extends any>(instance: T, _validator: ValidatorTypeResolver<T>, path = "") => {
+export const validate = <T>(instance: T, _validator: ValidatorTypeResolver<T>, path = "") => {
 	if (!_validator)
 		return;
 

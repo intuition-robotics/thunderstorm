@@ -124,8 +124,8 @@ export class AccountModule_Class
         const pervStatus = this.status;
         this.status = newStatus;
         this.logInfo(`Login status changes: ${LoggedStatus[pervStatus]} => ${LoggedStatus[newStatus]}`);
-        this.dispatchUI_loginChanged.dispatchUI([]);
-        this.dispatchUI_loginChanged.dispatchModule([]);
+        this.dispatchUI_loginChanged.dispatchUI();
+        this.dispatchUI_loginChanged.dispatchModule();
     };
 
 
@@ -231,7 +231,7 @@ export class AccountModule_Class
             .setRelativeUrl("/v1/account/query")
             .execute(async (res: Response_ListAccounts) => {
                 this.accounts = res.accounts.filter(account => account._id);
-                dispatch_onAccountsLoaded.dispatchUI([]);
+                dispatch_onAccountsLoaded.dispatchUI();
             });
 
     }

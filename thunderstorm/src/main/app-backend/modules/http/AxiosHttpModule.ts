@@ -1,27 +1,6 @@
-/*
- * Thunderstorm is a full web app framework!
- *
- * Typescript & Express backend infrastructure that natively runs on firebase function
- * Typescript & React frontend infrastructure
- *
- * Copyright (C) 2020 Alan Ben
- *
- * Licensed under the Apache License, Version 2.0 (the "License");
- * you may not use this file except in compliance with the License.
- * You may obtain a copy of the License at
- *
- *     http://www.apache.org/licenses/LICENSE-2.0
- *
- * Unless required by applicable law or agreed to in writing, software
- * distributed under the License is distributed on an "AS IS" BASIS,
- * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
- * See the License for the specific language governing permissions and
- * limitations under the License.
- */
-// noinspection TypeScriptPreferShortImport
 import axios from 'axios';
-import {ApiTypeBinder, DeriveErrorType, DeriveResponseType, ErrorResponse, HttpMethod} from "../../../shared/types";
-import {BadImplementationException, StringMap,} from "@intuitionrobotics/ts-common";
+import {ApiTypeBinder, ErrorResponse, HttpMethod, QueryParams} from "../../../shared/types";
+import {_keys, BadImplementationException, StringMap,} from "@intuitionrobotics/ts-common";
 import {BaseHttpRequest} from "../../../shared/BaseHttpRequest";
 import {BaseHttpModule_Class, HttpConfig} from "../../../shared/BaseHttpModule";
 import {Axios_CancelTokenSource, Axios_Method, Axios_RequestConfig, Axios_Response, Axios_ResponseType} from "./types";
@@ -32,7 +11,7 @@ export class AxiosHttpModule_Class
     private requestOption: Axios_RequestConfig = {};
 
     constructor(name?: string) {
-        super( name || "AxiosHttpModule");
+        super(name || "AxiosHttpModule");
     }
 
     init() {
@@ -42,8 +21,13 @@ export class AxiosHttpModule_Class
             this.origin = origin;
     }
 
-    createRequest<Binder extends ApiTypeBinder<any, any, any, any>>(method: HttpMethod, key: string, data?: string): AxiosHttpRequest<DeriveRealBinder<Binder>> {
-        return new AxiosHttpRequest<DeriveRealBinder<Binder>>(key, data, this.shouldCompress())
+    createRequest<Binder extends ApiTypeBinder<U, R, B, P, E>,
+        U extends string = Binder["url"],
+        R = Binder["response"],
+        B = Binder["body"],
+        P extends QueryParams = Binder["queryParams"],
+        E extends void | object = Binder["error"]>(method: HttpMethod, key: string, data?: string): BaseHttpRequest<Binder> {
+        return new AxiosHttpRequest<Binder>(key, data, this.shouldCompress())
             .setOrigin(this.origin)
             .setMethod(method)
             .setTimeout(this.timeout)
@@ -70,7 +54,7 @@ export class AxiosHttpModule_Class
         if (!fs.existsSync(outputFolder))
             fs.mkdirSync(outputFolder);
 
-        fs.writeFileSync(outputFile, downloadResponse);
+        fs.writeFileSync(outputFile, downloadResponse as any);
         return outputFile;
     }
 
@@ -80,9 +64,14 @@ export type DeriveRealBinder<Binder> = Binder extends ApiTypeBinder<infer U, inf
 
 export const AxiosHttpModule = new AxiosHttpModule_Class();
 
-class AxiosHttpRequest<Binder extends ApiTypeBinder<any, any, any, any>>
+class AxiosHttpRequest<Binder extends ApiTypeBinder<U, R, B, P, E>,
+    U extends string = Binder["url"],
+    R = Binder["response"],
+    B = Binder["body"],
+    P extends QueryParams = Binder["queryParams"],
+    E extends void | object = Binder["error"]>
     extends BaseHttpRequest<Binder> {
-    private response?: Axios_Response<DeriveResponseType<DeriveRealBinder<Binder>>>;
+    private response?: Axios_Response<R>;
     private cancelSignal: Axios_CancelTokenSource;
     protected status?: number;
     private requestOption: Axios_RequestConfig = {};
@@ -113,7 +102,7 @@ class AxiosHttpRequest<Binder extends ApiTypeBinder<any, any, any, any>>
         this.cancelSignal.cancel(`Request with key: '${this.key}' aborted by the user.`);
     }
 
-    getErrorResponse(): ErrorResponse<DeriveErrorType<Binder>> {
+    getErrorResponse(): ErrorResponse<E> {
         return {debugMessage: this.getResponse()};
     }
 
@@ -129,15 +118,18 @@ class AxiosHttpRequest<Binder extends ApiTypeBinder<any, any, any, any>>
                 return resolve();
 
             let nextOperator = this.url.indexOf("?") === -1 ? "?" : "&";
-            const fullUrl = Object.keys(this.params).reduce((url: string, paramKey: string) => {
-                const param: string | undefined = this.params[paramKey];
-                if (!param)
-                    return url;
+            let fullUrl = this.url;
+            const params = this.params;
+            if (params)
+                fullUrl = _keys(params).reduce((url: string, paramKey) => {
+                    const param: string | undefined = params[paramKey];
+                    if (!param)
+                        return url;
 
-                const toRet = `${url}${nextOperator}${paramKey}=${encodeURIComponent(param)}`;
-                nextOperator = "&";
-                return toRet;
-            }, this.url);
+                    const toRet = `${url}${nextOperator}${String(paramKey)}=${encodeURIComponent(param)}`;
+                    nextOperator = "&";
+                    return toRet;
+                }, this.url);
 
             // TODO set progress listener
             // this.xhr.upload.onprogress = this.onProgressListener;
@@ -184,12 +176,10 @@ class AxiosHttpRequest<Binder extends ApiTypeBinder<any, any, any, any>>
                 this.status = this.response?.status || 200;
                 return resolve();
             } catch (e) {
-                // console.log('In catch');
-                // TODO handle this here
-                // 	if (xhr.readyState === 4 && xhr.status === 0) {
-                // 		reject(new HttpException(404, this.url));
-                // 		return;
-                // 	}
+                if (!(e instanceof axios.AxiosError)) {
+                    this.status = 500;
+                    return reject(e);
+                }
 
                 if (axios.isCancel(e)) {
                     // Should already be set when I abort but just in case its aborted somehow else
@@ -197,7 +187,7 @@ class AxiosHttpRequest<Binder extends ApiTypeBinder<any, any, any, any>>
                     console.log('Api cancelled: ', e.message);
                 }
 
-                this.response = e.response;
+                this.response = e["response"];
                 this.status = this.response?.status || 500;
                 return reject(e);
             }
@@ -213,7 +203,6 @@ class AxiosHttpRequest<Binder extends ApiTypeBinder<any, any, any, any>>
 }
 
 
-
 export class AxiosHttpClient
     extends BaseHttpModule_Class {
     private requestOption: Axios_RequestConfig = {};
@@ -221,18 +210,19 @@ export class AxiosHttpClient
     constructor(name: string, config: HttpConfig) {
         super(name);
         this.setConfig(config);
-        this.init();
-    }
-
-    init() {
         super.init()
         const origin = this.config.origin;
         if (origin)
             this.origin = origin;
     }
 
-    createRequest<Binder extends ApiTypeBinder<any, any, any, any>>(method: HttpMethod, key: string, data?: string): AxiosHttpRequest<DeriveRealBinder<Binder>> {
-        return new AxiosHttpRequest<DeriveRealBinder<Binder>>(key, data, this.shouldCompress())
+    createRequest<Binder extends ApiTypeBinder<U, R, B, P, E>,
+        U extends string = Binder["url"],
+        R = Binder["response"],
+        B = Binder["body"],
+        P extends QueryParams = Binder["queryParams"],
+        E extends void | object = Binder["error"]>(method: HttpMethod, key: string, data?: string): BaseHttpRequest<Binder> {
+        return new AxiosHttpRequest<Binder>(key, data, this.shouldCompress())
             .setOrigin(this.origin)
             .setMethod(method)
             .setTimeout(this.timeout)

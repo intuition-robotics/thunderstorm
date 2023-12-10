@@ -24,7 +24,8 @@ import {
 	ApiResponse,
 	ExpressRequest,
 	RemoteProxy,
-	ServerApi_Get
+	ServerApi_Get,
+    ServerApi_Post
 } from "@intuitionrobotics/thunderstorm/backend";
 import {PermissionsAssert} from "@intuitionrobotics/permissions/backend";
 
@@ -57,7 +58,7 @@ type Assert2_Body = { a: string, b: number, c: string };
 type AssertTest2 = ApiWithBody<"/v1/test/permission", Assert2_Body, string>
 
 class ServerApi_TestMiddleware2
-	extends ServerApi_Get<AssertTest2> {
+	extends ServerApi_Post<AssertTest2> {
 
 	constructor() {
 		super("test2");

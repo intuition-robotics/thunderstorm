@@ -15,27 +15,23 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-import {
-	ApiResponse,
-	ServerApi_Get,
-} from "@intuitionrobotics/thunderstorm/backend";
+import {ApiResponse, ExpressRequest, ServerApi_Post,} from "@intuitionrobotics/thunderstorm/backend";
 
 
 import {DispatchModule} from "@modules/ExampleModule";
 import {ExampleSetMax} from "@app/app-shared";
-import {ExpressRequest} from "@intuitionrobotics/thunderstorm/backend";
 
 class ServerApi_EndpointExample
-	extends ServerApi_Get<ExampleSetMax> {
+    extends ServerApi_Post<ExampleSetMax> {
 
-	constructor() {
-		super("set-max");
-	}
+    constructor() {
+        super("set-max");
+    }
 
-	protected async process(request: ExpressRequest, response: ApiResponse, queryParams: {}, body: {n:number}) {
-		console.log('Setting max');
-		return DispatchModule.setMax(body.n)
-	}
+    protected async process(request: ExpressRequest, response: ApiResponse, queryParams: {}, body: { n: number }) {
+        console.log('Setting max');
+        return DispatchModule.setMax(body.n)
+    }
 }
 
 module.exports = new ServerApi_EndpointExample();

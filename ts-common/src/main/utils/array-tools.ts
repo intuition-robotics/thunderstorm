@@ -87,7 +87,7 @@ export function sortArray<T>(array: T[], map: (item: T) => any, invert = false) 
 	return array.sort(compareFn);
 }
 
-export async function batchAction<T extends any = any, R extends any = any>(arr: T[], chunk: number, action: (elements: T[], chunkNumber: number) => Promise<R | R[]>): Promise<R[]> {
+export async function batchAction<T= any, R= any>(arr: T[], chunk: number, action: (elements: T[], chunkNumber: number) => Promise<R | R[]>): Promise<R[]> {
 	if (chunk <= 0)
 		return []
 
@@ -102,7 +102,7 @@ export async function batchAction<T extends any = any, R extends any = any>(arr:
 	return result;
 }
 
-export async function batchActionParallel<T extends any = any, R extends any = any>(arr: T[], chunk: number, action: (elements: T[], chunkNumber: number) => Promise<R | R[]>): Promise<R[]> {
+export async function batchActionParallel<T= any, R= any>(arr: T[], chunk: number, action: (elements: T[], chunkNumber: number) => Promise<R | R[]>): Promise<R[]> {
 
 	if (chunk <= 0)
 		return []

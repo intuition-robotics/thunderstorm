@@ -51,7 +51,7 @@ class ExampleModule_Class
 	}
 
 	async getDispatchNumber() {
-		await this.dispatcher.dispatchModuleAsync([]);
+		await this.dispatcher.dispatchModuleAsync();
 		return this.config.dispatchNum;
 	}
 }

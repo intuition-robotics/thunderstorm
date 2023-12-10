@@ -21,7 +21,7 @@
  */
 import {Action} from "./Action";
 
-export class Action_Custom<ParamValue extends any = any, ReturnValue extends any = any>
+export class Action_Custom<ParamValue= any, ReturnValue= any>
 	extends Action<ParamValue, ReturnValue> {
 	private readonly action: (action: Action_Custom, param: ParamValue) => Promise<ReturnValue>;
 

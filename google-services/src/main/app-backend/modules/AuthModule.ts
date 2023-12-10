@@ -1,7 +1,3 @@
-/**
- * Created by tacb0ss on 07/05/2018.
- */
-
 import {
 	ImplementationMissingException,
 	Module,

@@ -1,45 +1,17 @@
-/*
- * Thunderstorm is a full web app framework!
- *
- * Typescript & Express backend infrastructure that natively runs on firebase function
- * Typescript & React frontend infrastructure
- *
- * Copyright (C) 2020 Intuition Robotics
- *
- * Licensed under the Apache License, Version 2.0 (the "License");
- * you may not use this file except in compliance with the License.
- * You may obtain a copy of the License at
- *
- *     http://www.apache.org/licenses/LICENSE-2.0
- *
- * Unless required by applicable law or agreed to in writing, software
- * distributed under the License is distributed on an "AS IS" BASIS,
- * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
- * See the License for the specific language governing permissions and
- * limitations under the License.
- */
 import {_keys, _setTimeout, BadImplementationException} from "@intuitionrobotics/ts-common";
-import {
-    ApiTypeBinder,
-    DeriveBodyType,
-    DeriveErrorType,
-    DeriveQueryType,
-    DeriveResponseType,
-    DeriveUrlType,
-    ErrorResponse,
-    HttpMethod,
-    QueryParams
-} from "./types";
+import {ApiTypeBinder, ErrorResponse, HttpMethod, QueryParams} from "./types";
 import {HttpException, RequestErrorHandler, RequestSuccessHandler, TS_Progress} from "./request-types";
 
 type DefaultHeaders = { [s: string]: ((url: string) => string | string[]) | string | string[] };
 
-export abstract class BaseHttpRequest<Binder extends ApiTypeBinder<U, R, B, P, E>,
-    U extends string = DeriveUrlType<Binder>,
-    R extends any = DeriveResponseType<Binder>,
-    B extends any = DeriveBodyType<Binder>,
-    P extends QueryParams = DeriveQueryType<Binder>,
-    E extends void | object = DeriveErrorType<Binder>> {
+export abstract class BaseHttpRequest<
+    Binder extends ApiTypeBinder<U, R, B, P, E>,
+    U extends string = Binder["url"],
+    R = Binder["response"],
+    B = Binder["body"],
+    P extends QueryParams = Binder["queryParams"],
+    E extends void | object = Binder["error"]
+> {
 
     key: string;
     requestData!: string | undefined;
@@ -52,7 +24,7 @@ export abstract class BaseHttpRequest<Binder extends ApiTypeBinder<U, R, B, P, E
     protected timeout: number = 10000;
     protected body!: B;
     protected url!: string;
-    protected params: { [K in keyof P]?: P[K] } = {};
+    protected params?: P;
     protected responseType!: string;
     private defaultHeaders: DefaultHeaders = {};
     protected label!: string;
@@ -153,7 +125,11 @@ export abstract class BaseHttpRequest<Binder extends ApiTypeBinder<U, R, B, P, E
     }
 
     setUrlParam<K extends keyof P = keyof P>(key: K, value: P[K]) {
-        delete this.params[key];
+        if (!this.params)
+            this.params = {} as P;
+        else
+            delete this.params[key];
+
         this.params[key] = value;
         return this;
     }

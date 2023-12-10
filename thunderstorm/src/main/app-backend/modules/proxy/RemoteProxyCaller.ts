@@ -20,15 +20,7 @@
  */
 import {__stringify, ImplementationMissingException, Module} from "@intuitionrobotics/ts-common";
 // noinspection TypeScriptPreferShortImport
-import {
-    ApiWithBody,
-    ApiWithQuery,
-    DeriveBodyType,
-    DeriveQueryType,
-    DeriveResponseType,
-    DeriveUrlType,
-    QueryParams
-} from "../../../shared/types";
+import {ApiWithBody, ApiWithQuery, QueryParams} from "../../../shared/types";
 import {promisifyRequest} from "../../utils/promisify-request";
 import {ApiException} from "../../exceptions";
 import {AxiosRequestConfig, AxiosResponse} from "axios";
@@ -69,14 +61,14 @@ export abstract class RemoteProxyCaller<Config extends RemoteServerConfig>
             this.config.proxyHeaderName = 'x-proxy';
     }
 
-    protected executeGetRequest = async <Binder extends ApiWithQuery<U, R, P>, U extends string = DeriveUrlType<Binder>, R = DeriveResponseType<Binder>, P extends QueryParams = DeriveQueryType<Binder>>(url: U, _params: P, _headers?: {
+    protected executeGetRequest = async <Binder extends ApiWithQuery<U, R, P>, U extends string = Binder["url"], R = Binder["response"], P extends QueryParams = Binder["queryParams"]>(url: U, _params: P, _headers?: {
         [key: string]: string
     }): Promise<R> => {
         const resp = await this.executeGetRequestImpl(url, _params, _headers);
         return resp.data as R;
     };
 
-    protected executeGetRequestImpl = async <Binder extends ApiWithQuery<U, R, P>, U extends string = DeriveUrlType<Binder>, R = DeriveResponseType<Binder>, P extends QueryParams = DeriveQueryType<Binder>>(url: U, _params: P, _headers?: {
+    protected executeGetRequestImpl = async <Binder extends ApiWithQuery<U, R, P>, U extends string = Binder["url"], R = Binder["response"], P extends QueryParams = Binder["queryParams"]>(url: U, _params: P, _headers?: {
         [key: string]: string
     }): Promise<AxiosResponse<R>> => {
         const params = _params && Object.keys(_params).map((key) => {
@@ -101,14 +93,14 @@ export abstract class RemoteProxyCaller<Config extends RemoteServerConfig>
         return this.executeRequest<R>(proxyRequest);
     };
 
-    protected executePostRequest = async <Binder extends ApiWithBody<U, R, B>, U extends string = DeriveUrlType<Binder>, R = DeriveResponseType<Binder>, B = DeriveBodyType<Binder>>(url: U, body: B, _headers?: {
+    protected executePostRequest = async <Binder extends ApiWithBody<U, R, B>, U extends string = Binder["url"], R = Binder["response"], B = Binder["body"]>(url: U, body: B, _headers?: {
         [key: string]: string
     }): Promise<R> => {
         const resp = await this.executePostRequestImpl(url, body, _headers);
         return resp.data as R;
     };
 
-    protected executePostRequestImpl = async <Binder extends ApiWithBody<U, R, B>, U extends string = DeriveUrlType<Binder>, R = DeriveResponseType<Binder>, B = DeriveBodyType<Binder>>(url: U, body: B, _headers?: {
+    protected executePostRequestImpl = async <Binder extends ApiWithBody<U, R, B>, U extends string = Binder["url"], R = Binder["response"], B = Binder["body"]>(url: U, body: B, _headers?: {
         [key: string]: string
     }): Promise<AxiosResponse<R>> => {
         const proxyRequest: AxiosRequestConfig = {
