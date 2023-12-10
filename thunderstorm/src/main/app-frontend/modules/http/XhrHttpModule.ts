@@ -1,6 +1,6 @@
 import {ApiTypeBinder, ErrorResponse, HttpMethod, QueryParams} from "../../../shared/types";
 import {_keys, BadImplementationException, currentTimeMillies} from "@intuitionrobotics/ts-common";
-import {gzipSync, InputType} from "zlib";
+import {gzipSync} from "zlib";
 import {HttpException} from "../../../shared/request-types";
 import {BaseHttpRequest} from "../../../shared/BaseHttpRequest";
 import {BaseHttpModule_Class} from "../../../shared/BaseHttpModule";
@@ -175,7 +175,7 @@ class XhrHttpRequest<
             let body: any = this.body;
             if (typeof body === 'string' && this.compress)
                 try {
-                    body = gzipSync(this.body as InputType);
+                    body = gzipSync(body);
                 } catch (error) {
                     return reject(error);
                 }
