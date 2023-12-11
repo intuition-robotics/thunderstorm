@@ -93,14 +93,14 @@ export abstract class RemoteProxyCaller<Config extends RemoteServerConfig>
         return this.executeRequest<R>(proxyRequest);
     };
 
-    protected executePostRequest = async <Binder extends ApiWithBody<U, R, B>, U extends string = Binder["url"], R = Binder["response"], B = Binder["body"]>(url: U, body: B, _headers?: {
+    protected executePostRequest = async <Binder extends ApiWithBody<U, B, R>, U extends string = Binder["url"], R = Binder["response"], B = Binder["body"]>(url: U, body: B, _headers?: {
         [key: string]: string
     }): Promise<R> => {
         const resp = await this.executePostRequestImpl(url, body, _headers);
         return resp.data as R;
     };
 
-    protected executePostRequestImpl = async <Binder extends ApiWithBody<U, R, B>, U extends string = Binder["url"], R = Binder["response"], B = Binder["body"]>(url: U, body: B, _headers?: {
+    protected executePostRequestImpl = async <Binder extends ApiWithBody<U, B, R>, U extends string = Binder["url"], R = Binder["response"], B = Binder["body"]>(url: U, body: B, _headers?: {
         [key: string]: string
     }): Promise<AxiosResponse<R>> => {
         const proxyRequest: AxiosRequestConfig = {
