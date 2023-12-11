@@ -20,20 +20,13 @@
  */
 
 import {FirebaseModule} from "@intuitionrobotics/firebase/backend";
-import {
-    BeLogged,
-    generateHex,
-    LogClient,
-    LogClient_Function,
-    LogClient_Terminal,
-    Module
-} from "@intuitionrobotics/ts-common";
+import {BeLogged, LogClient, LogClient_Function, LogClient_Terminal, Module} from "@intuitionrobotics/ts-common";
 import {Firebase_ExpressFunction, FirebaseFunction} from '@intuitionrobotics/firebase/backend-functions';
 import {HttpServer_Class, RouteResolver} from "../modules/server/HttpServer";
 import {ServerApi} from "../modules/server/server-api";
 import {BaseStorm} from "./BaseStorm";
-import {Express} from "express";
 import * as express from "express";
+import {Express} from "express";
 
 export class Storm
     extends BaseStorm {
@@ -45,18 +38,13 @@ export class Storm
     private readonly httpServer: HttpServer_Class;
     private logClient: LogClient = LogClient_Function;
     private onDestroy?: () => Promise<void>;
-    private readonly executionId: string;
+    private onStart?: () => Promise<void>;
 
     constructor(_express?: Express) {
         super();
         this.express = _express || express();
         this.httpServer = new HttpServer_Class(this.express);
         this.addModules(this.httpServer, FirebaseModule);
-        this.executionId = generateHex(32);
-    }
-
-    public getExecutionId() {
-        return this.executionId;
     }
 
     public setLogClient(logClient: LogClient) {
@@ -64,8 +52,17 @@ export class Storm
         return this;
     }
 
+    public getLogClient() {
+        return this.logClient;
+    }
+
     public setOnDestroy(onDestroy?: () => Promise<void>) {
         this.onDestroy = onDestroy;
+        return this;
+    }
+
+    public setOnStart(onStart?: () => Promise<void>) {
+        this.onStart = onStart;
         return this;
     }
 
@@ -109,6 +106,12 @@ export class Storm
     startServer(onStarted?: () => Promise<void>) {
         const modulesAsFunction: FirebaseFunction[] = this.modules.filter((module: Module): module is FirebaseFunction => module instanceof FirebaseFunction);
         const firebaseExpressFunction = new Firebase_ExpressFunction(this.httpServer.express);
+
+        const _onStart = this.onStart;
+        if (_onStart) {
+            modulesAsFunction.forEach(func => func.addOnStart(_onStart));
+            firebaseExpressFunction.addOnStart(_onStart);
+        }
 
         const _onDestroy = this.onDestroy;
         if (_onDestroy) {

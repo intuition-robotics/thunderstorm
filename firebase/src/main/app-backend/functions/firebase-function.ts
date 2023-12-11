@@ -26,7 +26,10 @@ import DocumentSnapshot = firestore.DocumentSnapshot;
 
 export interface FirebaseFunctionInterface {
     onDestroy: (() => Promise<void>)[]
+
     getFunction(): HttpsFunction;
+
+    addOnStart(onStart: () => Promise<void>): void;
 
     addOnDestroy(onDestroy: () => Promise<void>): void;
 }
@@ -35,12 +38,19 @@ export abstract class FirebaseFunction<Config = any>
     extends Module<Config>
     implements FirebaseFunctionInterface {
     onDestroy: (() => Promise<void>)[] = [];
+    onStart: (() => Promise<void>)[] = [];
 
-    constructor(name: string, onDestroy?: () => Promise<void>) {
+    constructor(name: string, onStart?: () => Promise<void>, onDestroy?: () => Promise<void>) {
         super(name);
+        onStart && this.onStart.push(onStart);
         onDestroy && this.onDestroy.push(onDestroy);
     }
+
     abstract getFunction(): HttpsFunction
+
+    public addOnStart(onStart: () => Promise<void>): void {
+        this.onStart.push(onStart);
+    };
 
     public addOnDestroy(onDestroy: () => Promise<void>): void {
         this.onDestroy.push(onDestroy);
@@ -55,16 +65,22 @@ export class Firebase_ExpressFunction
     private readonly name: string;
     static config: RuntimeOptions = {};
     onDestroy: (() => Promise<void>)[] = [];
+    onStart: (() => Promise<void>)[] = [];
 
-    constructor(_express: Express, name = "api", onDestroy?: () => Promise<void>) {
+    constructor(_express: Express, name = "api", onStart?: () => Promise<void>, onDestroy?: () => Promise<void>) {
         this.express = _express;
         this.name = name;
+        onStart && this.onStart.push(onStart);
         onDestroy && this.onDestroy.push(onDestroy);
     }
 
     static setConfig(config: RuntimeOptions) {
         this.config = config;
     }
+
+    public addOnStart(onStart: () => Promise<void>): void {
+        this.onStart.push(onStart);
+    };
 
     public addOnDestroy(onDestroy: () => Promise<void>): void {
         this.onDestroy.push(onDestroy);
@@ -89,13 +105,17 @@ export class Firebase_ExpressFunction
         };
 
         return this.function = functions.runWith(runtimeOptions).https.onRequest(async (req: Request, resp: Response) => {
-            const result = await this.express(req, resp);
+            try {
+                for (const _onStart of this.onStart) {
+                    await _onStart();
+                }
 
-            for (const _onDestroy of this.onDestroy) {
-                await _onDestroy();
+                return await this.express(req, resp);
+            } finally {
+                for (const _onDestroy of this.onDestroy) {
+                    await _onDestroy();
+                }
             }
-
-            return result;
         });
     };
 }
@@ -120,11 +140,18 @@ export abstract class Firebase_HttpsFunction<Config = any>
             }
         };
         return this.function = functions.runWith(runtimeOptions).https.onRequest(async (req: Request, res: Response) => {
-            const result = await this.process(req, res);
-            for (const _onDestroy of this.onDestroy) {
-                await _onDestroy();
+            try {
+                for (const _onStart of this.onStart) {
+                    await _onStart();
+                }
+
+                return await this.process(req, res);
+
+            } finally {
+                for (const _onDestroy of this.onDestroy) {
+                    await _onDestroy();
+                }
             }
-            return result;
         });
     };
 
@@ -140,9 +167,10 @@ export abstract class FirebaseFunctionModule<DataType = any, Config extends Runt
     private readonly listeningPath: string;
     private function!: CloudFunction<Change<DataSnapshot>>;
 
-    protected constructor(listeningPath: string, name: string, onDestroy?: () => Promise<void>) {
+    protected constructor(listeningPath: string, name: string, onStart?: () => Promise<void>, onDestroy?: () => Promise<void>) {
         super(name);
         this.listeningPath = listeningPath;
+        onStart && this.addOnStart(onStart);
         onDestroy && this.addOnDestroy(onDestroy);
     }
 
@@ -164,16 +192,21 @@ export abstract class FirebaseFunctionModule<DataType = any, Config extends Runt
 
         return this.function = functions.runWith(runtimeOptions).database.ref(this.listeningPath).onWrite(
             async (change: Change<DataSnapshot>, context: EventContext) => {
-                const before: DataType = change.before && change.before.val();
-                const after: DataType = change.after && change.after.val();
-                const params = deepClone(context.params);
+                try {
+                    for (const _onStart of this.onStart) {
+                        await _onStart();
+                    }
 
-                const result = await this.processChanges(before, after, params);
-                for (const _onDestroy of this.onDestroy) {
-                    await _onDestroy();
+                    const before: DataType = change.before && change.before.val();
+                    const after: DataType = change.after && change.after.val();
+                    const params = deepClone(context.params);
+
+                    return await this.processChanges(before, after, params);
+                } finally {
+                    for (const _onDestroy of this.onDestroy) {
+                        await _onDestroy();
+                    }
                 }
-                return result;
-
             });
     };
 }
@@ -190,8 +223,8 @@ export abstract class FirestoreFunctionModule<DataType extends object, Config ex
     private readonly collectionName: string;
     private function!: CloudFunction<Change<DocumentSnapshot>>;
 
-    protected constructor(collectionName: string, name: string, onDestroy?: () => Promise<void>) {
-        super(name, onDestroy);
+    protected constructor(collectionName: string, name: string, onStart?: () => Promise<void>, onDestroy?: () => Promise<void>) {
+        super(name, onStart, onDestroy);
         this.collectionName = collectionName;
     }
 
@@ -212,15 +245,21 @@ export abstract class FirestoreFunctionModule<DataType extends object, Config ex
         };
         return this.function = functions.runWith(runtimeOptions).firestore.document(`${this.collectionName}/{docId}`).onWrite(
             async (change: Change<DocumentSnapshot>, context: EventContext) => {
-                const before = change.before && change.before.data() as DataType | undefined;
-                const after = change.after && change.after.data() as DataType | undefined;
-                const params = deepClone(context.params);
+                try {
+                    for (const _onStart of this.onStart) {
+                        await _onStart();
+                    }
 
-                const result = await this.processChanges(params, before, after);
-                for (const _onDestroy of this.onDestroy) {
-                    await _onDestroy();
+                    const before = change.before && change.before.data() as DataType | undefined;
+                    const after = change.after && change.after.data() as DataType | undefined;
+                    const params = deepClone(context.params);
+
+                    return await this.processChanges(params, before, after);
+                } finally {
+                    for (const _onDestroy of this.onDestroy) {
+                        await _onDestroy();
+                    }
                 }
-                return result;
             });
     };
 }
@@ -270,18 +309,24 @@ export abstract class FirebaseScheduledFunction<Config extends ScheduledConfig =
             .schedule(this.schedule)
             .timeZone(this.config?.timeZone || "Etc/UTC")
             .onRun(async () => {
-                const results: boolean[] = await Promise.all(this.runningCondition.map(condition => condition()));
+                try {
+                    for (const _onStart of this.onStart) {
+                        await _onStart();
+                    }
 
-                if (results.includes(false)) {
-                    this.logDebug("will not execute backup.. running conditions didn't pass: ", results);
-                    return;
-                }
+                    const results: boolean[] = await Promise.all(this.runningCondition.map(condition => condition()));
 
-                const result = await this.onScheduledEvent();
-                for (const _onDestroy of this.onDestroy) {
-                    await _onDestroy();
+                    if (results.includes(false)) {
+                        this.logDebug("will not execute backup.. running conditions didn't pass: ", results);
+                        return;
+                    }
+
+                    return await this.onScheduledEvent();
+                } finally {
+                    for (const _onDestroy of this.onDestroy) {
+                        await _onDestroy();
+                    }
                 }
-                return result;
             });
     };
 }
@@ -322,6 +367,10 @@ export abstract class Firebase_StorageFunction<Config extends BucketConfigs = Bu
         return this.function = functions.runWith(runtimeOptions).storage.bucket(this.config.bucketName).object().onFinalize(
             async (object: ObjectMetadata, context: EventContext) => {
                 try {
+                    for (const _onStart of this.onStart) {
+                        await _onStart();
+                    }
+
                     return await this.onFinalize(object, context);
                 } catch (e) {
                     const _message = `Error handling callback to onFinalize bucket listener method` +
@@ -355,8 +404,8 @@ export abstract class Firebase_PubSubFunction<T, Config extends RuntimeOptsConfi
     private function!: CloudFunction<Message>;
     private readonly topic: string;
 
-    protected constructor(topic: string, name: string, onDestroy?: () => Promise<void>) {
-        super(name, onDestroy);
+    protected constructor(topic: string, name: string, onStart?: () => Promise<void>, onDestroy?: () => Promise<void>) {
+        super(name, onStart, onDestroy);
         this.topic = topic;
     }
 
@@ -373,10 +422,6 @@ export abstract class Firebase_PubSubFunction<T, Config extends RuntimeOptsConfi
                 await dispatch_onServerError.dispatchModuleAsync(ServerErrorSeverity.Critical, this, _message);
             } catch (_e) {
                 this.logError("Error while handing pubsub error", _e);
-            }
-        } finally {
-            for (const _onDestroy of this.onDestroy) {
-                await _onDestroy();
             }
         }
     };
@@ -396,17 +441,29 @@ export abstract class Firebase_PubSubFunction<T, Config extends RuntimeOptsConfi
         };
         return this.function = functions.runWith(runtimeOptions).pubsub.topic(this.topic).onPublish(async (message: Message, context: FirebaseEventContext) => {
             // need to validate etc...
-            const originalMessage: TopicMessage = message.toJSON();
-
-            let data: T | undefined;
             try {
-                data = JSON.parse(Buffer.from(originalMessage.data, "base64").toString());
-            } catch (e) {
-                this.logError(`Error parsing the data attribute from pub/sub message to topic ${this.topic}` +
-                    "\n" + __stringify(originalMessage.data) + "\n" + __stringify(e));
-            }
+                for (const _onStart of this.onStart) {
+                    await _onStart();
+                }
 
-            return this._onPublish(data, originalMessage, context);
+                const originalMessage: TopicMessage = message.toJSON();
+
+                let data: T | undefined;
+                try {
+                    data = JSON.parse(Buffer.from(originalMessage.data, "base64").toString());
+                } catch (e) {
+                    const originalMessage: TopicMessage = message.toJSON();
+
+                    this.logError(`Error parsing the data attribute from pub/sub message to topic ${this.topic}` +
+                        "\n" + __stringify(originalMessage.data) + "\n" + __stringify(e));
+                }
+
+                return await this._onPublish(data, originalMessage, context);
+            } finally {
+                for (const _onDestroy of this.onDestroy) {
+                    await _onDestroy();
+                }
+            }
         });
     };
 }
