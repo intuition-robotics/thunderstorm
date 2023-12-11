@@ -452,8 +452,6 @@ export abstract class Firebase_PubSubFunction<T, Config extends RuntimeOptsConfi
                 try {
                     data = JSON.parse(Buffer.from(originalMessage.data, "base64").toString());
                 } catch (e) {
-                    const originalMessage: TopicMessage = message.toJSON();
-
                     this.logError(`Error parsing the data attribute from pub/sub message to topic ${this.topic}` +
                         "\n" + __stringify(originalMessage.data) + "\n" + __stringify(e));
                 }
