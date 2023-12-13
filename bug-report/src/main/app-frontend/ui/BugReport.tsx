@@ -36,6 +36,7 @@ import {
 
 type Props = {
 	component?: React.ReactNode
+	children: React.ReactNode
 }
 const style: React.CSSProperties = {
 	cursor: "pointer",

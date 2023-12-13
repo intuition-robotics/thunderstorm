@@ -1,24 +1,3 @@
-/*
- * Thunderstorm is a full web app framework!
- *
- * Typescript & Express backend infrastructure that natively runs on firebase function
- * Typescript & React frontend infrastructure
- *
- * Copyright (C) 2020 Intuition Robotics
- *
- * Licensed under the Apache License, Version 2.0 (the "License");
- * you may not use this file except in compliance with the License.
- * You may obtain a copy of the License at
- *
- *     http://www.apache.org/licenses/LICENSE-2.0
- *
- * Unless required by applicable law or agreed to in writing, software
- * distributed under the License is distributed on an "AS IS" BASIS,
- * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
- * See the License for the specific language governing permissions and
- * limitations under the License.
- */
-
 import * as React from "react";
 import {
 	NavLink,
@@ -32,13 +11,13 @@ export type RouteParams = { [key: string]: string | number | (() => string | num
 export class RoutePath {
 	readonly key: string;
 	readonly path: string;
-	readonly exact: boolean = false;
 	readonly component: React.ComponentType<any> | string;
 
-	readonly logMessage?: string;
-	readonly label?: React.ElementType | string;
-	readonly visible: () => boolean = () => !!this.label;
-	readonly enabled?: () => boolean;
+	public exact: boolean = false;
+	public logMessage?: string;
+	public label?: string;
+	public visible: () => boolean = () => !!this.label;
+	public enabled?: () => boolean;
 
 	constructor(key: string, route: string, component: React.ComponentType<any> | string) {
 		this.key = key;
@@ -47,31 +26,26 @@ export class RoutePath {
 	}
 
 	setLogMessage(logMessage: string) {
-		// @ts-ignore
 		this.logMessage = logMessage;
 		return this;
 	}
 
-	setLabel(label: React.ElementType | string) {
-		// @ts-ignore
+	setLabel(label: string) {
 		this.label = label;
 		return this;
 	}
 
 	setVisible(visible: () => boolean) {
-		// @ts-ignore
 		this.visible = visible;
 		return this;
 	}
 
 	setEnabled(enabled: () => boolean) {
-		// @ts-ignore
 		this.enabled = enabled;
 		return this;
 	}
 
 	setExact(exact: boolean) {
-		// @ts-ignore
 		this.exact = exact;
 		return this;
 	}

@@ -32,7 +32,7 @@
   },
   "devDependencies": {
     "@intuitionrobotics/testelot": "~0.0.1",
-    "@types/node": "^18.0.0",
+    "@types/node": "^20.0.0",
     "module-alias": "^2.2.0",
     "ts-node": "^8.10.2",
     "tslint": "^5.16.0",

@@ -24,6 +24,7 @@ export type KeyboardListenerProps = {
 	onFocus?: () => void
 	onBlur?: () => void
 	id?: string
+	children: React.ReactNode
 }
 
 export class KeyboardListener<P extends KeyboardListenerProps>

@@ -56,7 +56,6 @@ export * from "./app-frontend/widgets/FieldEditorWithButtons";
 export * from "./app-frontend/components/TS_Table";
 export * from "./app-frontend/components/checkbox/TS_Checkbox";
 export * from "./app-frontend/components/FilterInput";
-export * from "./app-frontend/components/DropDown";
 
 export * from "./app-frontend/components/form/types";
 export * from "./app-frontend/components/form/Form";

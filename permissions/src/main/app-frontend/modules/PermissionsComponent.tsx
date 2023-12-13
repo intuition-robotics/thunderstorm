@@ -9,6 +9,7 @@ type Props = {
 	url: string
 	loadingComponent?: React.ComponentType
 	fallback?: React.ComponentType
+	children: React.ReactNode
 }
 
 export class PermissionsComponent
@@ -25,7 +26,7 @@ export class PermissionsComponent
 			return this.props.loadingComponent ? <this.props.loadingComponent/> : null;
 
 		if (permitted)
-			return <>{this.props.children}</>;
+			return this.props.children;
 
 		if (this.props.fallback)
 			return <this.props.fallback/>;

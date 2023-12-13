@@ -26,6 +26,7 @@ type Props = {
 	zIndex: number
 	showOverlay: boolean
 	onClickOverlay: (event: React.MouseEvent<HTMLDivElement>) => void
+	children: React.ReactNode
 };
 
 const overlayStyle = (zIndex: number): CSSProperties => ({

@@ -6,6 +6,7 @@ type Props = {
 	onMouseMove?: (e: MouseEvent) => void;
 	onMouseUp?: (e: MouseEvent) => void;
 	overlayZIndex?: number;
+	children: React.ReactNode;
 };
 
 type State = {
