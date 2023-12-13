@@ -1,5 +1,5 @@
 import {
-	addItemToArray, LogParam,
+	addItemToArray,
 	removeItemFromArray,
 } from "../index";
 import {Logger} from "../core/logger/Logger";
@@ -44,8 +44,8 @@ export class Queue
 					onError && onError(e);
 				} catch (e1) {
 					this.logError("Error while calling onError");
-					this.logError("--- Original: ", e as LogParam);
-					this.logError("-- Secondary: ", e1 as LogParam);
+					this.logError("--- Original: ", e);
+					this.logError("-- Secondary: ", e1);
 				}
 			}
 			this.running--;
