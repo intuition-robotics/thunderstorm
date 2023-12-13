@@ -90,7 +90,7 @@ export class ServerApi_Query<DBType extends DB_Object>
         super(dbModule, DefaultApiDefs.Query, pathPart);
     }
 
-    protected async process(request: ExpressRequest, response: ApiResponse, queryParams: {}, _body: Partial<DBType>): Promise<DBType[]> {
+    protected async process(request: ExpressRequest, response: ApiResponse, queryParams: {}, _body: Clause_Where<DBType>): Promise<DBType[]> {
         // for (const postProcessor of this.postProcessors) {
         // 	queries = await postProcessor();
         // }

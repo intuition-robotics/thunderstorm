@@ -1,6 +1,6 @@
 import {ApiTypeBinder, BaseHttpRequest, ErrorResponse, QueryParams, RequestErrorHandler} from "@intuitionrobotics/thunderstorm";
 import {ApiBinder_DBCreate, ApiBinder_DBDelete, ApiBinder_DBQuery, ApiBinder_DBUniuqe, DefaultApiDefs, GenericApiDef} from "../index";
-import {DB_Object} from "@intuitionrobotics/firebase";
+import {Clause_Where, DB_Object} from "@intuitionrobotics/firebase";
 import {ThunderDispatcher, XhrHttpModule} from "@intuitionrobotics/thunderstorm/frontend";
 
 import {addItemToArray, Module, PartialProperties, removeItemFromArray} from "@intuitionrobotics/ts-common";
@@ -78,10 +78,10 @@ export abstract class BaseDB_ApiGeneratorCaller<DBType extends DB_Object, UType 
             });
     };
 
-    query = (query?: Partial<DBType>): BaseHttpRequest<ApiBinder_DBQuery<DBType>> => {
+    query = (query?: Clause_Where<DBType>): BaseHttpRequest<ApiBinder_DBQuery<DBType>> => {
         let _query = query;
         if (!_query)
-            _query = {} as Partial<DBType>;
+            _query = {} as Clause_Where<DBType>;
 
         return this
             .createRequest<ApiBinder_DBQuery<DBType>>(DefaultApiDefs.Query)

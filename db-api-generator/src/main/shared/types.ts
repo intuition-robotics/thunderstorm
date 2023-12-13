@@ -1,5 +1,5 @@
-import {DB_Object, FirestoreQuery} from "@intuitionrobotics/firebase";
-import {ApiWithBody, ApiWithQuery, HttpMethod,} from "@intuitionrobotics/thunderstorm";
+import {DB_Object, Clause_Where} from "@intuitionrobotics/firebase";
+import {ApiWithBody, ApiWithQuery, HttpMethod} from "@intuitionrobotics/thunderstorm";
 
 export const DefaultApiDefs: { [k: string]: GenericApiDef; } = {
     Create: {
@@ -39,5 +39,5 @@ export type ApiBinder_DBCreate<DBType extends DB_Object, RequestType extends Omi
 export type ApiBinder_DBDelete<DBType extends DB_Object> = ApiWithQuery<string, DBType, DB_Object>;
 export type ApiBinder_DBUniuqe<DBType extends DB_Object> = ApiWithQuery<string, DBType, DB_Object>;
 export type ApiBinder_DBUpdate<DBType extends DB_Object> = ApiWithBody<string, DBType, DBType>;
-export type ApiBinder_DBQuery<DBType extends DB_Object> = ApiWithBody<string, FirestoreQuery<DBType>, DBType[]>;
+export type ApiBinder_DBQuery<DBType extends DB_Object> = ApiWithBody<string, Clause_Where<DBType>, DBType[]>;
 
