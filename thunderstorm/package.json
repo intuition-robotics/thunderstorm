@@ -23,7 +23,7 @@
   "types": "./index.d.ts",
   "sideEffects": false,
   "scripts": {
-    "build": "tsc -v && tsc -p src/main/tsconfig.json --rootDir ./src/main --outDir dist",
+    "build": "tsc -p src/main/tsconfig.json --rootDir ./src/main --outDir dist",
     "lint": "tslint -p src/main/tsconfig.json"
   },
   "dependencies": {

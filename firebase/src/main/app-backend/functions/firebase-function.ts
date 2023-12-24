@@ -39,9 +39,11 @@ export abstract class FirebaseFunction<Config = any>
     implements FirebaseFunctionInterface {
     onDestroy: (() => Promise<void>)[] = [];
     onStart: (() => Promise<void>)[] = [];
+    protected runtimeOptions: RuntimeOptions;
 
-    constructor(name: string, onStart?: () => Promise<void>, onDestroy?: () => Promise<void>) {
+    constructor(name: string, onStart?: () => Promise<void>, onDestroy?: () => Promise<void>,  runtimeOptions?: RuntimeOptions) {
         super(name);
+        this.runtimeOptions = runtimeOptions || {};
         onStart && this.onStart.push(onStart);
         onDestroy && this.onDestroy.push(onDestroy);
     }
@@ -137,7 +139,8 @@ export abstract class Firebase_HttpsFunction<Config = any>
                 function_name: getFormattedFunctionName(this.getName()),
                 type: "https",
                 version: "v1"
-            }
+            },
+            ...this.runtimeOptions
         };
         return this.function = functions.runWith(runtimeOptions).https.onRequest(async (req: Request, res: Response) => {
             try {
@@ -160,8 +163,7 @@ export abstract class Firebase_HttpsFunction<Config = any>
     };
 }
 
-//TODO: I would like to add a type for the params..
-export abstract class FirebaseFunctionModule<DataType = any, Config extends RuntimeOptsConfigs = any>
+export abstract class FirebaseFunctionModule<DataType = any, Config = any>
     extends FirebaseFunction<Config> {
 
     private readonly listeningPath: string;
@@ -187,7 +189,7 @@ export abstract class FirebaseFunctionModule<DataType = any, Config extends Runt
                 type: "realtime-db-listener",
                 version: "v1"
             },
-            ...this.config?.runtimeOpts
+            ...this.runtimeOptions
         };
 
         return this.function = functions.runWith(runtimeOptions).database.ref(this.listeningPath).onWrite(
@@ -212,7 +214,6 @@ export abstract class FirebaseFunctionModule<DataType = any, Config extends Runt
 }
 
 export type FirestoreConfigs = {
-    runTimeOptions?: RuntimeOptions,
     configs: any
 }
 
@@ -241,7 +242,7 @@ export abstract class FirestoreFunctionModule<DataType extends object, Config ex
                 type: "firestore-listener",
                 version: "v1"
             },
-            ...this.config?.runTimeOptions
+            ...this.runtimeOptions
         };
         return this.function = functions.runWith(runtimeOptions).firestore.document(`${this.collectionName}/{docId}`).onWrite(
             async (change: Change<DocumentSnapshot>, context: EventContext) => {
@@ -264,7 +265,7 @@ export abstract class FirestoreFunctionModule<DataType extends object, Config ex
     };
 }
 
-export type ScheduledConfig = RuntimeOptsConfigs & {
+export type ScheduledConfig = {
     timeZone?: string
 };
 
@@ -301,7 +302,7 @@ export abstract class FirebaseScheduledFunction<Config extends ScheduledConfig =
                 type: "pubsub-schedule",
                 version: "v1"
             },
-            ...this.config?.runtimeOpts
+            ...this.runtimeOptions
         };
         return this.function = functions
             .runWith(runtimeOptions)
@@ -331,11 +332,7 @@ export abstract class FirebaseScheduledFunction<Config extends ScheduledConfig =
     };
 }
 
-export type RuntimeOptsConfigs = {
-    runtimeOpts?: RuntimeOptions
-}
-
-export type BucketConfigs = RuntimeOptsConfigs & {
+export type BucketConfigs = {
     bucketName?: string
 }
 
@@ -361,7 +358,7 @@ export abstract class Firebase_StorageFunction<Config extends BucketConfigs = Bu
             },
             timeoutSeconds: 300,
             memory: "2GB",
-            ...this.config?.runtimeOpts
+            ...this.runtimeOptions
         };
 
         return this.function = functions.runWith(runtimeOptions).storage.bucket(this.config.bucketName).object().onFinalize(
@@ -398,7 +395,7 @@ function getFormattedFunctionName(name: string) {
     return name.replace(/([A-Z])/g, "_$1").toLowerCase().replace(/\s/g, "_");
 }
 
-export abstract class Firebase_PubSubFunction<T, Config extends RuntimeOptsConfigs = any>
+export abstract class Firebase_PubSubFunction<T, Config = any>
     extends FirebaseFunction<Config> {
 
     private function!: CloudFunction<Message>;
@@ -437,7 +434,7 @@ export abstract class Firebase_PubSubFunction<T, Config extends RuntimeOptsConfi
                 type: "pubsub-topic-publish",
                 version: "v1"
             },
-            ...this.config?.runtimeOpts
+            ...this.runtimeOptions
         };
         return this.function = functions.runWith(runtimeOptions).pubsub.topic(this.topic).onPublish(async (message: Message, context: FirebaseEventContext) => {
             // need to validate etc...
