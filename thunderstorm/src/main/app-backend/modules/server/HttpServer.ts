@@ -185,7 +185,7 @@ export class HttpServer_Class
 
         const label = `Printing ${this.routes.length} Routes`;
         console.time(label)
-        this.routes.forEach(route => this.logInfo(`${JSON.stringify(route.methods)} ${prefix}${route.path}`));
+        this.routes.forEach(route => this.logVerbose(`${JSON.stringify(route.methods)} ${prefix}${route.path}`));
         console.timeEnd(label)
     }
 
