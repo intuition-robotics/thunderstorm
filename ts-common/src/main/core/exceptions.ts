@@ -43,7 +43,7 @@ export abstract class CustomException
         super(message);
         this.message = message;
         this.stack = (new Error(message)).stack;
-        this.cause = cause instanceof Error ? cause : new Error(JSON.stringify(cause));
+        this.cause = cause instanceof Error ? cause : new Error(JSON.stringify(cause || message));
         this.exceptionType = exceptionType.name;
         this.isInstanceOf = (_exceptionType: Function): boolean => {
             return this.exceptionType === _exceptionType.name;
