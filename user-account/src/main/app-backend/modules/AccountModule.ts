@@ -416,7 +416,7 @@ export class AccountsModule_Class
         let sessionTTLms = this.config.sessionTTLms.web;
 
         if (session.frontType === FrontType.App)
-            sessionTTLms = this.config.sessionTTLms.app;
+            return false;
 
         return delta > sessionTTLms || delta < 0;
     };
