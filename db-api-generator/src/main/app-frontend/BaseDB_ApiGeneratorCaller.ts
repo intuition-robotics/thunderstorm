@@ -60,54 +60,102 @@ export abstract class BaseDB_ApiGeneratorCaller<DBType extends DB_Object, UType 
         return false;
     }
 
-    create(toCreate: UType): BaseHttpRequest<ApiBinder_DBCreate<DBType>> {
+    private getCreateRequest(toCreate: UType) {
         return this
             .createRequest<ApiBinder_DBCreate<DBType>>(DefaultApiDefs.Create)
-            .setJsonBody(toCreate)
+            .setJsonBody(toCreate);
+    }
+
+    create(toCreate: UType): BaseHttpRequest<ApiBinder_DBCreate<DBType>> {
+        return this.getCreateRequest(toCreate)
             .execute(async (response: DBType) => {
                 return this.onEntryCreated(response);
             });
     }
 
-    update = (toUpdate: DBType): BaseHttpRequest<ApiBinder_DBCreate<DBType>> => {
+    async createSync(toCreate: UType): Promise<ApiBinder_DBCreate<DBType>["response"]> {
+        return this.getCreateRequest(toCreate)
+            .executeSync();
+    }
+
+    private getUpdateRequest(toUpdate: DBType) {
         return this
             .createRequest<ApiBinder_DBCreate<DBType>>(DefaultApiDefs.Update)
-            .setJsonBody(toUpdate)
+            .setJsonBody(toUpdate);
+    }
+
+    update = (toUpdate: DBType): BaseHttpRequest<ApiBinder_DBCreate<DBType>> => {
+        return this.getUpdateRequest(toUpdate)
             .execute(async response => {
                 return this.onEntryUpdated(response);
             });
     };
 
-    query = (query?: Clause_Where<DBType>): BaseHttpRequest<ApiBinder_DBQuery<DBType>> => {
+    updateAsync = (toUpdate: DBType): Promise<ApiBinder_DBCreate<DBType>["response"]> => {
+        return this.getUpdateRequest(toUpdate)
+            .executeSync();
+    };
+
+    private getQueryBody(query?: Clause_Where<DBType>) {
         let _query = query;
         if (!_query)
             _query = {} as Clause_Where<DBType>;
 
         return this
             .createRequest<ApiBinder_DBQuery<DBType>>(DefaultApiDefs.Query)
-            .setJsonBody(_query)
+            .setJsonBody(_query);
+    }
+
+    query = (query?: Clause_Where<DBType>): BaseHttpRequest<ApiBinder_DBQuery<DBType>> => {
+        let _query = query;
+        if (!_query)
+            _query = {} as Clause_Where<DBType>;
+
+        return this.getQueryBody(_query)
             .execute(async response => {
                 return this.onQueryReturned(response);
             });
     };
+    queryAsync = (query?: Clause_Where<DBType>): Promise<ApiBinder_DBQuery<DBType>["response"]> => {
+        return this.getQueryBody(query)
+            .executeSync();
+    };
 
-    unique = (_id: string): BaseHttpRequest<ApiBinder_DBUniuqe<DBType>> => {
+    private getUniqueRequest(_id: string) {
         return this
             .createRequest<ApiBinder_DBUniuqe<DBType>>(DefaultApiDefs.Unique)
-            .setUrlParams({_id})
+            .setUrlParams({_id});
+    }
+
+    unique = (_id: string): BaseHttpRequest<ApiBinder_DBUniuqe<DBType>> => {
+        return this.getUniqueRequest(_id)
             .execute(async response => {
                 return this.onGotUnique(response);
             });
     };
 
-    delete = (_id: string): BaseHttpRequest<ApiBinder_DBDelete<DBType>> => {
+    uniqueSync = (_id: string): Promise<ApiBinder_DBUniuqe<DBType>["response"]> => {
+        return this.getUniqueRequest(_id).executeSync();
+    };
+
+    private getDeleteRequest(_id: string) {
         return this
             .createRequest<ApiBinder_DBDelete<DBType>>(DefaultApiDefs.Delete)
-            .setUrlParams({_id})
+            .setUrlParams({_id});
+    }
+
+    delete = (_id: string): BaseHttpRequest<ApiBinder_DBDelete<DBType>> => {
+        return this.getDeleteRequest(_id)
             .execute(async response => {
                 return this.onEntryDeleted(response);
             });
     };
+
+    deleteSync = (_id: string): Promise<ApiBinder_DBDelete<DBType>["response"]> => {
+        return this.getDeleteRequest(_id)
+            .executeSync();
+    };
+
 
     private ids: string[] = [];
     private items: { [k: string]: DBType } = {};
