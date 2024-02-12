@@ -91,7 +91,7 @@ export abstract class BaseDB_ApiGeneratorCaller<DBType extends DB_Object, UType 
             });
     };
 
-    updateAsync = (toUpdate: DBType): Promise<ApiBinder_DBCreate<DBType>["response"]> => {
+    updateSync = (toUpdate: DBType): Promise<ApiBinder_DBCreate<DBType>["response"]> => {
         return this.getUpdateRequest(toUpdate)
             .executeSync();
     };
@@ -116,7 +116,7 @@ export abstract class BaseDB_ApiGeneratorCaller<DBType extends DB_Object, UType 
                 return this.onQueryReturned(response);
             });
     };
-    queryAsync = (query?: Clause_Where<DBType>): Promise<ApiBinder_DBQuery<DBType>["response"]> => {
+    querySync = (query?: Clause_Where<DBType>): Promise<ApiBinder_DBQuery<DBType>["response"]> => {
         return this.getQueryBody(query)
             .executeSync();
     };
