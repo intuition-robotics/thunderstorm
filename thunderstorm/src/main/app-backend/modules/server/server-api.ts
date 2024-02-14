@@ -207,6 +207,7 @@ export abstract class ServerApi<Binder extends ApiTypeBinder<string, R, B, P>,
 
             return await response.text(200, toReturn as string);
         } catch (err) {
+            let dispatchError = true;
             let e: any = err;
             let severity: ServerErrorSeverity = ServerErrorSeverity.Warning;
             if (typeof e === "string")
@@ -233,6 +234,7 @@ export abstract class ServerApi<Binder extends ApiTypeBinder<string, R, B, P>,
             if (!apiException)
                 throw new MUSTNeverHappenException("MUST NEVER REACH HERE!!!");
 
+            dispatchError = apiException.getDispatchError();
             if (apiException.responseCode >= 500)
                 severity = ServerErrorSeverity.Error;
             else if (apiException.responseCode >= 400)
@@ -256,18 +258,20 @@ export abstract class ServerApi<Binder extends ApiTypeBinder<string, R, B, P>,
                     break;
             }
 
-            try {
-                const httpServer = Storm.getInstance()?.getHttpServer();
-                if (httpServer) {
-                    const message = await httpServer.errorMessageComposer(requestData, apiException);
-                    await dispatch_onServerError.dispatchModuleAsync(
-                        severity,
-                        httpServer,
-                        message
-                    );
+            if (dispatchError) {
+                try {
+                    const httpServer = Storm.getInstance()?.getHttpServer();
+                    if (httpServer) {
+                        const message = await httpServer.errorMessageComposer(requestData, apiException);
+                        await dispatch_onServerError.dispatchModuleAsync(
+                            severity,
+                            httpServer,
+                            message
+                        );
+                    }
+                } catch (e) {
+                    this.logError("Error while handing server error", e);
                 }
-            } catch (e) {
-                this.logError("Error while handing server error", e);
             }
             if (apiException.responseCode === 500)
                 return response.serverError(apiException);
