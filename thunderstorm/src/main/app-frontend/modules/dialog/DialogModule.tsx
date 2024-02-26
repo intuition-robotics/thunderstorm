@@ -33,6 +33,7 @@ export type Dialog_Model = Stylable & {
 	overlayColor?: Color,
 	actionsStyle?: Properties,
 	allowIndirectClosing?: boolean,
+	id?: string
 }
 
 export type DialogButtonModel = Stylable & {
@@ -41,10 +42,12 @@ export type DialogButtonModel = Stylable & {
 }
 
 export interface DialogListener {
-	__showDialog(dialogModel?: Dialog_Model): void;
+	__showDialog(dialogModel: Dialog_Model): void;
+	__hideDialog(id?: string): void;
 }
 
 const dispatch_showDialog = new ThunderDispatcher<DialogListener, "__showDialog">("__showDialog");
+const dispatch_hideDialog = new ThunderDispatcher<DialogListener, "__hideDialog">("__hideDialog");
 
 export class DialogModule_Class
 	extends Module<{}> {
@@ -56,8 +59,8 @@ export class DialogModule_Class
 	protected init(): void {
 	}
 
-	public close = () => {
-		dispatch_showDialog.dispatchUI()
+	public close = (id?: string) => {
+		dispatch_hideDialog.dispatchUI(id)
 	};
 
 	public show = (params: Dialog_Model) => {
@@ -103,10 +106,12 @@ export class Dialog_Builder
 	overlayColor: Color = "rgba(29, 29, 48, 0.6)";
 	allowIndirectClosing: boolean = false;
 	actionsStyle: Properties = {};
+	private id?: string;
 
-	constructor(content: React.ReactNode) {
+	constructor(content: React.ReactNode, id?: string) {
 		super();
 		this.content = content;
+		this.id = id;
 	}
 
 	setAllowIndirectClosing(allowIndirectClosing: boolean) {
@@ -144,6 +149,11 @@ export class Dialog_Builder
 		return this;
 	}
 
+	setId(id: string) {
+		this.id = id;
+		return this;
+	}
+
 	show() {
 		const model: Dialog_Model = {
 			style: this.style,
@@ -154,7 +164,8 @@ export class Dialog_Builder
 			title: this.title,
 			zIndex: this.zIndex,
 			overlayColor: this.overlayColor,
-			actionsStyle: this.actionsStyle
+			actionsStyle: this.actionsStyle,
+			id: this.id
 		};
 
 		DialogModule.show(model);

@@ -137,14 +137,19 @@ export class Dialog
 			DialogModule.close();
 	}
 
-	__showDialog = (model?: Dialog_Model): void => {
-		if (model && model.allowIndirectClosing)
+	__showDialog = (model: Dialog_Model): void => {
+		if (model.allowIndirectClosing)
 			addEventListener("keydown", Dialog.closeWithEsc);
 		else
 			removeEventListener("keydown", Dialog.closeWithEsc);
 
 		this.setState({model});
 	};
+
+	__hideDialog = (id?: string): void => {
+		removeEventListener("keydown", Dialog.closeWithEsc);
+		this.setState({model: undefined});
+	}
 
 	render() {
 		const dialogModel = this.state.model;
